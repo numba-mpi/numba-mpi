@@ -1,2 +1,2 @@
-from mpi import initialized, size, rank, send, recv
+from .mpi import initialized, size, rank, send, recv
 
