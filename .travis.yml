@@ -61,6 +61,8 @@ script:
   - | 
     if [[ $MPI != 'none' ]]; then
       MPIEXEC="mpiexec -n 2 $([ "$MPI" == 'openmpi' ] && echo "--oversubscribe")"
+    else
+      MPIEXEC=""
     fi;
   - $MPIEXEC python$PY_SFX -m pytest numba_mpi_tests || exit 1;
   # execute Python lines from README.md
