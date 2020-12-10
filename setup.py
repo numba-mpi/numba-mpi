@@ -1,11 +1,8 @@
 from distutils.core import setup
-try: # for pip >= 10
-    from pip._internal.req import parse_requirements
-except ImportError: # for pip <= 9.0.3
-    from pip.req import parse_requirements
 
-# parse_requirements() returns generator of pip.req.InstallRequirement objects
-install_reqs = parse_requirements('requirements.txt')
+def parse_requirements(filename):
+    lineiter = (line.strip() for line in open(filename))
+    return [line for line in lineiter if line and not line.startswith("#")]
 
 setup(
     name='numba-mpi',
@@ -14,5 +11,5 @@ setup(
         'numba_mpi'],
     license='GPL v3',
     long_description='Numba @njittable MPI wrappers tested on Linux, macOS and Windows',
-    install_requires=[str(ir.req) for ir in install_reqs]
+    install_requires=parse_requirements('requirements.txt')
 )
