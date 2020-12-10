@@ -12,14 +12,12 @@ jobs:
       before_script:
         - pip install -U $(cat requirements.txt | awk -F '==|>=' {'print $1'})
       env: MPI=openmpi
-    - name: "Linux, Python 3.8, OpenMPI, required packages"
-      python: 3.8
     - name: "Linux, Python 3.8, MPICH, required packages"
       python: 3.8
       env: MPI=mpich
-    - name: "Linux, Python 3.8, no MPI, required packages"
-      python: 3.8
-      env: MPI=none
+#     - name: "Linux, Python 3.8, no MPI, required packages"
+#       python: 3.8
+#       env: MPI=none
     - name: "OSX, Python 3.8, OpenMPI, required packages"
       language: shell
       os: osx
