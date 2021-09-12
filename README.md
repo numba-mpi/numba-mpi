@@ -6,9 +6,10 @@ Numba @njittable MPI wrappers tested on Linux, macOS and Windows
 [![Linux OK](https://img.shields.io/static/v1?label=Linux&logo=Linux&color=yellow&message=%E2%9C%93)](https://en.wikipedia.org/wiki/Linux)
 [![macOS OK](https://img.shields.io/static/v1?label=macOS&logo=Apple&color=silver&message=%E2%9C%93)](https://en.wikipedia.org/wiki/macOS)
 [![Windows OK](https://img.shields.io/static/v1?label=Windows&logo=Windows&color=white&message=%E2%9C%93)](https://en.wikipedia.org/wiki/Windows)
-[![Travis Build Status](https://img.shields.io/travis/atmos-cloud-sim-uj/numba-mpi/main.svg?logo=travis)](https://travis-ci.com/atmos-cloud-sim-uj/numba-mpi)
+[![Github Actions Build Status](https://github.com/atmos-cloud-sim-uj/numba-mpi/workflows/tests/badge.svg?branch=main)](https://github.com/atmos-cloud-sim-uj/numba-mpi/actions)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/atmos-cloud-sim-uj/PySDM/graphs/commit-activity)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![PyPI version](https://badge.fury.io/py/numba-mpi.svg)](https://pypi.org/project/numba-mpi)
 
 
 Hello world example:
