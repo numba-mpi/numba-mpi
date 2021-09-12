@@ -32,7 +32,7 @@ jobs:
           ./msmpisetup.exe || exit 1;
           msiexec //i msmpisdk.msi || exit 1;
           export PATH=/c/Program\ Files/Microsoft\ MPI/bin:$PATH
-      - if: matrix.platform == 'maxos-latest'
+      - if: matrix.platform == 'macos-latest'
         run: |
           export HOMEBREW_NO_INSTALL_CLEANUP=1
           export HOMEBREW_NO_AUTO_UPDATE=1
