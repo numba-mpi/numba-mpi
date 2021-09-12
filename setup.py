@@ -1,15 +1,22 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 
-def parse_requirements(filename):
-    lineiter = (line.strip() for line in open(filename))
-    return [line for line in lineiter if line and not line.startswith("#")]
+
+def get_long_description():
+    with open("README.md", "r", encoding="utf8") as file:
+        long_description = file.read()
+    return long_description
+
 
 setup(
     name='numba-mpi',
-    version='0.1.0',
-    packages=[
-        'numba_mpi'],
+    url="https://github.com/atmos-cloud-sim-uj/numba-mpi",
+    author='https://github.com/atmos-cloud-sim-uj/numba-mpi/graphs/contributors',
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     license='GPL v3',
-    long_description='Numba @njittable MPI wrappers tested on Linux, macOS and Windows',
-    install_requires=parse_requirements('requirements.txt')
+    description='Numba @njittable MPI wrappers tested on Linux, macOS and Windows',
+    install_requires=('numba', 'numpy', 'mpi4py'),
+    long_description=get_long_description(),
+    long_description_content_type="text/markdown",
+    packages=find_packages(include=['numba_mpi', 'numba_mpi.*'])
 )
