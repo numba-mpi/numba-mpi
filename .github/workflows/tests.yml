@@ -17,29 +17,14 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.9]  # TODO: 3.7, 3.8
+        python-version: [3.9, 3.7, 3.8]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - if: matrix.platform == 'windows-latest'
-        run: |
-          WEB_ADDRESS=https://github.com/microsoft/Microsoft-MPI/releases/download/v10.1.1
-          curl -L $WEB_ADDRESS/msmpisetup.exe -o msmpisetup.exe || exit 1;
-          curl -L $WEB_ADDRESS/msmpisdk.msi -o msmpisdk.msi || exit 1;
-          ./msmpisetup.exe || exit 1;
-          msiexec //i msmpisdk.msi || exit 1;
-          export PATH=/c/Program\ Files/Microsoft\ MPI/bin:$PATH
-      - if: matrix.platform == 'macos-latest'
-        run: |
-          export HOMEBREW_NO_INSTALL_CLEANUP=1
-          export HOMEBREW_NO_AUTO_UPDATE=1
-          brew install open-mpi
-      - if: matrix.platform == 'ubuntu-latest'
-        run: |
-          sudo apt-get install mpich libmpich-dev
+      - uses: mpi4py/setup-mpi@v1
       - run: pip install -e .
       - run: pip install pytest
       - run: python -We -c "import numba_mpi"
