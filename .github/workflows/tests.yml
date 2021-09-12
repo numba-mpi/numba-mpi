@@ -40,7 +40,7 @@ jobs:
       - if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get install mpich libmpich-dev
-      - run: pip --use-deprecated=legacy-resolver install -e .
+      - run: pip install -e .
       - run: python -We -c "import numba_mpi"
       - run: mpiexec -n 2 pytest -p no:unraisableexception -We
       # execute Python lines from README.md
