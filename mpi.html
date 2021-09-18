@@ -111,7 +111,7 @@ def _mpi_comm_world_njit():
     def impl():
         return numba.carray(
             # pylint: disable-next=no-value-for-parameter
-            address_as_void_pointer(_MPI_Comm_World_ptr),
+            _address_as_void_pointer(_MPI_Comm_World_ptr),
             shape=(1,),
             dtype=np.intp
         )[0]
@@ -128,7 +128,7 @@ def _mpi_double_njit():
     def impl():
         return numba.carray(
             # pylint: disable-next=no-value-for-parameter
-            address_as_void_pointer(_MPI_Double_ptr),
+            _address_as_void_pointer(_MPI_Double_ptr),
             shape=(1,),
             dtype=np.intp
         )[0]
@@ -137,7 +137,7 @@ def _mpi_double_njit():
 
 # https://stackoverflow.com/questions/61509903/how-to-pass-array-pointer-to-numba-function
 @numba.extending.intrinsic
-def address_as_void_pointer(_, src):
+def _address_as_void_pointer(_, src):
     &#34;&#34;&#34; returns a void pointer from a given memory address &#34;&#34;&#34;
     sig = types.voidptr(src)
 
@@ -210,25 +210,6 @@ def recv(data, source, tag):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="numba_mpi.mpi.address_as_void_pointer"><code class="name flex">
-<span>def <span class="ident">address_as_void_pointer</span></span>(<span>_, src)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>returns a void pointer from a given memory address</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@numba.extending.intrinsic
-def address_as_void_pointer(_, src):
-    &#34;&#34;&#34; returns a void pointer from a given memory address &#34;&#34;&#34;
-    sig = types.voidptr(src)
-
-    def codegen(__, builder, ___, args):
-        return builder.inttoptr(args[0], cgutils.voidptr_t)
-    return sig, codegen</code></pre>
-</details>
-</dd>
 <dt id="numba_mpi.mpi.initialized"><code class="name flex">
 <span>def <span class="ident">initialized</span></span>(<span>)</span>
 </code></dt>
@@ -349,7 +330,6 @@ def size():
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="numba_mpi.mpi.address_as_void_pointer" href="#numba_mpi.mpi.address_as_void_pointer">address_as_void_pointer</a></code></li>
 <li><code><a title="numba_mpi.mpi.initialized" href="#numba_mpi.mpi.initialized">initialized</a></code></li>
 <li><code><a title="numba_mpi.mpi.rank" href="#numba_mpi.mpi.rank">rank</a></code></li>
 <li><code><a title="numba_mpi.mpi.recv" href="#numba_mpi.mpi.recv">recv</a></code></li>
