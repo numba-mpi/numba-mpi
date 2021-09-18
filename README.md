@@ -1,5 +1,4 @@
 # numba-mpi
-Numba @njittable MPI wrappers tested on Linux, macOS and Windows
 
 [![Python 3](https://img.shields.io/static/v1?label=Python&logo=Python&color=3776AB&message=3)](https://www.python.org/)
 [![LLVM](https://img.shields.io/static/v1?label=LLVM&logo=LLVM&color=gold&message=Numba)](https://numba.pydata.org)
@@ -12,6 +11,9 @@ Numba @njittable MPI wrappers tested on Linux, macOS and Windows
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![PyPI version](https://badge.fury.io/py/numba-mpi.svg)](https://pypi.org/project/numba-mpi)
 
+#### Numba @njittable MPI wrappers tested on Linux, macOS and Windows
+
+API documentation is maintained at: https://atmos-cloud-sim-uj.github.io/numba-mpi
 
 Hello world example:
 ```python

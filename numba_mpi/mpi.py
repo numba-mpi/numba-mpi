@@ -82,7 +82,7 @@ def _mpi_comm_world_njit():
     def impl():
         return numba.carray(
             # pylint: disable-next=no-value-for-parameter
-            address_as_void_pointer(_MPI_Comm_World_ptr),
+            _address_as_void_pointer(_MPI_Comm_World_ptr),
             shape=(1,),
             dtype=np.intp
         )[0]
@@ -99,7 +99,7 @@ def _mpi_double_njit():
     def impl():
         return numba.carray(
             # pylint: disable-next=no-value-for-parameter
-            address_as_void_pointer(_MPI_Double_ptr),
+            _address_as_void_pointer(_MPI_Double_ptr),
             shape=(1,),
             dtype=np.intp
         )[0]
@@ -108,7 +108,7 @@ def _mpi_double_njit():
 
 # https://stackoverflow.com/questions/61509903/how-to-pass-array-pointer-to-numba-function
 @numba.extending.intrinsic
-def address_as_void_pointer(_, src):
+def _address_as_void_pointer(_, src):
     """ returns a void pointer from a given memory address """
     sig = types.voidptr(src)
 
