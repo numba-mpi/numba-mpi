@@ -29,3 +29,10 @@ def hello():
   elif mpi.rank() == 1:
     numba_mpi.recv(dst_tst, source=0, tag=11)
 ```
+
+For information on MPI, see:
+- https://www.mpi-forum.org/docs/
+- https://www.open-mpi.org/doc/
+- https://www.mpich.org/
+- https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi
+- https://mpi4py.readthedocs.io/en/stable/
