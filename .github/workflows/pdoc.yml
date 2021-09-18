@@ -1,0 +1,28 @@
+name: generate and deploy API docs
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v2
+      - name: Build
+        run: |
+          pip --use-deprecated=legacy-resolver install pdoc3
+          pip --use-deprecated=legacy-resolver install -e .
+          pdoc --html numba-mpi
+      - name: Deploy
+        if: github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        with:
+          BRANCH: pdoc
+          FOLDER: html/numba-mpi
+          CLEAN: true
