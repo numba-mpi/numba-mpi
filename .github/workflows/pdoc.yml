@@ -17,8 +17,8 @@ jobs:
       - uses: mpi4py/setup-mpi@v1
       - name: Build
         run: |
-          pip --use-deprecated=legacy-resolver install pdoc3
-          pip --use-deprecated=legacy-resolver install -e .
+          pip install pdoc3
+          pip install -e .
           pdoc --html numba_mpi
       - name: Deploy
         if: github.ref == 'refs/heads/main'
