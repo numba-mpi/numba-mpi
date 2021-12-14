@@ -14,6 +14,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
       - uses: mpi4py/setup-mpi@v1
       - name: Build
         run: |
