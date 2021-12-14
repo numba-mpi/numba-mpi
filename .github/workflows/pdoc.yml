@@ -19,7 +19,7 @@ jobs:
         run: |
           pip install pdoc3
           pip install -e .
-          pdoc --html numba_mpi
+          python -We -m pdoc --html numba_mpi
       - name: Deploy
         if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@4.1.1
