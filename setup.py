@@ -13,7 +13,10 @@ setup(
     name='numba-mpi',
     url="https://github.com/atmos-cloud-sim-uj/numba-mpi",
     author='https://github.com/atmos-cloud-sim-uj/numba-mpi/graphs/contributors',
-    use_scm_version=True,
+    use_scm_version={
+        "local_scheme": lambda _: "",
+        "version_scheme": "post-release",
+    },
     setup_requires=['setuptools_scm'],
     license='GPL v3',
     description='Numba @njittable MPI wrappers tested on Linux, macOS and Windows',
