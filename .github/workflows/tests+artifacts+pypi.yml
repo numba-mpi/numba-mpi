@@ -49,6 +49,7 @@ jobs:
       - run: pip install twine build
 
       - run: |
+          unset CI
           python -m build 2>&1 | tee build.log
           exit `fgrep -i warning build.log | wc -l`
 
