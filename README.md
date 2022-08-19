@@ -27,10 +27,12 @@ def hello():
   src = numpy.array([1., 2., 3., 4., 5.])
   dst_tst = numpy.empty_like(src)
 
-  if mpi.rank() == 0:
+  if numba_mpi.rank() == 0:
     numba_mpi.send(src, dest=1, tag=11)
-  elif mpi.rank() == 1:
+  elif numba_mpi.rank() == 1:
     numba_mpi.recv(dst_tst, source=0, tag=11)
+
+hello()
 ```
 
 For information on MPI, see:
