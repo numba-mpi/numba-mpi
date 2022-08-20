@@ -1,0 +1,28 @@
+name: readme
+
+defaults:
+  run:
+    shell: bash
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 13 * * 4'
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - uses: mpi4py/setup-mpi@v1
+      - run: pip install -e .
+      - run: pip install pytest-codeblocks pytest
+      - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()"
+      - run: cat -n readme.py
+      - run: mpiexec -n 2 python -We readme.py
