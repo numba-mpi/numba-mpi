@@ -165,33 +165,25 @@ def send(data, dest, tag):
 
 @numba.njit()
 def recv(data, source, tag):
-    """ wrapper for MPI_Recv """
+    """ wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise
+        allocates a buffer and later copies the data into non-contiguous `data` array) """
     status = np.empty(5, dtype=np.intc)
 
-    if data.flags.c_contiguous:
-        # write data directly into contiguous array
-        result = _MPI_Recv(
-            data.ctypes.data,
-            data.size,
-            _mpi_double(),
-            source,
-            tag,
-            _mpi_comm_world(),
-            status.ctypes.data,
-        )
-        assert result == 0
+    buffer = (
+        data if data.flags.c_contiguous
+        else np.empty_like(data)
+    )
 
-    else:
-        # write data to buffer and copy it into non-contiguous array
-        buffer = np.zeros_like(data)
-        result = _MPI_Recv(
-            buffer.ctypes.data,
-            buffer.size,
-            _mpi_double(),
-            source,
-            tag,
-            _mpi_comm_world(),
-            status.ctypes.data,
-        )
-        assert result == 0
+    result = _MPI_Recv(
+        data.ctypes.data,
+        data.size,
+        _mpi_double(),
+        source,
+        tag,
+        _mpi_comm_world(),
+        status.ctypes.data,
+    )
+    assert result == 0
+
+    if not data.flags.c_contiguous:
         data[:] = buffer
