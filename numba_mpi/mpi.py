@@ -157,10 +157,10 @@ def send(data, dest, tag):
         _mpi_comm_world()
     )
     assert result == 0
-    
-    # the following no-op prevents numba from too aggressive optimizations
+
+    # The following no-op prevents numba from too aggressive optimizations
     # This looks like a bug in numba (tested for version 0.55)
-    data += 0
+    data[0]
 
 
 @numba.njit()
@@ -180,7 +180,7 @@ def recv(data, source, tag):
             status.ctypes.data,
         )
         assert result == 0
-        
+
     else:
         # write data to buffer and copy it into non-contiguous array
         buffer = np.zeros_like(data)
