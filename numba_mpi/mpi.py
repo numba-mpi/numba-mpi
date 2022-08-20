@@ -147,6 +147,7 @@ def rank():
 @numba.njit
 def send(data, dest, tag):
     """ wrapper for MPI_Send """
+    data = np.ascontiguousarray(data)
     result = _MPI_Send(
         data.ctypes.data,
         data.size,
@@ -157,14 +158,25 @@ def send(data, dest, tag):
     )
     assert result == 0
 
+    # The following no-op prevents numba from too aggressive optimizations
+    # This looks like a bug in numba (tested for version 0.55)
+    data[0]  # pylint: disable=pointless-statement
+
 
 @numba.njit()
 def recv(data, source, tag):
-    """ wrapper for MPI_Recv """
+    """ wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise
+        allocates a buffer and later copies the data into non-contiguous `data` array) """
     status = np.empty(5, dtype=np.intc)
+
+    buffer = (
+        data if data.flags.c_contiguous
+        else np.empty_like(data)
+    )
+
     result = _MPI_Recv(
-        data.ctypes.data,
-        data.size,
+        buffer.ctypes.data,
+        buffer.size,
         _mpi_double(),
         source,
         tag,
@@ -172,3 +184,6 @@ def recv(data, source, tag):
         status.ctypes.data
     )
     assert result == 0
+
+    if not data.flags.c_contiguous:
+        data[:] = buffer
