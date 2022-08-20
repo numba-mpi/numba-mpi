@@ -175,13 +175,13 @@ def recv(data, source, tag):
     )
 
     result = _MPI_Recv(
-        data.ctypes.data,
-        data.size,
+        buffer.ctypes.data,
+        buffer.size,
         _mpi_double(),
         source,
         tag,
         _mpi_comm_world(),
-        status.ctypes.data,
+        status.ctypes.data
     )
     assert result == 0
 
