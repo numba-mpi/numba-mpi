@@ -147,6 +147,7 @@ def rank():
 @numba.njit
 def send(data, dest, tag):
     """ wrapper for MPI_Send """
+    data = np.ascontiguousarray(data)
     result = _MPI_Send(
         data.ctypes.data,
         data.size,
@@ -162,13 +163,31 @@ def send(data, dest, tag):
 def recv(data, source, tag):
     """ wrapper for MPI_Recv """
     status = np.empty(5, dtype=np.intc)
-    result = _MPI_Recv(
-        data.ctypes.data,
-        data.size,
-        _mpi_double(),
-        source,
-        tag,
-        _mpi_comm_world(),
-        status.ctypes.data
-    )
-    assert result == 0
+
+    if data.flags.c_contiguous:
+        # write data directly into contiguous array
+        result = _MPI_Recv(
+            data.ctypes.data,
+            data.size,
+            _mpi_double(),
+            source,
+            tag,
+            _mpi_comm_world(),
+            status.ctypes.data,
+        )
+        assert result == 0
+
+    else:
+        # write data into buffer and copy into non-contiguous array
+        buffer = np.empty_like(data)
+        result = _MPI_Recv(
+            buffer.ctypes.data,
+            buffer.size,
+            _mpi_double(),
+            source,
+            tag,
+            _mpi_comm_world(),
+            status.ctypes.data,
+        )
+        assert result == 0
+        data[:] = buffer
