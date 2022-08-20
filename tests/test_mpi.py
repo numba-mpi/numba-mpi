@@ -53,15 +53,11 @@ class TestMPI:
     def test_send_recv_noncontiguous(snd, rcv, data_type):
         src = np.array([1, 2, 3, 4, 5], dtype=data_type)
         dst_tst = np.zeros(5, dtype=data_type)
-        dst_exp = np.zeros(5, dtype=data_type)
 
         if mpi.rank() == 0:
             snd(src[::2], dest=1, tag=11)
-            COMM_WORLD.Send(src[::2], dest=1, tag=22)
         elif mpi.rank() == 1:
             rcv(dst_tst[::2], source=0, tag=11)
-            COMM_WORLD.Recv(dst_exp[::2], source=0, tag=22)
 
             assert np.all(dst_tst[1::2] == 0)
             assert np.all(dst_tst[::2] == src[::2])
-            assert np.all(dst_tst == dst_exp)
