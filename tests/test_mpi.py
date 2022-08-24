@@ -52,7 +52,7 @@ class TestMPI:
     @pytest.mark.parametrize("data_type", [np.float64])
     def test_send_recv_noncontiguous(snd, rcv, data_type):
         src = np.array([1, 2, 3, 4, 5], dtype=data_type)
-        dst_tst = np.zeros(5, dtype=data_type)
+        dst_tst = np.zeros_like(src)
 
         if mpi.rank() == 0:
             snd(src[::2], dest=1, tag=11)
@@ -61,3 +61,20 @@ class TestMPI:
 
             assert np.all(dst_tst[1::2] == 0)
             assert np.all(dst_tst[::2] == src[::2])
+
+    @staticmethod
+    @pytest.mark.parametrize("snd, rcv", [
+        (mpi.send, mpi.recv),
+        (mpi.send.py_func, mpi.recv.py_func)
+    ])
+    @pytest.mark.parametrize("data_type", [np.float64])
+    def test_send_0d_arrays(snd, rcv, data_type):
+        src = np.array(1, dtype=data_type)
+        dst_tst = np.zeros_like(src)
+
+        if mpi.rank() == 0:
+            snd(src, dest=1, tag=11)
+        elif mpi.rank() == 1:
+            rcv(dst_tst, source=0, tag=11)
+
+            assert np.all(dst_tst == src)
