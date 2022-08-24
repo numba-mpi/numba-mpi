@@ -186,4 +186,4 @@ def recv(data, source, tag):
     assert result == 0
 
     if not data.flags.c_contiguous:
-        data[:] = buffer
+        data[...] = buffer
