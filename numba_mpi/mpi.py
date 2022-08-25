@@ -43,10 +43,9 @@ _MPI_Comm_rank = libmpi.MPI_Comm_rank
 _MPI_Comm_rank.restype = ctypes.c_int
 _MPI_Comm_rank.argtypes = [_MpiComm, ctypes.c_void_p]
 
-# pylint: disable-next=protected-access
+# pylint: disable=protected-access
 _MPI_Comm_World_ptr = MPI._addressof(MPI.COMM_WORLD)
 
-# pylint: disable-next=protected-access
 _MPI_DTYPES = {
     np.dtype("int32"): MPI._addressof(MPI.INT32_T),
     np.dtype("int64"): MPI._addressof(MPI.INT64_T),
@@ -55,6 +54,7 @@ _MPI_DTYPES = {
     np.dtype("complex64"): MPI._addressof(MPI.C_FLOAT_COMPLEX),
     np.dtype("complex128"): MPI._addressof(MPI.C_DOUBLE_COMPLEX)
 }
+# pylint: enable=protected-access
 
 _MPI_Send = libmpi.MPI_Send
 _MPI_Send.restype = ctypes.c_int
@@ -119,6 +119,7 @@ def _mpi_dtype(arr):
 def _mpi_dtype_njit(arr):
     mpi_dtype = _get_dtype_numba_to_mpi_ptr(arr)
 
+    # pylint: disable-next=unused-argument
     def impl(arr):
         return numba.carray(
             # pylint: disable-next=no-value-for-parameter
