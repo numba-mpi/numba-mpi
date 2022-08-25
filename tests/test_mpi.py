@@ -6,6 +6,13 @@ import numba_mpi as mpi
 
 
 class TestMPI:
+
+    data_types = [
+        int, np.int32, np.int64,
+        float, np.float64, np.double,
+        complex, np.complex64, np.complex128
+    ]
+
     @staticmethod
     @pytest.mark.parametrize("sut", [mpi.initialized, mpi.initialized.py_func])
     def test_init(sut):
@@ -28,7 +35,7 @@ class TestMPI:
         (mpi.send, mpi.recv),
         (mpi.send.py_func, mpi.recv.py_func)
     ])
-    @pytest.mark.parametrize("data_type", [np.float64])
+    @pytest.mark.parametrize("data_type", data_types)
     def test_send_recv(snd, rcv, data_type):
         src = np.array([1, 2, 3, 4, 5], dtype=data_type)
         dst_tst = np.empty(5, dtype=data_type)
@@ -41,15 +48,15 @@ class TestMPI:
             rcv(dst_tst, source=0, tag=11)
             COMM_WORLD.Recv(dst_exp, source=0, tag=22)
 
-            assert np.all(dst_tst == src)
-            assert np.all(dst_tst == dst_exp)
+            np.testing.assert_equal(dst_tst, src)
+            np.testing.assert_equal(dst_tst, dst_exp)
 
     @staticmethod
     @pytest.mark.parametrize("snd, rcv", [
         (mpi.send, mpi.recv),
         (mpi.send.py_func, mpi.recv.py_func)
     ])
-    @pytest.mark.parametrize("data_type", [np.float64])
+    @pytest.mark.parametrize("data_type", data_types)
     def test_send_recv_noncontiguous(snd, rcv, data_type):
         src = np.array([1, 2, 3, 4, 5], dtype=data_type)
         dst_tst = np.zeros_like(src)
@@ -59,15 +66,15 @@ class TestMPI:
         elif mpi.rank() == 1:
             rcv(dst_tst[::2], source=0, tag=11)
 
-            assert np.all(dst_tst[1::2] == 0)
-            assert np.all(dst_tst[::2] == src[::2])
+            np.testing.assert_equal(dst_tst[1::2], 0)
+            np.testing.assert_equal(dst_tst[::2], src[::2])
 
     @staticmethod
     @pytest.mark.parametrize("snd, rcv", [
         (mpi.send, mpi.recv),
         (mpi.send.py_func, mpi.recv.py_func)
     ])
-    @pytest.mark.parametrize("data_type", [np.float64])
+    @pytest.mark.parametrize("data_type", data_types)
     def test_send_0d_arrays(snd, rcv, data_type):
         src = np.array(1, dtype=data_type)
         dst_tst = np.zeros_like(src)
@@ -77,4 +84,4 @@ class TestMPI:
         elif mpi.rank() == 1:
             rcv(dst_tst, source=0, tag=11)
 
-            assert np.all(dst_tst == src)
+            np.testing.assert_equal(dst_tst, src)
