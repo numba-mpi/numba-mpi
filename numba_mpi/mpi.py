@@ -43,11 +43,18 @@ _MPI_Comm_rank = libmpi.MPI_Comm_rank
 _MPI_Comm_rank.restype = ctypes.c_int
 _MPI_Comm_rank.argtypes = [_MpiComm, ctypes.c_void_p]
 
-# pylint: disable-next=protected-access
+# pylint: disable=protected-access
 _MPI_Comm_World_ptr = MPI._addressof(MPI.COMM_WORLD)
 
-# pylint: disable-next=protected-access
-_MPI_Double_ptr = MPI._addressof(MPI.DOUBLE)
+_MPI_DTYPES = {
+    np.dtype("int32"): MPI._addressof(MPI.INT32_T),
+    np.dtype("int64"): MPI._addressof(MPI.INT64_T),
+    np.dtype("float"): MPI._addressof(MPI.FLOAT),
+    np.dtype("double"): MPI._addressof(MPI.DOUBLE),
+    np.dtype("complex64"): MPI._addressof(MPI.C_FLOAT_COMPLEX),
+    np.dtype("complex128"): MPI._addressof(MPI.C_DOUBLE_COMPLEX)
+}
+# pylint: enable=protected-access
 
 _MPI_Send = libmpi.MPI_Send
 _MPI_Send.restype = ctypes.c_int
@@ -89,20 +96,38 @@ def _mpi_comm_world_njit():
     return impl
 
 
-def _mpi_double():
-    return _MpiDatatype.from_address(_MPI_Double_ptr)
+def _get_dtype_numpy_to_mpi_ptr(arr):
+    for np_dtype, mpi_ptr in _MPI_DTYPES.items():
+        if np.can_cast(arr.dtype, np_dtype, casting="equiv"):
+            return mpi_ptr
+    raise NotImplementedError(f"Type: {arr.dtype}")
 
-# WIN DOUBLE - 0x4c00080b
 
-@numba.extending.overload(_mpi_double)
-def _mpi_double_njit():
-    def impl():
+def _get_dtype_numba_to_mpi_ptr(arr):
+    for np_dtype, mpi_ptr in _MPI_DTYPES.items():
+        if arr.dtype == numba.from_dtype(np_dtype):
+            return mpi_ptr
+    raise NotImplementedError(f"Type: {arr.dtype}")
+
+
+def _mpi_dtype(arr):
+    ptr = _get_dtype_numpy_to_mpi_ptr(arr)
+    return _MpiDatatype.from_address(ptr)
+
+
+@numba.extending.overload(_mpi_dtype)
+def _mpi_dtype_njit(arr):
+    mpi_dtype = _get_dtype_numba_to_mpi_ptr(arr)
+
+    # pylint: disable-next=unused-argument
+    def impl(arr):
         return numba.carray(
             # pylint: disable-next=no-value-for-parameter
-            _address_as_void_pointer(_MPI_Double_ptr),
+            _address_as_void_pointer(mpi_dtype),
             shape=(1,),
             dtype=np.intp
         )[0]
+
     return impl
 
 
@@ -151,7 +176,7 @@ def send(data, dest, tag):
     result = _MPI_Send(
         data.ctypes.data,
         data.size,
-        _mpi_double(),
+        _mpi_dtype(data),
         dest,
         tag,
         _mpi_comm_world()
@@ -177,7 +202,7 @@ def recv(data, source, tag):
     result = _MPI_Recv(
         buffer.ctypes.data,
         buffer.size,
-        _mpi_double(),
+        _mpi_dtype(data),
         source,
         tag,
         _mpi_comm_world(),
