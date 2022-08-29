@@ -196,7 +196,7 @@ def recv(data, source, tag):
 
     buffer = (
         data if data.flags.c_contiguous
-        else np.empty(data.shape, data.dtype)
+        else np.empty_like(data, order='C')
     )
 
     result = _MPI_Recv(
