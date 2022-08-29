@@ -40,7 +40,7 @@ class TestMPI:
     def test_send_recv(snd, rcv, fortran_order, data_type):
         rng = np.random.default_rng(0)
         if np.issubdtype(data_type, np.complexfloating):
-            src = rng.random((3, 3)) + rng.random((3, 3)) * 1j 
+            src = rng.random((3, 3)) + rng.random((3, 3)) * 1j
         elif np.issubdtype(data_type, np.integer):
             src = rng.integers(0, 10, size=(3, 3))
         else:
