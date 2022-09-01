@@ -104,7 +104,8 @@ class TestMPI:
             np.testing.assert_equal(dst_tst, src)
 
     @staticmethod
-    @pytest.mark.parametrize("allreduce", [mpi.allreduce, mpi.allreduce.py_func])
+    @pytest.mark.parametrize("allreduce",
+                             [mpi.allreduce, lambda x: mpi.allreduce.py_func(x)(x)])
     @pytest.mark.parametrize("data_type", data_types_real)
     def test_allreduce(allreduce, data_type):
         # test arrays
@@ -112,7 +113,14 @@ class TestMPI:
         res = allreduce(src)
         np.testing.assert_equal(res, mpi.size() * src)
 
-        # test scalar
+        # test scalars
+        src = src[0]
+        res = allreduce(src)
+        assert np.isscalar(res)
+        np.testing.assert_equal(res, mpi.size() * src)
+
+        # test 0d arrays
         src = get_random_array((), data_type)
         res = allreduce(src)
+        assert not np.isscalar(res)
         np.testing.assert_equal(res, mpi.size() * src)
