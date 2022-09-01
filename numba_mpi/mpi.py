@@ -1,6 +1,7 @@
 """ Numba @njittable MPI wrappers tested on Linux, macOS and Windows """
 import ctypes
 import platform
+from numbers import Number
 import numba
 from numba.core import types, cgutils
 import numpy as np
@@ -21,15 +22,18 @@ else:
 
 _MpiStatusPtr = ctypes.c_void_p
 
-if platform.system() == 'Linux':
-    LIB = 'libmpi.so'
-elif platform.system() == 'Windows':
-    LIB = 'msmpi.dll'
-elif platform.system() == 'Darwin':
-    LIB = 'libmpi.dylib'
+if platform.system() == "Linux":
+    LIB = "libmpi.so"
+elif platform.system() == "Windows":
+    LIB = "msmpi.dll"
+elif platform.system() == "Darwin":
+    LIB = "libmpi.dylib"
 else:
     raise NotImplementedError()
 libmpi = ctypes.CDLL(LIB)
+
+_MpiOp = ctypes.c_int
+_MPI_SUM = 0x58000003
 
 _MPI_Initialized = libmpi.MPI_Initialized
 _MPI_Initialized.restype = ctypes.c_int
@@ -52,7 +56,7 @@ _MPI_DTYPES = {
     np.dtype("float"): MPI._addressof(MPI.FLOAT),
     np.dtype("double"): MPI._addressof(MPI.DOUBLE),
     np.dtype("complex64"): MPI._addressof(MPI.C_FLOAT_COMPLEX),
-    np.dtype("complex128"): MPI._addressof(MPI.C_DOUBLE_COMPLEX)
+    np.dtype("complex128"): MPI._addressof(MPI.C_DOUBLE_COMPLEX),
 }
 # pylint: enable=protected-access
 
@@ -64,7 +68,7 @@ _MPI_Send.argtypes = [
     _MpiDatatype,
     ctypes.c_int,
     ctypes.c_int,
-    _MpiComm
+    _MpiComm,
 ]
 
 _MPI_Recv = libmpi.MPI_Recv
@@ -76,7 +80,18 @@ _MPI_Recv.argtypes = [
     ctypes.c_int,
     ctypes.c_int,
     _MpiComm,
-    _MpiStatusPtr
+    _MpiStatusPtr,
+]
+
+_MPI_Allreduce = libmpi.MPI_Allreduce
+_MPI_Allreduce.restype = ctypes.c_int
+_MPI_Allreduce.argtypes = [
+    ctypes.c_void_p,
+    ctypes.c_void_p,
+    ctypes.c_int,
+    _MpiDatatype,
+    _MpiOp,
+    _MpiComm,
 ]
 
 
@@ -91,8 +106,9 @@ def _mpi_comm_world_njit():
             # pylint: disable-next=no-value-for-parameter
             _address_as_void_pointer(_MPI_Comm_World_ptr),
             shape=(1,),
-            dtype=np.intp
+            dtype=np.intp,
         )[0]
+
     return impl
 
 
@@ -125,7 +141,7 @@ def _mpi_dtype_njit(arr):
             # pylint: disable-next=no-value-for-parameter
             _address_as_void_pointer(mpi_dtype),
             shape=(1,),
-            dtype=np.intp
+            dtype=np.intp,
         )[0]
 
     return impl
@@ -134,17 +150,18 @@ def _mpi_dtype_njit(arr):
 # https://stackoverflow.com/questions/61509903/how-to-pass-array-pointer-to-numba-function
 @numba.extending.intrinsic
 def _address_as_void_pointer(_, src):
-    """ returns a void pointer from a given memory address """
+    """returns a void pointer from a given memory address"""
     sig = types.voidptr(src)
 
     def codegen(__, builder, ___, args):
         return builder.inttoptr(args[0], cgutils.voidptr_t)
+
     return sig, codegen
 
 
 @numba.njit()
 def initialized():
-    """ wrapper for MPI_Initialized() """
+    """wrapper for MPI_Initialized()"""
     flag = np.empty((1,), dtype=np.intc)
     status = _MPI_Initialized(flag.ctypes.data)
     assert status == 0
@@ -153,7 +170,7 @@ def initialized():
 
 @numba.njit()
 def size():
-    """ wrapper for MPI_Comm_size() """
+    """wrapper for MPI_Comm_size()"""
     value = np.empty(1, dtype=np.intc)
     status = _MPI_Comm_size(_mpi_comm_world(), value.ctypes.data)
     assert status == 0
@@ -162,7 +179,7 @@ def size():
 
 @numba.njit()
 def rank():
-    """ wrapper for MPI_Comm_rank() """
+    """wrapper for MPI_Comm_rank()"""
     value = np.empty(1, dtype=np.intc)
     status = _MPI_Comm_rank(_mpi_comm_world(), value.ctypes.data)
     assert status == 0
@@ -171,15 +188,10 @@ def rank():
 
 @numba.njit
 def send(data, dest, tag):
-    """ wrapper for MPI_Send """
+    """wrapper for MPI_Send"""
     data = np.ascontiguousarray(data)
     result = _MPI_Send(
-        data.ctypes.data,
-        data.size,
-        _mpi_dtype(data),
-        dest,
-        tag,
-        _mpi_comm_world()
+        data.ctypes.data, data.size, _mpi_dtype(data), dest, tag, _mpi_comm_world()
     )
     assert result == 0
 
@@ -190,13 +202,16 @@ def send(data, dest, tag):
 
 @numba.njit()
 def recv(data, source, tag):
-    """ wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise
-        allocates a buffer and later copies the data into non-contiguous `data` array) """
+    """wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise
+    allocates a buffer and later copies the data into non-contiguous `data` array)"""
     status = np.empty(5, dtype=np.intc)
 
     buffer = (
-        data if data.flags.c_contiguous
-        else np.empty(data.shape, data.dtype)  # np.empty_like(data, order='C') fails with Numba
+        data
+        if data.flags.c_contiguous
+        else np.empty(
+            data.shape, data.dtype
+        )  # np.empty_like(data, order='C') fails with Numba
     )
 
     result = _MPI_Recv(
@@ -206,9 +221,62 @@ def recv(data, source, tag):
         source,
         tag,
         _mpi_comm_world(),
-        status.ctypes.data
+        status.ctypes.data,
     )
     assert result == 0
 
     if not data.flags.c_contiguous:
         data[...] = buffer
+
+
+@numba.generated_jit(nopython=True)
+def allreduce(data):
+    """wrapper for MPI_Allreduce
+
+    Currently only supports summing operation and complex datatypes are not properly
+    supported.
+    """
+    if isinstance(data, (types.Number, Number)):
+
+        def impl(data):
+            sendobj = np.array([data])
+            recvobj = np.empty((1,), sendobj.dtype)
+
+            result = _MPI_Allreduce(
+                sendobj.ctypes.data,
+                recvobj.ctypes.data,
+                sendobj.size,
+                _mpi_dtype(sendobj),
+                _MPI_SUM,
+                _mpi_comm_world(),
+            )
+            assert result == 0
+
+            # The following no-op prevents numba from too aggressive optimizations
+            # This looks like a bug in numba (tested for version 0.55)
+            sendobj[0]  # pylint: disable=pointless-statement
+
+            return recvobj[0]
+
+    elif isinstance(data, (types.Array, np.ndarray)):
+
+        def impl(data):
+            sendobj = np.ascontiguousarray(data)
+            recvobj = np.empty(sendobj.shape, sendobj.dtype)
+
+            result = _MPI_Allreduce(
+                sendobj.ctypes.data,
+                recvobj.ctypes.data,
+                sendobj.size,
+                _mpi_dtype(sendobj),
+                _MPI_SUM,
+                _mpi_comm_world(),
+            )
+            assert result == 0
+
+            return recvobj
+
+    else:
+        raise TypeError(f"Unsupported type {data.__class__.__name__}")
+
+    return impl

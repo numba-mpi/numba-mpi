@@ -5,13 +5,23 @@ import pytest
 import numba_mpi as mpi
 
 
+def get_random_array(shape, data_type):
+    rng = np.random.default_rng(0)
+    if np.issubdtype(data_type, np.complexfloating):
+        return rng.random(shape) + rng.random(shape) * 1j
+    if np.issubdtype(data_type, np.integer):
+        return rng.integers(0, 10, size=shape)
+    return rng.random(shape)
+
+
 class TestMPI:
 
-    data_types = [
+    data_types_real = [
         int, np.int32, np.int64,
         float, np.float64, np.double,
-        complex, np.complex64, np.complex128
     ]
+    data_types_complex = [complex, np.complex64, np.complex128]
+    data_types = data_types_real + data_types_complex
 
     @staticmethod
     @pytest.mark.parametrize("sut", [mpi.initialized, mpi.initialized.py_func])
@@ -38,13 +48,7 @@ class TestMPI:
     @pytest.mark.parametrize("fortran_order", [True, False])
     @pytest.mark.parametrize("data_type", data_types)
     def test_send_recv(snd, rcv, fortran_order, data_type):
-        rng = np.random.default_rng(0)
-        if np.issubdtype(data_type, np.complexfloating):
-            src = rng.random((3, 3)) + rng.random((3, 3)) * 1j
-        elif np.issubdtype(data_type, np.integer):
-            src = rng.integers(0, 10, size=(3, 3))
-        else:
-            src = rng.random((3, 3))
+        src = get_random_array((3, 3), data_type)
 
         if fortran_order:
             src = np.asfortranarray(src, dtype=data_type)
@@ -71,7 +75,7 @@ class TestMPI:
     ])
     @pytest.mark.parametrize("data_type", data_types)
     def test_send_recv_noncontiguous(snd, rcv, data_type):
-        src = np.array([1, 2, 3, 4, 5], dtype=data_type)
+        src = get_random_array((5,), data_type)
         dst_tst = np.zeros_like(src)
 
         if mpi.rank() == 0:
@@ -89,7 +93,7 @@ class TestMPI:
     ])
     @pytest.mark.parametrize("data_type", data_types)
     def test_send_0d_arrays(snd, rcv, data_type):
-        src = np.array(1, dtype=data_type)
+        src = get_random_array((), data_type)
         dst_tst = np.empty_like(src)
 
         if mpi.rank() == 0:
@@ -98,3 +102,25 @@ class TestMPI:
             rcv(dst_tst, source=0, tag=11)
 
             np.testing.assert_equal(dst_tst, src)
+
+    @staticmethod
+    @pytest.mark.parametrize("allreduce",
+                             [mpi.allreduce, lambda x: mpi.allreduce.py_func(x)(x)])  # pylint: disable=unnecessary-lambda
+    @pytest.mark.parametrize("data_type", data_types_real)
+    def test_allreduce(allreduce, data_type):
+        # test arrays
+        src = get_random_array((3,), data_type)
+        res = allreduce(src)
+        np.testing.assert_equal(res, mpi.size() * src)
+
+        # test scalars
+        src = src[0]
+        res = allreduce(src)
+        assert np.isscalar(res)
+        np.testing.assert_equal(res, mpi.size() * src)
+
+        # test 0d arrays
+        src = get_random_array((), data_type)
+        res = allreduce(src)
+        assert not np.isscalar(res)
+        np.testing.assert_equal(res, mpi.size() * src)
