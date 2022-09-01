@@ -31,6 +31,9 @@ else:
     raise NotImplementedError()
 libmpi = ctypes.CDLL(LIB)
 
+_MpiOp = ctypes.c_int
+_MPI_Sum = 0x58000003
+
 _MPI_Initialized = libmpi.MPI_Initialized
 _MPI_Initialized.restype = ctypes.c_int
 _MPI_Initialized.argtypes = [ctypes.c_void_p]
@@ -79,6 +82,16 @@ _MPI_Recv.argtypes = [
     _MpiStatusPtr
 ]
 
+_MPI_Allreduce = libmpi.MPI_Allreduce
+_MPI_Allreduce.restype = ctypes.c_int
+_MPI_Allreduce.argtypes = [
+    ctypes.c_void_p,
+    ctypes.c_void_p,
+    ctypes.c_int,
+    _MpiDatatype,
+    _MpiOp,
+    _MpiComm
+]
 
 def _mpi_comm_world():
     return _MpiComm.from_address(_MPI_Comm_World_ptr)
@@ -212,3 +225,26 @@ def recv(data, source, tag):
 
     if not data.flags.c_contiguous:
         data[...] = buffer
+
+
+@numba.njit()
+def allreduce(data):
+    """ wrapper for MPI_Allreduce.
+
+    Currently only supports summing operation and complex datatypes are not properly
+    supported.
+    """
+    sendobj = np.ascontiguousarray(data)
+    recvobj = np.empty(sendobj.shape, sendobj.dtype)
+
+    result = _MPI_Allreduce(
+        sendobj.ctypes.data,
+        recvobj.ctypes.data,
+        sendobj.size,
+        _mpi_dtype(sendobj),
+        _MPI_Sum,
+        _mpi_comm_world()
+    )
+    assert result == 0
+
+    return recvobj
