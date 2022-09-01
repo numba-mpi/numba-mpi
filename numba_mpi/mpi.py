@@ -209,7 +209,7 @@ def recv(data, source, tag):
 
     buffer = (
         data if data.flags.c_contiguous
-        else np.empty(data.shape, data.dtype)
+        else np.empty(data.shape, data.dtype)  # np.empty_like(data, order='C') fails with Numba
     )
 
     result = _MPI_Recv(
