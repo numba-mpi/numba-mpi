@@ -105,7 +105,7 @@ class TestMPI:
 
     @staticmethod
     @pytest.mark.parametrize("allreduce",
-                             [mpi.allreduce, lambda x: mpi.allreduce.py_func(x)(x)])
+                             [mpi.allreduce, lambda x: mpi.allreduce.py_func(x)(x)])  # pylint: disable=unnecessary-lambda
     @pytest.mark.parametrize("data_type", data_types_real)
     def test_allreduce(allreduce, data_type):
         # test arrays
