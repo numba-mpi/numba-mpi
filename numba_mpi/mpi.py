@@ -32,7 +32,7 @@ else:
 libmpi = ctypes.CDLL(LIB)
 
 _MpiOp = ctypes.c_int
-_MPI_Sum = 0x58000003
+_MpiSum = 0x58000003
 
 _MPI_Initialized = libmpi.MPI_Initialized
 _MPI_Initialized.restype = ctypes.c_int
@@ -242,7 +242,7 @@ def allreduce(data):
         recvobj.ctypes.data,
         sendobj.size,
         _mpi_dtype(sendobj),
-        _MPI_Sum,
+        _MpiSum,
         _mpi_comm_world()
     )
     assert result == 0

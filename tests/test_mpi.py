@@ -9,10 +9,9 @@ def get_random_array(shape, data_type):
     rng = np.random.default_rng(0)
     if np.issubdtype(data_type, np.complexfloating):
         return rng.random(shape) + rng.random(shape) * 1j
-    elif np.issubdtype(data_type, np.integer):
+    if np.issubdtype(data_type, np.integer):
         return rng.integers(0, 10, size=shape)
-    else:
-        return rng.random(shape)
+    return rng.random(shape)
 
 
 class TestMPI:
