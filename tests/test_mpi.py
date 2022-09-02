@@ -6,12 +6,18 @@ import numba_mpi as mpi
 
 
 def get_random_array(shape, data_type):
+    """helper function creating the same random array in each process"""
     rng = np.random.default_rng(0)
     if np.issubdtype(data_type, np.complexfloating):
         return rng.random(shape) + rng.random(shape) * 1j
     if np.issubdtype(data_type, np.integer):
         return rng.integers(0, 10, size=shape)
     return rng.random(shape)
+
+
+def allreduce_pyfunc(data, operator):
+    """helper function to call pyfunc of allreduce without jitting"""
+    return mpi.allreduce.py_func(data, operator)(data, operator)
 
 
 class TestMPI:
@@ -104,23 +110,28 @@ class TestMPI:
             np.testing.assert_equal(dst_tst, src)
 
     @staticmethod
-    @pytest.mark.parametrize("allreduce",
-                             [mpi.allreduce, lambda x: mpi.allreduce.py_func(x)(x)])  # pylint: disable=unnecessary-lambda
+    @pytest.mark.parametrize("allreduce", [mpi.allreduce, allreduce_pyfunc])
+    @pytest.mark.parametrize("op_mpi, op_np", [(mpi.Operator.SUM, np.sum),
+                                               (mpi.Operator.MIN, np.min),
+                                               (mpi.Operator.MAX, np.max)])
     @pytest.mark.parametrize("data_type", data_types_real)
-    def test_allreduce(allreduce, data_type):
+    def test_allreduce(allreduce, op_mpi, op_np, data_type):
         # test arrays
         src = get_random_array((3,), data_type)
-        res = allreduce(src)
-        np.testing.assert_equal(res, mpi.size() * src)
+        res = allreduce(src, operator=op_mpi)
+        expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
+        np.testing.assert_equal(res, expect)
 
         # test scalars
         src = src[0]
-        res = allreduce(src)
+        res = allreduce(src, operator=op_mpi)
         assert np.isscalar(res)
-        np.testing.assert_equal(res, mpi.size() * src)
+        expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
+        np.testing.assert_equal(res, expect)
 
         # test 0d arrays
         src = get_random_array((), data_type)
-        res = allreduce(src)
+        res = allreduce(src, operator=op_mpi)
         assert not np.isscalar(res)
-        np.testing.assert_equal(res, mpi.size() * src)
+        expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
+        np.testing.assert_equal(res, expect)
