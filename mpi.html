@@ -30,7 +30,9 @@
 <pre><code class="python">&#34;&#34;&#34; Numba @njittable MPI wrappers tested on Linux, macOS and Windows &#34;&#34;&#34;
 import ctypes
 import platform
+from enum import IntEnum
 from numbers import Number
+
 import numba
 from numba.core import types, cgutils
 import numpy as np
@@ -62,7 +64,14 @@ else:
 libmpi = ctypes.CDLL(LIB)
 
 _MpiOp = ctypes.c_int
-_MPI_SUM = 0x58000003
+
+
+class Operator(IntEnum):
+    &#34;&#34;&#34;collection of operators that MPI supports&#34;&#34;&#34;
+    MAX = MPI.MAX.py2f()
+    MIN = MPI.MIN.py2f()
+    SUM = MPI.SUM.py2f()
+
 
 _MPI_Initialized = libmpi.MPI_Initialized
 _MPI_Initialized.restype = ctypes.c_int
@@ -259,15 +268,14 @@ def recv(data, source, tag):
 
 
 @numba.generated_jit(nopython=True)
-def allreduce(data):
+def allreduce(data, operator=Operator.SUM):  # pylint: disable=unused-argument
     &#34;&#34;&#34;wrapper for MPI_Allreduce
 
-    Currently only supports summing operation and complex datatypes are not properly
-    supported.
+    Note that complex datatypes and user-defined functions are not properly supported.
     &#34;&#34;&#34;
     if isinstance(data, (types.Number, Number)):
 
-        def impl(data):
+        def impl(data, operator=Operator.SUM):
             sendobj = np.array([data])
             recvobj = np.empty((1,), sendobj.dtype)
 
@@ -276,7 +284,7 @@ def allreduce(data):
                 recvobj.ctypes.data,
                 sendobj.size,
                 _mpi_dtype(sendobj),
-                _MPI_SUM,
+                operator,
                 _mpi_comm_world(),
             )
             assert result == 0
@@ -289,7 +297,7 @@ def allreduce(data):
 
     elif isinstance(data, (types.Array, np.ndarray)):
 
-        def impl(data):
+        def impl(data, operator=Operator.SUM):
             sendobj = np.ascontiguousarray(data)
             recvobj = np.empty(sendobj.shape, sendobj.dtype)
 
@@ -298,7 +306,7 @@ def allreduce(data):
                 recvobj.ctypes.data,
                 sendobj.size,
                 _mpi_dtype(sendobj),
-                _MPI_SUM,
+                operator,
                 _mpi_comm_world(),
             )
             assert result == 0
@@ -319,26 +327,24 @@ def allreduce(data):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="numba_mpi.mpi.allreduce"><code class="name flex">
-<span>def <span class="ident">allreduce</span></span>(<span>data)</span>
+<span>def <span class="ident">allreduce</span></span>(<span>data, operator=Operator.SUM)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>wrapper for MPI_Allreduce</p>
-<p>Currently only supports summing operation and complex datatypes are not properly
-supported.</p></div>
+<p>Note that complex datatypes and user-defined functions are not properly supported.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@numba.generated_jit(nopython=True)
-def allreduce(data):
+def allreduce(data, operator=Operator.SUM):  # pylint: disable=unused-argument
     &#34;&#34;&#34;wrapper for MPI_Allreduce
 
-    Currently only supports summing operation and complex datatypes are not properly
-    supported.
+    Note that complex datatypes and user-defined functions are not properly supported.
     &#34;&#34;&#34;
     if isinstance(data, (types.Number, Number)):
 
-        def impl(data):
+        def impl(data, operator=Operator.SUM):
             sendobj = np.array([data])
             recvobj = np.empty((1,), sendobj.dtype)
 
@@ -347,7 +353,7 @@ def allreduce(data):
                 recvobj.ctypes.data,
                 sendobj.size,
                 _mpi_dtype(sendobj),
-                _MPI_SUM,
+                operator,
                 _mpi_comm_world(),
             )
             assert result == 0
@@ -360,7 +366,7 @@ def allreduce(data):
 
     elif isinstance(data, (types.Array, np.ndarray)):
 
-        def impl(data):
+        def impl(data, operator=Operator.SUM):
             sendobj = np.ascontiguousarray(data)
             recvobj = np.empty(sendobj.shape, sendobj.dtype)
 
@@ -369,7 +375,7 @@ def allreduce(data):
                 recvobj.ctypes.data,
                 sendobj.size,
                 _mpi_dtype(sendobj),
-                _MPI_SUM,
+                operator,
                 _mpi_comm_world(),
             )
             assert result == 0
@@ -501,6 +507,47 @@ def size():
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="numba_mpi.mpi.Operator"><code class="flex name class">
+<span>class <span class="ident">Operator</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>collection of operators that MPI supports</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Operator(IntEnum):
+    &#34;&#34;&#34;collection of operators that MPI supports&#34;&#34;&#34;
+    MAX = MPI.MAX.py2f()
+    MIN = MPI.MIN.py2f()
+    SUM = MPI.SUM.py2f()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="numba_mpi.mpi.Operator.MAX"><code class="name">var <span class="ident">MAX</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="numba_mpi.mpi.Operator.MIN"><code class="name">var <span class="ident">MIN</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="numba_mpi.mpi.Operator.SUM"><code class="name">var <span class="ident">SUM</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -522,6 +569,18 @@ def size():
 <li><code><a title="numba_mpi.mpi.recv" href="#numba_mpi.mpi.recv">recv</a></code></li>
 <li><code><a title="numba_mpi.mpi.send" href="#numba_mpi.mpi.send">send</a></code></li>
 <li><code><a title="numba_mpi.mpi.size" href="#numba_mpi.mpi.size">size</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="numba_mpi.mpi.Operator" href="#numba_mpi.mpi.Operator">Operator</a></code></h4>
+<ul class="">
+<li><code><a title="numba_mpi.mpi.Operator.MAX" href="#numba_mpi.mpi.Operator.MAX">MAX</a></code></li>
+<li><code><a title="numba_mpi.mpi.Operator.MIN" href="#numba_mpi.mpi.Operator.MIN">MIN</a></code></li>
+<li><code><a title="numba_mpi.mpi.Operator.SUM" href="#numba_mpi.mpi.Operator.SUM">SUM</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
