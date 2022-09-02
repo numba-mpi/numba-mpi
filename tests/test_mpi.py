@@ -111,9 +111,9 @@ class TestMPI:
 
     @staticmethod
     @pytest.mark.parametrize("allreduce", [mpi.allreduce, allreduce_pyfunc])
-    @pytest.mark.parametrize("op_mpi, op_np", [(mpi.Operator.Sum, np.sum),
-                                               (mpi.Operator.Min, np.min),
-                                               (mpi.Operator.Max, np.max)])
+    @pytest.mark.parametrize("op_mpi, op_np", [(mpi.Operator.SUM, np.sum),
+                                               (mpi.Operator.MIN, np.min),
+                                               (mpi.Operator.MAX, np.max)])
     @pytest.mark.parametrize("data_type", data_types_real)
     def test_allreduce(allreduce, op_mpi, op_np, data_type):
         # test arrays

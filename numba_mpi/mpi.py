@@ -38,9 +38,10 @@ _MpiOp = ctypes.c_int
 
 
 class Operator(IntEnum):
-    Max = MPI.MAX.py2f()
-    Min = MPI.MIN.py2f()
-    Sum = MPI.SUM.py2f()
+    """collection of operators that MPI supports"""
+    MAX = MPI.MAX.py2f()
+    MIN = MPI.MIN.py2f()
+    SUM = MPI.SUM.py2f()
 
 
 _MPI_Initialized = libmpi.MPI_Initialized
@@ -238,14 +239,14 @@ def recv(data, source, tag):
 
 
 @numba.generated_jit(nopython=True)
-def allreduce(data, operator=Operator.Sum):  # pylint: disable=unused-argument
+def allreduce(data, operator=Operator.SUM):  # pylint: disable=unused-argument
     """wrapper for MPI_Allreduce
 
     Note that complex datatypes and user-defined functions are not properly supported.
     """
     if isinstance(data, (types.Number, Number)):
 
-        def impl(data, operator=Operator.Sum):
+        def impl(data, operator=Operator.SUM):
             sendobj = np.array([data])
             recvobj = np.empty((1,), sendobj.dtype)
 
@@ -267,7 +268,7 @@ def allreduce(data, operator=Operator.Sum):  # pylint: disable=unused-argument
 
     elif isinstance(data, (types.Array, np.ndarray)):
 
-        def impl(data, operator=Operator.Sum):
+        def impl(data, operator=Operator.SUM):
             sendobj = np.ascontiguousarray(data)
             recvobj = np.empty(sendobj.shape, sendobj.dtype)
 
