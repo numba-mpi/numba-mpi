@@ -1,7 +1,9 @@
 """ Numba @njittable MPI wrappers tested on Linux, macOS and Windows """
 import ctypes
 import platform
+from enum import IntEnum
 from numbers import Number
+
 import numba
 from numba.core import types, cgutils
 import numpy as np
@@ -33,7 +35,13 @@ else:
 libmpi = ctypes.CDLL(LIB)
 
 _MpiOp = ctypes.c_int
-_MPI_SUM = 0x58000003
+
+
+class Operator(IntEnum):
+    Max = MPI.MAX.py2f()
+    Min = MPI.MIN.py2f()
+    Sum = MPI.SUM.py2f()
+
 
 _MPI_Initialized = libmpi.MPI_Initialized
 _MPI_Initialized.restype = ctypes.c_int
@@ -230,15 +238,14 @@ def recv(data, source, tag):
 
 
 @numba.generated_jit(nopython=True)
-def allreduce(data):
+def allreduce(data, operator=Operator.Sum):  # pylint: disable=unused-argument
     """wrapper for MPI_Allreduce
 
-    Currently only supports summing operation and complex datatypes are not properly
-    supported.
+    Note that complex datatypes and user-defined functions are not properly supported.
     """
     if isinstance(data, (types.Number, Number)):
 
-        def impl(data):
+        def impl(data, operator=Operator.Sum):
             sendobj = np.array([data])
             recvobj = np.empty((1,), sendobj.dtype)
 
@@ -247,7 +254,7 @@ def allreduce(data):
                 recvobj.ctypes.data,
                 sendobj.size,
                 _mpi_dtype(sendobj),
-                _MPI_SUM,
+                operator,
                 _mpi_comm_world(),
             )
             assert result == 0
@@ -260,7 +267,7 @@ def allreduce(data):
 
     elif isinstance(data, (types.Array, np.ndarray)):
 
-        def impl(data):
+        def impl(data, operator=Operator.Sum):
             sendobj = np.ascontiguousarray(data)
             recvobj = np.empty(sendobj.shape, sendobj.dtype)
 
@@ -269,7 +276,7 @@ def allreduce(data):
                 recvobj.ctypes.data,
                 sendobj.size,
                 _mpi_dtype(sendobj),
-                _MPI_SUM,
+                operator,
                 _mpi_comm_world(),
             )
             assert result == 0
