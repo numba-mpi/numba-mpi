@@ -1,7 +1,8 @@
 # pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring
-from mpi4py.MPI import COMM_WORLD
 import numpy as np
 import pytest
+from mpi4py.MPI import COMM_WORLD
+
 import numba_mpi as mpi
 
 
@@ -23,8 +24,12 @@ def allreduce_pyfunc(data, operator):
 class TestMPI:
 
     data_types_real = [
-        int, np.int32, np.int64,
-        float, np.float64, np.double,
+        int,
+        np.int32,
+        np.int64,
+        float,
+        np.float64,
+        np.double,
     ]
     data_types_complex = [complex, np.complex64, np.complex128]
     data_types = data_types_real + data_types_complex
@@ -47,10 +52,9 @@ class TestMPI:
         assert rank == COMM_WORLD.Get_rank()
 
     @staticmethod
-    @pytest.mark.parametrize("snd, rcv", [
-        (mpi.send, mpi.recv),
-        (mpi.send.py_func, mpi.recv.py_func)
-    ])
+    @pytest.mark.parametrize(
+        "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
+    )
     @pytest.mark.parametrize("fortran_order", [True, False])
     @pytest.mark.parametrize("data_type", data_types)
     def test_send_recv(snd, rcv, fortran_order, data_type):
@@ -75,10 +79,9 @@ class TestMPI:
             np.testing.assert_equal(dst_exp, src)
 
     @staticmethod
-    @pytest.mark.parametrize("snd, rcv", [
-        (mpi.send, mpi.recv),
-        (mpi.send.py_func, mpi.recv.py_func)
-    ])
+    @pytest.mark.parametrize(
+        "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
+    )
     @pytest.mark.parametrize("data_type", data_types)
     def test_send_recv_noncontiguous(snd, rcv, data_type):
         src = get_random_array((5,), data_type)
@@ -93,10 +96,9 @@ class TestMPI:
             np.testing.assert_equal(dst_tst[::2], src[::2])
 
     @staticmethod
-    @pytest.mark.parametrize("snd, rcv", [
-        (mpi.send, mpi.recv),
-        (mpi.send.py_func, mpi.recv.py_func)
-    ])
+    @pytest.mark.parametrize(
+        "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
+    )
     @pytest.mark.parametrize("data_type", data_types)
     def test_send_0d_arrays(snd, rcv, data_type):
         src = get_random_array((), data_type)
@@ -111,9 +113,14 @@ class TestMPI:
 
     @staticmethod
     @pytest.mark.parametrize("allreduce", [mpi.allreduce, allreduce_pyfunc])
-    @pytest.mark.parametrize("op_mpi, op_np", [(mpi.Operator.SUM, np.sum),
-                                               (mpi.Operator.MIN, np.min),
-                                               (mpi.Operator.MAX, np.max)])
+    @pytest.mark.parametrize(
+        "op_mpi, op_np",
+        [
+            (mpi.Operator.SUM, np.sum),
+            (mpi.Operator.MIN, np.min),
+            (mpi.Operator.MAX, np.max),
+        ],
+    )
     @pytest.mark.parametrize("data_type", data_types_real)
     def test_allreduce(allreduce, op_mpi, op_np, data_type):
         # test arrays
