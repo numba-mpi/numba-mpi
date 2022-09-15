@@ -73,7 +73,7 @@ jobs:
           CLEAN: true
 
   build:
-    needs: [pylint, prcommit, pdoc]
+    needs: [pylint, precommit, pdoc]
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
