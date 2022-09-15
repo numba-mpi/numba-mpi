@@ -1,4 +1,4 @@
-name: tests+artifacts+pypi
+name: main
 
 defaults:
   run:
