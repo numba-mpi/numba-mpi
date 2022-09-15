@@ -5,10 +5,9 @@ from enum import IntEnum
 from numbers import Number
 
 import numba
-from numba.core import types, cgutils
 import numpy as np
 from mpi4py import MPI
-
+from numba.core import cgutils, types
 
 # pylint: disable-next=protected-access
 if MPI._sizeof(MPI.Comm) == ctypes.sizeof(ctypes.c_int):
@@ -39,6 +38,7 @@ _MpiOp = ctypes.c_int
 
 class Operator(IntEnum):
     """collection of operators that MPI supports"""
+
     MAX = MPI.MAX.py2f()
     MIN = MPI.MIN.py2f()
     SUM = MPI.SUM.py2f()
