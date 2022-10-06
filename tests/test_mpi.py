@@ -18,9 +18,9 @@ def get_random_array(shape, data_type):
     return rng.random(shape)
 
 
-def allreduce_pyfunc(data, operator):
+def allreduce_pyfunc(sendobj, recvobj, operator):
     """helper function to call pyfunc of allreduce without jitting"""
-    return mpi.allreduce.py_func(data, operator)(data, operator)
+    return mpi.allreduce.py_func(sendobj, recvobj, operator)(sendobj, recvobj, operator)
 
 
 class TestMPI:
