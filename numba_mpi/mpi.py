@@ -294,6 +294,6 @@ def allreduce(
             return status
 
     else:
-        raise TypeError(f"Unsupported type {data.__class__.__name__}")
+        raise TypeError(f"Unsupported type {sendobj.__class__.__name__}")
 
     return impl

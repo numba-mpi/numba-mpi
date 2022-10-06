@@ -144,7 +144,6 @@ class TestMPI:
         src = src[0]
         status = allreduce(src, recvobj, operator=op_mpi)
         assert status == MPI_SUCCESS
-        assert np.isscalar(res)
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
         np.testing.assert_equal(recvobj[0], expect)
 
@@ -152,6 +151,5 @@ class TestMPI:
         src = get_random_array((), data_type)
         status = allreduce(src, recvobj, operator=op_mpi)
         assert status == MPI_SUCCESS
-        assert not np.isscalar(res)
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
         np.testing.assert_equal(recvobj[0], expect)
