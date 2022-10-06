@@ -131,22 +131,27 @@ class TestMPI:
     )
     @pytest.mark.parametrize("data_type", data_types_real)
     def test_allreduce(allreduce, op_mpi, op_np, data_type):
+        recvobj = np.empty((1,), data_type)
+
         # test arrays
         src = get_random_array((3,), data_type)
-        res = allreduce(src, operator=op_mpi)
+        status = allreduce(src, recvobj, operator=op_mpi)
+        assert status == MPI_SUCCESS
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
-        np.testing.assert_equal(res, expect)
+        np.testing.assert_equal(recvobj[0], expect)
 
         # test scalars
         src = src[0]
-        res = allreduce(src, operator=op_mpi)
+        status = allreduce(src, recvobj, operator=op_mpi)
+        assert status == MPI_SUCCESS
         assert np.isscalar(res)
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
-        np.testing.assert_equal(res, expect)
+        np.testing.assert_equal(recvobj[0], expect)
 
         # test 0d arrays
         src = get_random_array((), data_type)
-        res = allreduce(src, operator=op_mpi)
+        status = allreduce(src, recvobj, operator=op_mpi)
+        assert status == MPI_SUCCESS
         assert not np.isscalar(res)
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
-        np.testing.assert_equal(res, expect)
+        np.testing.assert_equal(recvobj[0], expect)
