@@ -131,25 +131,26 @@ class TestMPI:
     )
     @pytest.mark.parametrize("data_type", data_types_real)
     def test_allreduce(allreduce, op_mpi, op_np, data_type):
-        recvobj = np.empty((1,), data_type)
-
         # test arrays
         src = get_random_array((3,), data_type)
-        status = allreduce(src, recvobj, operator=op_mpi)
+        rcv = np.empty_like(src)
+        status = allreduce(src, rcv, operator=op_mpi)
         assert status == MPI_SUCCESS
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
-        np.testing.assert_equal(recvobj[0], expect)
+        np.testing.assert_equal(rcv, expect)
 
         # test scalars
         src = src[0]
-        status = allreduce(src, recvobj, operator=op_mpi)
+        rcv = np.empty(1)
+        status = allreduce(src, rcv, operator=op_mpi)
         assert status == MPI_SUCCESS
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
-        np.testing.assert_equal(recvobj[0], expect)
+        np.testing.assert_equal(rcv, expect)
 
         # test 0d arrays
         src = get_random_array((), data_type)
-        status = allreduce(src, recvobj, operator=op_mpi)
+        rcv = np.empty_like(src)
+        status = allreduce(src, rcv, operator=op_mpi)
         assert status == MPI_SUCCESS
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
-        np.testing.assert_equal(recvobj[0], expect)
+        np.testing.assert_equal(rcv, expect)
