@@ -249,7 +249,9 @@ def recv(data, source, tag):
 
 
 @numba.generated_jit(nopython=True)
-def allreduce(sendobj, recvobj, operator=Operator.SUM):  # pylint: disable=unused-argument
+def allreduce(
+    sendobj, recvobj, operator=Operator.SUM
+):  # pylint: disable=unused-argument
     """wrapper for MPI_Allreduce
 
     Note that complex datatypes and user-defined functions are not properly supported.
