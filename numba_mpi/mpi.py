@@ -1,6 +1,6 @@
 """ Numba @njittable MPI wrappers tested on Linux, macOS and Windows """
 import ctypes
-import platform
+from ctypes.util import find_library
 from enum import IntEnum
 from numbers import Number
 
@@ -23,14 +23,14 @@ else:
 
 _MpiStatusPtr = ctypes.c_void_p
 
-if platform.system() == "Linux":
-    LIB = "libmpi.so"
-elif platform.system() == "Windows":
-    LIB = "msmpi.dll"
-elif platform.system() == "Darwin":
-    LIB = "libmpi.dylib"
-else:
-    raise NotImplementedError()
+for name in ('mpi', 'msmpi', 'impi'):
+    LIB = find_library(name)
+    if LIB is not None:
+        break
+
+if LIB is None:
+    raise RuntimeError("no MPI library found")
+
 libmpi = ctypes.CDLL(LIB)
 
 _MpiOp = ctypes.c_int
