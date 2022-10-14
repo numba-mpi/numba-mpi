@@ -29,7 +29,7 @@
 </summary>
 <pre><code class="python">&#34;&#34;&#34; Numba @njittable MPI wrappers tested on Linux, macOS and Windows &#34;&#34;&#34;
 import ctypes
-import platform
+from ctypes.util import find_library
 from enum import IntEnum
 from numbers import Number
 
@@ -52,14 +52,14 @@ else:
 
 _MpiStatusPtr = ctypes.c_void_p
 
-if platform.system() == &#34;Linux&#34;:
-    LIB = &#34;libmpi.so&#34;
-elif platform.system() == &#34;Windows&#34;:
-    LIB = &#34;msmpi.dll&#34;
-elif platform.system() == &#34;Darwin&#34;:
-    LIB = &#34;libmpi.dylib&#34;
-else:
-    raise NotImplementedError()
+for name in (&#34;mpi&#34;, &#34;msmpi&#34;, &#34;impi&#34;):
+    LIB = find_library(name)
+    if LIB is not None:
+        break
+
+if LIB is None:
+    raise RuntimeError(&#34;no MPI library found&#34;)
+
 libmpi = ctypes.CDLL(LIB)
 
 _MpiOp = ctypes.c_int
