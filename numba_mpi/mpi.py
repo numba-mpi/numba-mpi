@@ -23,7 +23,7 @@ else:
 
 _MpiStatusPtr = ctypes.c_void_p
 
-for name in ('mpi', 'msmpi', 'impi'):
+for name in ("mpi", "msmpi", "impi"):
     LIB = find_library(name)
     if LIB is not None:
         break
