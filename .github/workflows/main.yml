@@ -80,13 +80,13 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10"]
         mpi: [ 'mpich', 'openmpi', 'msmpi' ]
         exclude:
-        - os: macos-latest
+        - platform: macos-latest
           mpi: msmpi
-        - os: ubuntu-latest
+        - platform: ubuntu-latest
           mpi: msmpi
-        - os: windows-latest
+        - platform: windows-latest
           mpi: mpich
-        - os: windows-latest
+        - platform: windows-latest
           mpi: openmpi
     runs-on: ${{ matrix.platform }}
     steps:
