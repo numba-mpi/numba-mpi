@@ -78,16 +78,20 @@ jobs:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.7", "3.8", "3.9", "3.10"]
-        mpi: [ 'mpich', 'openmpi', 'msmpi' ]
+        mpi: [ 'mpich', 'openmpi', 'msmpi', 'intelmpi']
         exclude:
         - platform: macos-latest
           mpi: msmpi
+        - platform: macos-latest
+          mpi: intelmpi
         - platform: ubuntu-latest
           mpi: msmpi
         - platform: windows-latest
           mpi: mpich
         - platform: windows-latest
           mpi: openmpi
+        - platform: windows-latest
+          mpi: intelmpi
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
