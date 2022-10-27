@@ -141,7 +141,7 @@ class TestMPI:
 
         # test scalars
         src = src[0]
-        rcv = np.empty(1)
+        rcv = np.empty(1, dtype=src.dtype)
         status = allreduce(src, rcv, operator=op_mpi)
         assert status == MPI_SUCCESS
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
