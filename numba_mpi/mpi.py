@@ -38,6 +38,7 @@ libmpi = ctypes.CDLL(LIB)
 
 class Operator(IntEnum):
     """collection of operators that MPI supports"""
+
     # pylint: disable=protected-access
     MAX = MPI._addressof(MPI.MAX)
     MIN = MPI._addressof(MPI.MIN)
