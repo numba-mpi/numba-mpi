@@ -199,9 +199,9 @@ def rank():
 
 @numba.njit
 def send(data, dest, tag):
-    """wrapper for MPI_Send"""
+    """wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS)"""
     data = np.ascontiguousarray(data)
-    result = _MPI_Send(
+    status = _MPI_Send(
         data.ctypes.data,
         data.size,
         _mpi_dtype(data),
@@ -209,17 +209,19 @@ def send(data, dest, tag):
         tag,
         _mpi_addr(_MPI_Comm_World_ptr),
     )
-    assert result == 0
 
     # The following no-op prevents numba from too aggressive optimizations
     # This looks like a bug in numba (tested for version 0.55)
     data[0]  # pylint: disable=pointless-statement
 
+    return status
+
 
 @numba.njit()
 def recv(data, source, tag):
     """wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise
-    allocates a buffer and later copies the data into non-contiguous `data` array)"""
+    allocates a buffer and later copies the data into non-contiguous `data` array).
+    Returns integer status code (0 == MPI_SUCCESS)"""
     status = np.empty(5, dtype=np.intc)
 
     buffer = (
@@ -230,7 +232,7 @@ def recv(data, source, tag):
         )  # np.empty_like(data, order='C') fails with Numba
     )
 
-    result = _MPI_Recv(
+    status = _MPI_Recv(
         buffer.ctypes.data,
         buffer.size,
         _mpi_dtype(data),
@@ -239,10 +241,11 @@ def recv(data, source, tag):
         _mpi_addr(_MPI_Comm_World_ptr),
         status.ctypes.data,
     )
-    assert result == 0
 
     if not data.flags.c_contiguous:
         data[...] = buffer
+
+    return status
 
 
 @numba.generated_jit(nopython=True)

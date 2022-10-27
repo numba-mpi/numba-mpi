@@ -5,6 +5,8 @@ from mpi4py.MPI import COMM_WORLD
 
 import numba_mpi as mpi
 
+MPI_SUCCESS = 0
+
 
 def get_random_array(shape, data_type):
     """helper function creating the same random array in each process"""
@@ -69,10 +71,12 @@ class TestMPI:
         dst_tst = np.empty_like(src)
 
         if mpi.rank() == 0:
-            snd(src, dest=1, tag=11)
+            status = snd(src, dest=1, tag=11)
+            assert status == MPI_SUCCESS
             COMM_WORLD.Send(src, dest=1, tag=22)
         elif mpi.rank() == 1:
-            rcv(dst_tst, source=0, tag=11)
+            status = rcv(dst_tst, source=0, tag=11)
+            assert status == MPI_SUCCESS
             COMM_WORLD.Recv(dst_exp, source=0, tag=22)
 
             np.testing.assert_equal(dst_tst, src)
@@ -88,9 +92,11 @@ class TestMPI:
         dst_tst = np.zeros_like(src)
 
         if mpi.rank() == 0:
-            snd(src[::2], dest=1, tag=11)
+            status = snd(src[::2], dest=1, tag=11)
+            assert status == MPI_SUCCESS
         elif mpi.rank() == 1:
-            rcv(dst_tst[::2], source=0, tag=11)
+            status = rcv(dst_tst[::2], source=0, tag=11)
+            assert status == MPI_SUCCESS
 
             np.testing.assert_equal(dst_tst[1::2], 0)
             np.testing.assert_equal(dst_tst[::2], src[::2])
@@ -105,9 +111,11 @@ class TestMPI:
         dst_tst = np.empty_like(src)
 
         if mpi.rank() == 0:
-            snd(src, dest=1, tag=11)
+            status = snd(src, dest=1, tag=11)
+            assert status == MPI_SUCCESS
         elif mpi.rank() == 1:
-            rcv(dst_tst, source=0, tag=11)
+            status = rcv(dst_tst, source=0, tag=11)
+            assert status == MPI_SUCCESS
 
             np.testing.assert_equal(dst_tst, src)
 
