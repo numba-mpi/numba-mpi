@@ -18,8 +18,10 @@ else:
 # pylint: disable-next=protected-access
 if MPI._sizeof(MPI.Datatype) == ctypes.sizeof(ctypes.c_int):
     _MpiDatatype = ctypes.c_int
+    _MpiOp = ctypes.c_int
 else:
     _MpiDatatype = ctypes.c_void_p
+    _MpiOp = ctypes.c_void_p
 
 _MpiStatusPtr = ctypes.c_void_p
 
@@ -33,15 +35,15 @@ if LIB is None:
 
 libmpi = ctypes.CDLL(LIB)
 
-_MpiOp = ctypes.c_int
-
 
 class Operator(IntEnum):
     """collection of operators that MPI supports"""
 
-    MAX = MPI.MAX.py2f()
-    MIN = MPI.MIN.py2f()
-    SUM = MPI.SUM.py2f()
+    # pylint: disable=protected-access
+    MAX = MPI._addressof(MPI.MAX)
+    MIN = MPI._addressof(MPI.MIN)
+    SUM = MPI._addressof(MPI.SUM)
+    # pylint: enable=protected-access
 
 
 _MPI_Initialized = libmpi.MPI_Initialized
@@ -104,16 +106,16 @@ _MPI_Allreduce.argtypes = [
 ]
 
 
-def _mpi_comm_world():
-    return _MpiComm.from_address(_MPI_Comm_World_ptr)
+def _mpi_addr(ptr):
+    return _MpiComm.from_address(ptr)
 
 
-@numba.extending.overload(_mpi_comm_world)
-def _mpi_comm_world_njit():
-    def impl():
+@numba.extending.overload(_mpi_addr)
+def _mpi_comm_world_njit(ptr):
+    def impl(ptr):
         return numba.carray(
             # pylint: disable-next=no-value-for-parameter
-            _address_as_void_pointer(_MPI_Comm_World_ptr),
+            _address_as_void_pointer(ptr),
             shape=(1,),
             dtype=np.intp,
         )[0]
@@ -181,7 +183,7 @@ def initialized():
 def size():
     """wrapper for MPI_Comm_size()"""
     value = np.empty(1, dtype=np.intc)
-    status = _MPI_Comm_size(_mpi_comm_world(), value.ctypes.data)
+    status = _MPI_Comm_size(_mpi_addr(_MPI_Comm_World_ptr), value.ctypes.data)
     assert status == 0
     return value[0]
 
@@ -190,7 +192,7 @@ def size():
 def rank():
     """wrapper for MPI_Comm_rank()"""
     value = np.empty(1, dtype=np.intc)
-    status = _MPI_Comm_rank(_mpi_comm_world(), value.ctypes.data)
+    status = _MPI_Comm_rank(_mpi_addr(_MPI_Comm_World_ptr), value.ctypes.data)
     assert status == 0
     return value[0]
 
@@ -200,7 +202,12 @@ def send(data, dest, tag):
     """wrapper for MPI_Send"""
     data = np.ascontiguousarray(data)
     result = _MPI_Send(
-        data.ctypes.data, data.size, _mpi_dtype(data), dest, tag, _mpi_comm_world()
+        data.ctypes.data,
+        data.size,
+        _mpi_dtype(data),
+        dest,
+        tag,
+        _mpi_addr(_MPI_Comm_World_ptr),
     )
     assert result == 0
 
@@ -229,7 +236,7 @@ def recv(data, source, tag):
         _mpi_dtype(data),
         source,
         tag,
-        _mpi_comm_world(),
+        _mpi_addr(_MPI_Comm_World_ptr),
         status.ctypes.data,
     )
     assert result == 0
@@ -255,8 +262,8 @@ def allreduce(data, operator=Operator.SUM):  # pylint: disable=unused-argument
                 recvobj.ctypes.data,
                 sendobj.size,
                 _mpi_dtype(sendobj),
-                operator,
-                _mpi_comm_world(),
+                _mpi_addr(operator),
+                _mpi_addr(_MPI_Comm_World_ptr),
             )
             assert result == 0
 
@@ -277,8 +284,8 @@ def allreduce(data, operator=Operator.SUM):  # pylint: disable=unused-argument
                 recvobj.ctypes.data,
                 sendobj.size,
                 _mpi_dtype(sendobj),
-                operator,
-                _mpi_comm_world(),
+                _mpi_addr(operator),
+                _mpi_addr(_MPI_Comm_World_ptr),
             )
             assert result == 0
 
