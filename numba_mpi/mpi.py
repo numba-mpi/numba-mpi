@@ -36,7 +36,6 @@ if LIB is None:
 libmpi = ctypes.CDLL(LIB)
 
 
-
 class Operator(IntEnum):
     """collection of operators that MPI supports"""
 
@@ -201,7 +200,12 @@ def send(data, dest, tag):
     """wrapper for MPI_Send"""
     data = np.ascontiguousarray(data)
     result = _MPI_Send(
-        data.ctypes.data, data.size, _mpi_dtype(data), dest, tag, _mpi_addr(_MPI_Comm_World_ptr)
+        data.ctypes.data,
+        data.size,
+        _mpi_dtype(data),
+        dest,
+        tag,
+        _mpi_addr(_MPI_Comm_World_ptr),
     )
     assert result == 0
 
