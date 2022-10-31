@@ -199,9 +199,9 @@ def rank():
 
 @numba.njit
 def send(data, dest, tag):
-    """wrapper for MPI_Send"""
+    """wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS)"""
     data = np.ascontiguousarray(data)
-    result = _MPI_Send(
+    status = _MPI_Send(
         data.ctypes.data,
         data.size,
         _mpi_dtype(data),
@@ -209,17 +209,19 @@ def send(data, dest, tag):
         tag,
         _mpi_addr(_MPI_Comm_World_ptr),
     )
-    assert result == 0
 
     # The following no-op prevents numba from too aggressive optimizations
     # This looks like a bug in numba (tested for version 0.55)
     data[0]  # pylint: disable=pointless-statement
 
+    return status
+
 
 @numba.njit()
 def recv(data, source, tag):
     """wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise
-    allocates a buffer and later copies the data into non-contiguous `data` array)"""
+    allocates a buffer and later copies the data into non-contiguous `data` array).
+    Returns integer status code (0 == MPI_SUCCESS)"""
     status = np.empty(5, dtype=np.intc)
 
     buffer = (
@@ -230,7 +232,7 @@ def recv(data, source, tag):
         )  # np.empty_like(data, order='C') fails with Numba
     )
 
-    result = _MPI_Recv(
+    status = _MPI_Recv(
         buffer.ctypes.data,
         buffer.size,
         _mpi_dtype(data),
@@ -239,25 +241,28 @@ def recv(data, source, tag):
         _mpi_addr(_MPI_Comm_World_ptr),
         status.ctypes.data,
     )
-    assert result == 0
 
     if not data.flags.c_contiguous:
         data[...] = buffer
 
+    return status
+
 
 @numba.generated_jit(nopython=True)
-def allreduce(data, operator=Operator.SUM):  # pylint: disable=unused-argument
+def allreduce(
+    sendobj, recvobj, operator=Operator.SUM
+):  # pylint: disable=unused-argument
     """wrapper for MPI_Allreduce
 
     Note that complex datatypes and user-defined functions are not properly supported.
+    Returns integer status code (0 == MPI_SUCCESS)
     """
-    if isinstance(data, (types.Number, Number)):
+    if isinstance(sendobj, (types.Number, Number)):
 
-        def impl(data, operator=Operator.SUM):
-            sendobj = np.array([data])
-            recvobj = np.empty((1,), sendobj.dtype)
+        def impl(sendobj, recvobj, operator=Operator.SUM):
+            sendobj = np.array([sendobj])
 
-            result = _MPI_Allreduce(
+            status = _MPI_Allreduce(
                 sendobj.ctypes.data,
                 recvobj.ctypes.data,
                 sendobj.size,
@@ -265,21 +270,19 @@ def allreduce(data, operator=Operator.SUM):  # pylint: disable=unused-argument
                 _mpi_addr(operator),
                 _mpi_addr(_MPI_Comm_World_ptr),
             )
-            assert result == 0
 
             # The following no-op prevents numba from too aggressive optimizations
             # This looks like a bug in numba (tested for version 0.55)
             sendobj[0]  # pylint: disable=pointless-statement
 
-            return recvobj[0]
+            return status
 
-    elif isinstance(data, (types.Array, np.ndarray)):
+    elif isinstance(sendobj, (types.Array, np.ndarray)):
 
-        def impl(data, operator=Operator.SUM):
-            sendobj = np.ascontiguousarray(data)
-            recvobj = np.empty(sendobj.shape, sendobj.dtype)
+        def impl(sendobj, recvobj, operator=Operator.SUM):
+            sendobj = np.ascontiguousarray(sendobj)
 
-            result = _MPI_Allreduce(
+            status = _MPI_Allreduce(
                 sendobj.ctypes.data,
                 recvobj.ctypes.data,
                 sendobj.size,
@@ -287,11 +290,10 @@ def allreduce(data, operator=Operator.SUM):  # pylint: disable=unused-argument
                 _mpi_addr(operator),
                 _mpi_addr(_MPI_Comm_World_ptr),
             )
-            assert result == 0
 
-            return recvobj
+            return status
 
     else:
-        raise TypeError(f"Unsupported type {data.__class__.__name__}")
+        raise TypeError(f"Unsupported type {sendobj.__class__.__name__}")
 
     return impl
