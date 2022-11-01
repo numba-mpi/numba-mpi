@@ -5,6 +5,8 @@ from mpi4py.MPI import COMM_WORLD
 
 import numba_mpi as mpi
 
+MPI_SUCCESS = 0
+
 
 def get_random_array(shape, data_type):
     """helper function creating the same random array in each process"""
@@ -16,9 +18,9 @@ def get_random_array(shape, data_type):
     return rng.random(shape)
 
 
-def allreduce_pyfunc(data, operator):
+def allreduce_pyfunc(sendobj, recvobj, operator):
     """helper function to call pyfunc of allreduce without jitting"""
-    return mpi.allreduce.py_func(data, operator)(data, operator)
+    return mpi.allreduce.py_func(sendobj, recvobj, operator)(sendobj, recvobj, operator)
 
 
 class TestMPI:
@@ -69,10 +71,12 @@ class TestMPI:
         dst_tst = np.empty_like(src)
 
         if mpi.rank() == 0:
-            snd(src, dest=1, tag=11)
+            status = snd(src, dest=1, tag=11)
+            assert status == MPI_SUCCESS
             COMM_WORLD.Send(src, dest=1, tag=22)
         elif mpi.rank() == 1:
-            rcv(dst_tst, source=0, tag=11)
+            status = rcv(dst_tst, source=0, tag=11)
+            assert status == MPI_SUCCESS
             COMM_WORLD.Recv(dst_exp, source=0, tag=22)
 
             np.testing.assert_equal(dst_tst, src)
@@ -88,9 +92,11 @@ class TestMPI:
         dst_tst = np.zeros_like(src)
 
         if mpi.rank() == 0:
-            snd(src[::2], dest=1, tag=11)
+            status = snd(src[::2], dest=1, tag=11)
+            assert status == MPI_SUCCESS
         elif mpi.rank() == 1:
-            rcv(dst_tst[::2], source=0, tag=11)
+            status = rcv(dst_tst[::2], source=0, tag=11)
+            assert status == MPI_SUCCESS
 
             np.testing.assert_equal(dst_tst[1::2], 0)
             np.testing.assert_equal(dst_tst[::2], src[::2])
@@ -105,9 +111,11 @@ class TestMPI:
         dst_tst = np.empty_like(src)
 
         if mpi.rank() == 0:
-            snd(src, dest=1, tag=11)
+            status = snd(src, dest=1, tag=11)
+            assert status == MPI_SUCCESS
         elif mpi.rank() == 1:
-            rcv(dst_tst, source=0, tag=11)
+            status = rcv(dst_tst, source=0, tag=11)
+            assert status == MPI_SUCCESS
 
             np.testing.assert_equal(dst_tst, src)
 
@@ -125,20 +133,24 @@ class TestMPI:
     def test_allreduce(allreduce, op_mpi, op_np, data_type):
         # test arrays
         src = get_random_array((3,), data_type)
-        res = allreduce(src, operator=op_mpi)
+        rcv = np.empty_like(src)
+        status = allreduce(src, rcv, operator=op_mpi)
+        assert status == MPI_SUCCESS
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
-        np.testing.assert_equal(res, expect)
+        np.testing.assert_equal(rcv, expect)
 
         # test scalars
         src = src[0]
-        res = allreduce(src, operator=op_mpi)
-        assert np.isscalar(res)
+        rcv = np.empty(1, dtype=src.dtype)
+        status = allreduce(src, rcv, operator=op_mpi)
+        assert status == MPI_SUCCESS
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
-        np.testing.assert_equal(res, expect)
+        np.testing.assert_equal(rcv, expect)
 
         # test 0d arrays
         src = get_random_array((), data_type)
-        res = allreduce(src, operator=op_mpi)
-        assert not np.isscalar(res)
+        rcv = np.empty_like(src)
+        status = allreduce(src, rcv, operator=op_mpi)
+        assert status == MPI_SUCCESS
         expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
-        np.testing.assert_equal(res, expect)
+        np.testing.assert_equal(rcv, expect)
