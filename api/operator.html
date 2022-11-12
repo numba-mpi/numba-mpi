@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>numba_mpi API documentation</title>
-<meta name="description" content="Numba @njittable MPI wrappers tested on Linux, macOS and Windows" />
+<title>numba_mpi.api.operator API documentation</title>
+<meta name="description" content="operators supported by MPI" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,54 +19,81 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>numba_mpi</code></h1>
+<h1 class="title">Module <code>numba_mpi.api.operator</code></h1>
 </header>
 <section id="section-intro">
-<p>Numba @njittable MPI wrappers tested on Linux, macOS and Windows</p>
+<p>operators supported by MPI</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34; Numba @njittable MPI wrappers tested on Linux, macOS and Windows &#34;&#34;&#34;
-from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
+<pre><code class="python">&#34;&#34;&#34;operators supported by MPI&#34;&#34;&#34;
+from enum import IntEnum
 
-from .api.allreduce import allreduce
-from .api.initialized import initialized
-from .api.operator import Operator
-from .api.rank import rank
-from .api.recv import recv
-from .api.send import send
-from .api.size import size
+from mpi4py import MPI
 
-try:
-    __version__ = get_distribution(__name__).version
-except (DistributionNotFound, VersionConflict):
-    # package is not installed
-    pass</code></pre>
+
+class Operator(IntEnum):
+    &#34;&#34;&#34;collection of operators that MPI supports&#34;&#34;&#34;
+
+    # pylint: disable=protected-access
+    MAX = MPI._addressof(MPI.MAX)
+    MIN = MPI._addressof(MPI.MIN)
+    SUM = MPI._addressof(MPI.SUM)
+    # pylint: enable=protected-access</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt><code class="name"><a title="numba_mpi.api" href="api/index.html">numba_mpi.api</a></code></dt>
+<dt id="numba_mpi.api.operator.Operator"><code class="flex name class">
+<span>class <span class="ident">Operator</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>collection of operators that MPI supports</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Operator(IntEnum):
+    &#34;&#34;&#34;collection of operators that MPI supports&#34;&#34;&#34;
+
+    # pylint: disable=protected-access
+    MAX = MPI._addressof(MPI.MAX)
+    MIN = MPI._addressof(MPI.MIN)
+    SUM = MPI._addressof(MPI.SUM)
+    # pylint: enable=protected-access</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="numba_mpi.api.operator.Operator.MAX"><code class="name">var <span class="ident">MAX</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="numba_mpi.common" href="common.html">numba_mpi.common</a></code></dt>
+<dt id="numba_mpi.api.operator.Operator.MIN"><code class="name">var <span class="ident">MIN</span></code></dt>
 <dd>
-<div class="desc"><p>variables used across API implementation</p></div>
+<div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="numba_mpi.utils" href="utils.html">numba_mpi.utils</a></code></dt>
+<dt id="numba_mpi.api.operator.Operator.SUM"><code class="name">var <span class="ident">SUM</span></code></dt>
 <dd>
-<div class="desc"><p>helper functions used across API implementation</p></div>
+<div class="desc"></div>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -75,11 +102,21 @@ except (DistributionNotFound, VersionConflict):
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<li><h3>Super-module</h3>
 <ul>
-<li><code><a title="numba_mpi.api" href="api/index.html">numba_mpi.api</a></code></li>
-<li><code><a title="numba_mpi.common" href="common.html">numba_mpi.common</a></code></li>
-<li><code><a title="numba_mpi.utils" href="utils.html">numba_mpi.utils</a></code></li>
+<li><code><a title="numba_mpi.api" href="index.html">numba_mpi.api</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="numba_mpi.api.operator.Operator" href="#numba_mpi.api.operator.Operator">Operator</a></code></h4>
+<ul class="">
+<li><code><a title="numba_mpi.api.operator.Operator.MAX" href="#numba_mpi.api.operator.Operator.MAX">MAX</a></code></li>
+<li><code><a title="numba_mpi.api.operator.Operator.MIN" href="#numba_mpi.api.operator.Operator.MIN">MIN</a></code></li>
+<li><code><a title="numba_mpi.api.operator.Operator.SUM" href="#numba_mpi.api.operator.Operator.SUM">SUM</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

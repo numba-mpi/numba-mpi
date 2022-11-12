@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>numba_mpi API documentation</title>
-<meta name="description" content="Numba @njittable MPI wrappers tested on Linux, macOS and Windows" />
+<title>numba_mpi.api.allreduce API documentation</title>
+<meta name="description" content="file contains MPI_Allreduce() implementations" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,52 +19,157 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>numba_mpi</code></h1>
+<h1 class="title">Module <code>numba_mpi.api.allreduce</code></h1>
 </header>
 <section id="section-intro">
-<p>Numba @njittable MPI wrappers tested on Linux, macOS and Windows</p>
+<p>file contains MPI_Allreduce() implementations</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34; Numba @njittable MPI wrappers tested on Linux, macOS and Windows &#34;&#34;&#34;
-from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
+<pre><code class="python">&#34;&#34;&#34;file contains MPI_Allreduce() implementations&#34;&#34;&#34;
+import ctypes
+from numbers import Number
 
-from .api.allreduce import allreduce
-from .api.initialized import initialized
-from .api.operator import Operator
-from .api.rank import rank
-from .api.recv import recv
-from .api.send import send
-from .api.size import size
+import numba
+import numpy as np
+from numba.core import types
 
-try:
-    __version__ = get_distribution(__name__).version
-except (DistributionNotFound, VersionConflict):
-    # package is not installed
-    pass</code></pre>
+from numba_mpi.api.operator import Operator
+from numba_mpi.common import _MPI_Comm_World_ptr, _MpiComm, _MpiDatatype, _MpiOp, libmpi
+from numba_mpi.utils import _mpi_addr, _mpi_dtype
+
+_MPI_Allreduce = libmpi.MPI_Allreduce
+_MPI_Allreduce.restype = ctypes.c_int
+_MPI_Allreduce.argtypes = [
+    ctypes.c_void_p,
+    ctypes.c_void_p,
+    ctypes.c_int,
+    _MpiDatatype,
+    _MpiOp,
+    _MpiComm,
+]
+
+
+@numba.generated_jit(nopython=True)
+def allreduce(
+    sendobj, recvobj, operator=Operator.SUM
+):  # pylint: disable=unused-argument
+    &#34;&#34;&#34;wrapper for MPI_Allreduce
+    Note that complex datatypes and user-defined functions are not properly supported.
+    Returns integer status code (0 == MPI_SUCCESS)
+    &#34;&#34;&#34;
+    if isinstance(sendobj, (types.Number, Number)):
+
+        def impl(sendobj, recvobj, operator=Operator.SUM):
+            sendobj = np.array([sendobj])
+
+            status = _MPI_Allreduce(
+                sendobj.ctypes.data,
+                recvobj.ctypes.data,
+                sendobj.size,
+                _mpi_dtype(sendobj),
+                _mpi_addr(operator),
+                _mpi_addr(_MPI_Comm_World_ptr),
+            )
+
+            # The following no-op prevents numba from too aggressive optimizations
+            # This looks like a bug in numba (tested for version 0.55)
+            sendobj[0]  # pylint: disable=pointless-statement
+
+            return status
+
+    elif isinstance(sendobj, (types.Array, np.ndarray)):
+
+        def impl(sendobj, recvobj, operator=Operator.SUM):
+            sendobj = np.ascontiguousarray(sendobj)
+
+            status = _MPI_Allreduce(
+                sendobj.ctypes.data,
+                recvobj.ctypes.data,
+                sendobj.size,
+                _mpi_dtype(sendobj),
+                _mpi_addr(operator),
+                _mpi_addr(_MPI_Comm_World_ptr),
+            )
+
+            return status
+
+    else:
+        raise TypeError(f&#34;Unsupported type {sendobj.__class__.__name__}&#34;)
+
+    return impl</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="numba_mpi.api" href="api/index.html">numba_mpi.api</a></code></dt>
+<dt id="numba_mpi.api.allreduce.allreduce"><code class="name flex">
+<span>def <span class="ident">allreduce</span></span>(<span>sendobj, recvobj, operator=Operator.SUM)</span>
+</code></dt>
 <dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="numba_mpi.common" href="common.html">numba_mpi.common</a></code></dt>
-<dd>
-<div class="desc"><p>variables used across API implementation</p></div>
-</dd>
-<dt><code class="name"><a title="numba_mpi.utils" href="utils.html">numba_mpi.utils</a></code></dt>
-<dd>
-<div class="desc"><p>helper functions used across API implementation</p></div>
+<div class="desc"><p>wrapper for MPI_Allreduce
+Note that complex datatypes and user-defined functions are not properly supported.
+Returns integer status code (0 == MPI_SUCCESS)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@numba.generated_jit(nopython=True)
+def allreduce(
+    sendobj, recvobj, operator=Operator.SUM
+):  # pylint: disable=unused-argument
+    &#34;&#34;&#34;wrapper for MPI_Allreduce
+    Note that complex datatypes and user-defined functions are not properly supported.
+    Returns integer status code (0 == MPI_SUCCESS)
+    &#34;&#34;&#34;
+    if isinstance(sendobj, (types.Number, Number)):
+
+        def impl(sendobj, recvobj, operator=Operator.SUM):
+            sendobj = np.array([sendobj])
+
+            status = _MPI_Allreduce(
+                sendobj.ctypes.data,
+                recvobj.ctypes.data,
+                sendobj.size,
+                _mpi_dtype(sendobj),
+                _mpi_addr(operator),
+                _mpi_addr(_MPI_Comm_World_ptr),
+            )
+
+            # The following no-op prevents numba from too aggressive optimizations
+            # This looks like a bug in numba (tested for version 0.55)
+            sendobj[0]  # pylint: disable=pointless-statement
+
+            return status
+
+    elif isinstance(sendobj, (types.Array, np.ndarray)):
+
+        def impl(sendobj, recvobj, operator=Operator.SUM):
+            sendobj = np.ascontiguousarray(sendobj)
+
+            status = _MPI_Allreduce(
+                sendobj.ctypes.data,
+                recvobj.ctypes.data,
+                sendobj.size,
+                _mpi_dtype(sendobj),
+                _mpi_addr(operator),
+                _mpi_addr(_MPI_Comm_World_ptr),
+            )
+
+            return status
+
+    else:
+        raise TypeError(f&#34;Unsupported type {sendobj.__class__.__name__}&#34;)
+
+    return impl</code></pre>
+</details>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
 </section>
 <section>
 </section>
@@ -75,11 +180,14 @@ except (DistributionNotFound, VersionConflict):
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<li><h3>Super-module</h3>
 <ul>
-<li><code><a title="numba_mpi.api" href="api/index.html">numba_mpi.api</a></code></li>
-<li><code><a title="numba_mpi.common" href="common.html">numba_mpi.common</a></code></li>
-<li><code><a title="numba_mpi.utils" href="utils.html">numba_mpi.utils</a></code></li>
+<li><code><a title="numba_mpi.api" href="index.html">numba_mpi.api</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="numba_mpi.api.allreduce.allreduce" href="#numba_mpi.api.allreduce.allreduce">allreduce</a></code></li>
 </ul>
 </li>
 </ul>

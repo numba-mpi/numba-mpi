@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>numba_mpi API documentation</title>
-<meta name="description" content="Numba @njittable MPI wrappers tested on Linux, macOS and Windows" />
+<title>numba_mpi.utils API documentation</title>
+<meta name="description" content="helper functions used across API implementation" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,48 +19,87 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>numba_mpi</code></h1>
+<h1 class="title">Module <code>numba_mpi.utils</code></h1>
 </header>
 <section id="section-intro">
-<p>Numba @njittable MPI wrappers tested on Linux, macOS and Windows</p>
+<p>helper functions used across API implementation</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34; Numba @njittable MPI wrappers tested on Linux, macOS and Windows &#34;&#34;&#34;
-from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
+<pre><code class="python">&#34;&#34;&#34;helper functions used across API implementation&#34;&#34;&#34;
+import numba
+import numpy as np
+from numba.core import cgutils, types
 
-from .api.allreduce import allreduce
-from .api.initialized import initialized
-from .api.operator import Operator
-from .api.rank import rank
-from .api.recv import recv
-from .api.send import send
-from .api.size import size
+from .common import _MPI_DTYPES, _MpiComm, _MpiDatatype
 
-try:
-    __version__ = get_distribution(__name__).version
-except (DistributionNotFound, VersionConflict):
-    # package is not installed
-    pass</code></pre>
+
+def _mpi_dtype(arr):
+    ptr = _get_dtype_numpy_to_mpi_ptr(arr)
+    return _MpiDatatype.from_address(ptr)
+
+
+@numba.extending.overload(_mpi_dtype)
+def _mpi_dtype_njit(arr):
+    mpi_dtype = _get_dtype_numba_to_mpi_ptr(arr)
+
+    # pylint: disable-next=unused-argument
+    def impl(arr):
+        return numba.carray(
+            # pylint: disable-next=no-value-for-parameter
+            _address_as_void_pointer(mpi_dtype),
+            shape=(1,),
+            dtype=np.intp,
+        )[0]
+
+    return impl
+
+
+def _get_dtype_numba_to_mpi_ptr(arr):
+    for np_dtype, mpi_ptr in _MPI_DTYPES.items():
+        if arr.dtype == numba.from_dtype(np_dtype):
+            return mpi_ptr
+    raise NotImplementedError(f&#34;Type: {arr.dtype}&#34;)
+
+
+def _get_dtype_numpy_to_mpi_ptr(arr):
+    for np_dtype, mpi_ptr in _MPI_DTYPES.items():
+        if np.can_cast(arr.dtype, np_dtype, casting=&#34;equiv&#34;):
+            return mpi_ptr
+    raise NotImplementedError(f&#34;Type: {arr.dtype}&#34;)
+
+
+def _mpi_addr(ptr):
+    return _MpiComm.from_address(ptr)
+
+
+@numba.extending.overload(_mpi_addr)
+def _mpi_addr_njit(ptr):
+    def impl(ptr):
+        return numba.carray(
+            # pylint: disable-next=no-value-for-parameter
+            _address_as_void_pointer(ptr),
+            shape=(1,),
+            dtype=np.intp,
+        )[0]
+
+    return impl
+
+
+# https://stackoverflow.com/questions/61509903/how-to-pass-array-pointer-to-numba-function
+@numba.extending.intrinsic
+def _address_as_void_pointer(_, src):
+    &#34;&#34;&#34;returns a void pointer from a given memory address&#34;&#34;&#34;
+    sig = types.voidptr(src)
+
+    def codegen(__, builder, ___, args):
+        return builder.inttoptr(args[0], cgutils.voidptr_t)
+
+    return sig, codegen</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
-<dl>
-<dt><code class="name"><a title="numba_mpi.api" href="api/index.html">numba_mpi.api</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="numba_mpi.common" href="common.html">numba_mpi.common</a></code></dt>
-<dd>
-<div class="desc"><p>variables used across API implementation</p></div>
-</dd>
-<dt><code class="name"><a title="numba_mpi.utils" href="utils.html">numba_mpi.utils</a></code></dt>
-<dd>
-<div class="desc"><p>helper functions used across API implementation</p></div>
-</dd>
-</dl>
 </section>
 <section>
 </section>
@@ -75,11 +114,9 @@ except (DistributionNotFound, VersionConflict):
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<li><h3>Super-module</h3>
 <ul>
-<li><code><a title="numba_mpi.api" href="api/index.html">numba_mpi.api</a></code></li>
-<li><code><a title="numba_mpi.common" href="common.html">numba_mpi.common</a></code></li>
-<li><code><a title="numba_mpi.utils" href="utils.html">numba_mpi.utils</a></code></li>
+<li><code><a title="numba_mpi" href="index.html">numba_mpi</a></code></li>
 </ul>
 </li>
 </ul>
