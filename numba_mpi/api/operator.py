@@ -1,5 +1,4 @@
 """operators supported by MPI"""
-# pylint: disable=c-extension-no-member
 from enum import IntEnum
 
 from mpi4py import MPI

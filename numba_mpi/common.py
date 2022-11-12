@@ -1,5 +1,4 @@
 """variables used across API implementation"""
-# pylint: disable=c-extension-no-member
 import ctypes
 from ctypes.util import find_library
 
@@ -17,7 +16,6 @@ _MPI_DTYPES = {
     np.dtype("complex64"): MPI._addressof(MPI.C_FLOAT_COMPLEX),
     np.dtype("complex128"): MPI._addressof(MPI.C_DOUBLE_COMPLEX),
 }
-
 
 if MPI._sizeof(MPI.Comm) == ctypes.sizeof(ctypes.c_int):
     _MpiComm = ctypes.c_int
@@ -44,3 +42,12 @@ if LIB is None:
     raise RuntimeError("no MPI library found")
 
 libmpi = ctypes.CDLL(LIB)
+
+argtypes = [
+    ctypes.c_void_p,
+    ctypes.c_int,
+    _MpiDatatype,
+    ctypes.c_int,
+    ctypes.c_int,
+    _MpiComm,
+]
