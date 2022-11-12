@@ -1,4 +1,5 @@
 """variables used across API implementation"""
+# pylint: disable=c-extension-no-member
 import ctypes
 from ctypes.util import find_library
 
