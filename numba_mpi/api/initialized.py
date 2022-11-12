@@ -4,7 +4,7 @@ import ctypes
 import numba
 import numpy as np
 
-from ..common import libmpi
+from numba_mpi.common import libmpi
 
 _MPI_Initialized = libmpi.MPI_Initialized
 _MPI_Initialized.restype = ctypes.c_int

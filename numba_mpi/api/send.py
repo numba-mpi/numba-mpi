@@ -4,8 +4,8 @@ import ctypes
 import numba
 import numpy as np
 
-from ..common import _MPI_Comm_World_ptr, argtypes, libmpi
-from ..utils import _mpi_addr, _mpi_dtype
+from numba_mpi.common import _MPI_Comm_World_ptr, argtypes, libmpi
+from numba_mpi.utils import _mpi_addr, _mpi_dtype
 
 _MPI_Send = libmpi.MPI_Send
 _MPI_Send.restype = ctypes.c_int
