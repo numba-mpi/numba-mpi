@@ -1,3 +1,4 @@
+# pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring
 import numpy as np
 import pytest
 from mpi4py.MPI import COMM_WORLD
