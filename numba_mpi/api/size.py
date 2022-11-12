@@ -1,3 +1,4 @@
+"""MPI_Comm_size() implementation"""
 import ctypes
 
 import numba

@@ -1,3 +1,4 @@
+"""MPI_Send() implementation"""
 import ctypes
 
 import numba

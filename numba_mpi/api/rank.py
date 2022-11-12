@@ -1,3 +1,4 @@
+"""MPI_Comm_rank() implementation"""
 import ctypes
 
 import numba
