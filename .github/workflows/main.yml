@@ -110,6 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
+      - uses: mpi4py/setup-mpi@v1
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
