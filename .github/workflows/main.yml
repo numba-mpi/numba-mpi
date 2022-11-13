@@ -110,6 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
+      - uses: mpi4py/setup-mpi@v1
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
@@ -125,6 +126,13 @@ jobs:
           exit `fgrep -i warning build.log | wc -l`
 
       - run: twine check --strict dist/*
+
+      - run: |
+          python setup.py egg_info
+          pip install -r *.egg-info/requires.txt
+          pip install --no-index --find-links file:./dist numba-mpi
+          cd /tmp  # make sure local files are not picked up
+          python -We -c "import numba_mpi"
 
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: pypa/gh-action-pypi-publish@unstable/v1
