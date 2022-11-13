@@ -125,9 +125,12 @@ jobs:
           exit `fgrep -i warning build.log | wc -l`
 
       - run: twine check --strict dist/*
-      
-      - run: pip install --no-index --find-links file:./dist numba-mpi
-      - run: python -We -c "import numba_mpi"
+
+      - run: |
+          python setup.py egg_info
+          pip install -r *.egg-info/requires.txt
+          pip install --no-index --find-links file:./dist numba-mpi
+          python -We -c "import numba_mpi"
 
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: pypa/gh-action-pypi-publish@unstable/v1
