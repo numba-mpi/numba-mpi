@@ -23,7 +23,7 @@ setup(
     install_requires=("numba", "numpy", "mpi4py"),
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
-    packages=find_packages(include=["numba_mpi", "numba_mpi.*, numba_mpi.api.*"]),
+    packages=find_packages(include=["numba_mpi", "numba_mpi.*", "numba_mpi.api.*"]),
     project_urls={
         "Tracker": "https://github.com/atmos-cloud-sim-uj/numba-mpi/issues",
         "Documentation": "https://atmos-cloud-sim-uj.github.io/numba-mpi",
