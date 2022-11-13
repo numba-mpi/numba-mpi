@@ -24,7 +24,7 @@ setup(
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     packages=find_packages(
-        include=["numba_mpi", "numba_mpi.*", "numba_mpi.api", "numba_mpi.api.*"]
+        include=["numba_mpi", "numba_mpi.*"]
     ),
     project_urls={
         "Tracker": "https://github.com/atmos-cloud-sim-uj/numba-mpi/issues",
