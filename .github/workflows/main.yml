@@ -131,6 +131,7 @@ jobs:
           python setup.py egg_info
           pip install -r *.egg-info/requires.txt
           pip install --no-index --find-links file:./dist numba-mpi
+          cd /tmp  # make sure local files are not picked up
           python -We -c "import numba_mpi"
 
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
