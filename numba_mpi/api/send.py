@@ -4,19 +4,12 @@ import ctypes
 import numba
 import numpy as np
 
-from numba_mpi.common import _MPI_Comm_World_ptr, libmpi
-from numba_mpi.utils import _mpi_addr, _mpi_dtype, _MpiComm, _MpiDatatype
+from numba_mpi.common import _MPI_Comm_World_ptr, libmpi, send_recv_args
+from numba_mpi.utils import _mpi_addr, _mpi_dtype
 
 _MPI_Send = libmpi.MPI_Send
 _MPI_Send.restype = ctypes.c_int
-_MPI_Send.argtypes = [
-    ctypes.c_void_p,
-    ctypes.c_int,
-    _MpiDatatype,
-    ctypes.c_int,
-    ctypes.c_int,
-    _MpiComm,
-]
+_MPI_Send.argtypes = send_recv_args
 
 
 @numba.njit
