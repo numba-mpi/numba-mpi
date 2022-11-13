@@ -42,3 +42,12 @@ if LIB is None:
     raise RuntimeError("no MPI library found")
 
 libmpi = ctypes.CDLL(LIB)
+
+send_recv_args = [
+    ctypes.c_void_p,
+    ctypes.c_int,
+    _MpiDatatype,
+    ctypes.c_int,
+    ctypes.c_int,
+    _MpiComm,
+]
