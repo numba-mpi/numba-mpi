@@ -2,6 +2,7 @@
 from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
 
 from .api.allreduce import allreduce
+from .api.bcast import bcast
 from .api.initialized import initialized
 from .api.operator import Operator
 from .api.rank import rank

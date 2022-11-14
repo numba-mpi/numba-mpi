@@ -43,7 +43,7 @@ if LIB is None:
 
 libmpi = ctypes.CDLL(LIB)
 
-argtypes = [
+send_recv_args = [
     ctypes.c_void_p,
     ctypes.c_int,
     _MpiDatatype,
