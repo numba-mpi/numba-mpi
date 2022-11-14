@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>numba_mpi.common API documentation</title>
-<meta name="description" content="variables used across API implementation" />
+<title>numba_mpi.api.bcast API documentation</title>
+<meta name="description" content="MPI_Bcast() implementation" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,67 +19,48 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>numba_mpi.common</code></h1>
+<h1 class="title">Module <code>numba_mpi.api.bcast</code></h1>
 </header>
 <section id="section-intro">
-<p>variables used across API implementation</p>
+<p>MPI_Bcast() implementation</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;variables used across API implementation&#34;&#34;&#34;
+<pre><code class="python">&#34;&#34;&#34;MPI_Bcast() implementation&#34;&#34;&#34;
 import ctypes
-from ctypes.util import find_library
 
+import numba
 import numpy as np
-from mpi4py import MPI
 
-# pylint: disable=protected-access
-_MPI_Comm_World_ptr = MPI._addressof(MPI.COMM_WORLD)
+from numba_mpi.common import _MPI_Comm_World_ptr, libmpi
+from numba_mpi.utils import _mpi_addr, _mpi_dtype, _MpiComm, _MpiDatatype
 
-_MPI_DTYPES = {
-    np.dtype(&#34;int32&#34;): MPI._addressof(MPI.INT32_T),
-    np.dtype(&#34;int64&#34;): MPI._addressof(MPI.INT64_T),
-    np.dtype(&#34;float&#34;): MPI._addressof(MPI.FLOAT),
-    np.dtype(&#34;double&#34;): MPI._addressof(MPI.DOUBLE),
-    np.dtype(&#34;complex64&#34;): MPI._addressof(MPI.C_FLOAT_COMPLEX),
-    np.dtype(&#34;complex128&#34;): MPI._addressof(MPI.C_DOUBLE_COMPLEX),
-}
-
-if MPI._sizeof(MPI.Comm) == ctypes.sizeof(ctypes.c_int):
-    _MpiComm = ctypes.c_int
-else:
-    _MpiComm = ctypes.c_void_p
-
-
-if MPI._sizeof(MPI.Datatype) == ctypes.sizeof(ctypes.c_int):
-    _MpiDatatype = ctypes.c_int
-    _MpiOp = ctypes.c_int
-else:
-    _MpiDatatype = ctypes.c_void_p
-    _MpiOp = ctypes.c_void_p
-
-# pylint: enable=protected-access
-_MpiStatusPtr = ctypes.c_void_p
-
-for name in (&#34;mpi&#34;, &#34;msmpi&#34;, &#34;impi&#34;):
-    LIB = find_library(name)
-    if LIB is not None:
-        break
-
-if LIB is None:
-    raise RuntimeError(&#34;no MPI library found&#34;)
-
-libmpi = ctypes.CDLL(LIB)
-
-send_recv_args = [
+_MPI_Bcast = libmpi.MPI_Bcast
+_MPI_Bcast.restype = ctypes.c_int
+_MPI_Bcast.argtypes = [
     ctypes.c_void_p,
     ctypes.c_int,
     _MpiDatatype,
     ctypes.c_int,
-    ctypes.c_int,
     _MpiComm,
-]</code></pre>
+]
+
+
+@numba.njit
+def bcast(data, root):
+    &#34;&#34;&#34;wrapper for MPI_Bcast(). Returns integer status code (0 == MPI_SUCCESS)&#34;&#34;&#34;
+    data = np.ascontiguousarray(data)
+
+    status = _MPI_Bcast(
+        data.ctypes.data,
+        data.size,
+        _mpi_dtype(data),
+        root,
+        _mpi_addr(_MPI_Comm_World_ptr),
+    )
+
+    return status</code></pre>
 </details>
 </section>
 <section>
@@ -87,6 +68,34 @@ send_recv_args = [
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="numba_mpi.api.bcast.bcast"><code class="name flex">
+<span>def <span class="ident">bcast</span></span>(<span>data, root)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>wrapper for MPI_Bcast(). Returns integer status code (0 == MPI_SUCCESS)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@numba.njit
+def bcast(data, root):
+    &#34;&#34;&#34;wrapper for MPI_Bcast(). Returns integer status code (0 == MPI_SUCCESS)&#34;&#34;&#34;
+    data = np.ascontiguousarray(data)
+
+    status = _MPI_Bcast(
+        data.ctypes.data,
+        data.size,
+        _mpi_dtype(data),
+        root,
+        _mpi_addr(_MPI_Comm_World_ptr),
+    )
+
+    return status</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 </section>
@@ -99,7 +108,12 @@ send_recv_args = [
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="numba_mpi" href="index.html">numba_mpi</a></code></li>
+<li><code><a title="numba_mpi.api" href="index.html">numba_mpi.api</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="numba_mpi.api.bcast.bcast" href="#numba_mpi.api.bcast.bcast">bcast</a></code></li>
 </ul>
 </li>
 </ul>
