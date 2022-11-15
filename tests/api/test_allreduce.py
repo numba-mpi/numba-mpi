@@ -8,7 +8,13 @@ from tests.common import MPI_SUCCESS, data_types_real
 from tests.utils import get_random_array
 
 
-@pytest.mark.parametrize("allreduce", [mpi.allreduce, njit(mpi.allreduce)])
+@njit
+def jit_allreduce(sendobj, recvobj, operator):
+    """helper function to produce a jitted version of `allreduce`"""
+    return mpi.allreduce(sendobj, recvobj, operator)
+
+
+@pytest.mark.parametrize("allreduce", [mpi.allreduce, jit_allreduce])
 @pytest.mark.parametrize(
     "op_mpi, op_np",
     [
