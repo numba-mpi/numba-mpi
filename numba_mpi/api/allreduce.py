@@ -22,7 +22,6 @@ _MPI_Allreduce.argtypes = [
 ]
 
 
-
 def allreduce(
     sendobj, recvobj, operator=Operator.SUM
 ):  # pylint: disable=unused-argument
@@ -31,9 +30,8 @@ def allreduce(
     Returns integer status code (0 == MPI_SUCCESS)
     """
     if isinstance(sendobj, Number):
-
+        # reduce a single number
         sendobj = np.array([sendobj])
-
         status = _MPI_Allreduce(
             sendobj.ctypes.data,
             recvobj.ctypes.data,
@@ -43,11 +41,9 @@ def allreduce(
             _mpi_addr(_MPI_Comm_World_ptr),
         )
 
-
     elif isinstance(sendobj, np.ndarray):
-
+        # reduce an array
         sendobj = np.ascontiguousarray(sendobj)
-
         status = _MPI_Allreduce(
             sendobj.ctypes.data,
             recvobj.ctypes.data,
@@ -72,6 +68,7 @@ def ol_allreduce(
     Returns integer status code (0 == MPI_SUCCESS)
     """
     if isinstance(sendobj, types.Number):
+        # reduce a single number
 
         def impl(sendobj, recvobj, operator=Operator.SUM):
             sendobj = np.array([sendobj])
@@ -92,6 +89,7 @@ def ol_allreduce(
             return status
 
     elif isinstance(sendobj, types.Array):
+        # reduce an array
 
         def impl(sendobj, recvobj, operator=Operator.SUM):
             sendobj = np.ascontiguousarray(sendobj)
