@@ -31,9 +31,9 @@
 import ctypes
 from numbers import Number
 
-import numba
 import numpy as np
 from numba.core import types
+from numba.extending import overload
 
 from numba_mpi.api.operator import Operator
 from numba_mpi.common import _MPI_Comm_World_ptr, _MpiComm, _MpiDatatype, _MpiOp, libmpi
@@ -51,7 +51,6 @@ _MPI_Allreduce.argtypes = [
 ]
 
 
-@numba.generated_jit(nopython=True)
 def allreduce(
     sendobj, recvobj, operator=Operator.SUM
 ):  # pylint: disable=unused-argument
@@ -59,7 +58,46 @@ def allreduce(
     Note that complex datatypes and user-defined functions are not properly supported.
     Returns integer status code (0 == MPI_SUCCESS)
     &#34;&#34;&#34;
-    if isinstance(sendobj, (types.Number, Number)):
+    if isinstance(sendobj, Number):
+        # reduce a single number
+        sendobj = np.array([sendobj])
+        status = _MPI_Allreduce(
+            sendobj.ctypes.data,
+            recvobj.ctypes.data,
+            sendobj.size,
+            _mpi_dtype(sendobj),
+            _mpi_addr(operator),
+            _mpi_addr(_MPI_Comm_World_ptr),
+        )
+
+    elif isinstance(sendobj, np.ndarray):
+        # reduce an array
+        sendobj = np.ascontiguousarray(sendobj)
+        status = _MPI_Allreduce(
+            sendobj.ctypes.data,
+            recvobj.ctypes.data,
+            sendobj.size,
+            _mpi_dtype(sendobj),
+            _mpi_addr(operator),
+            _mpi_addr(_MPI_Comm_World_ptr),
+        )
+
+    else:
+        raise TypeError(f&#34;Unsupported type {sendobj.__class__.__name__}&#34;)
+
+    return status
+
+
+@overload(allreduce)
+def ol_allreduce(
+    sendobj, recvobj, operator=Operator.SUM
+):  # pylint: disable=unused-argument
+    &#34;&#34;&#34;wrapper for MPI_Allreduce
+    Note that complex datatypes and user-defined functions are not properly supported.
+    Returns integer status code (0 == MPI_SUCCESS)
+    &#34;&#34;&#34;
+    if isinstance(sendobj, types.Number):
+        # reduce a single number
 
         def impl(sendobj, recvobj, operator=Operator.SUM):
             sendobj = np.array([sendobj])
@@ -79,7 +117,8 @@ def allreduce(
 
             return status
 
-    elif isinstance(sendobj, (types.Array, np.ndarray)):
+    elif isinstance(sendobj, types.Array):
+        # reduce an array
 
         def impl(sendobj, recvobj, operator=Operator.SUM):
             sendobj = np.ascontiguousarray(sendobj)
@@ -119,15 +158,64 @@ Returns integer status code (0 == MPI_SUCCESS)</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">@numba.generated_jit(nopython=True)
-def allreduce(
+<pre><code class="python">def allreduce(
     sendobj, recvobj, operator=Operator.SUM
 ):  # pylint: disable=unused-argument
     &#34;&#34;&#34;wrapper for MPI_Allreduce
     Note that complex datatypes and user-defined functions are not properly supported.
     Returns integer status code (0 == MPI_SUCCESS)
     &#34;&#34;&#34;
-    if isinstance(sendobj, (types.Number, Number)):
+    if isinstance(sendobj, Number):
+        # reduce a single number
+        sendobj = np.array([sendobj])
+        status = _MPI_Allreduce(
+            sendobj.ctypes.data,
+            recvobj.ctypes.data,
+            sendobj.size,
+            _mpi_dtype(sendobj),
+            _mpi_addr(operator),
+            _mpi_addr(_MPI_Comm_World_ptr),
+        )
+
+    elif isinstance(sendobj, np.ndarray):
+        # reduce an array
+        sendobj = np.ascontiguousarray(sendobj)
+        status = _MPI_Allreduce(
+            sendobj.ctypes.data,
+            recvobj.ctypes.data,
+            sendobj.size,
+            _mpi_dtype(sendobj),
+            _mpi_addr(operator),
+            _mpi_addr(_MPI_Comm_World_ptr),
+        )
+
+    else:
+        raise TypeError(f&#34;Unsupported type {sendobj.__class__.__name__}&#34;)
+
+    return status</code></pre>
+</details>
+</dd>
+<dt id="numba_mpi.api.allreduce.ol_allreduce"><code class="name flex">
+<span>def <span class="ident">ol_allreduce</span></span>(<span>sendobj, recvobj, operator=Operator.SUM)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>wrapper for MPI_Allreduce
+Note that complex datatypes and user-defined functions are not properly supported.
+Returns integer status code (0 == MPI_SUCCESS)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@overload(allreduce)
+def ol_allreduce(
+    sendobj, recvobj, operator=Operator.SUM
+):  # pylint: disable=unused-argument
+    &#34;&#34;&#34;wrapper for MPI_Allreduce
+    Note that complex datatypes and user-defined functions are not properly supported.
+    Returns integer status code (0 == MPI_SUCCESS)
+    &#34;&#34;&#34;
+    if isinstance(sendobj, types.Number):
+        # reduce a single number
 
         def impl(sendobj, recvobj, operator=Operator.SUM):
             sendobj = np.array([sendobj])
@@ -147,7 +235,8 @@ def allreduce(
 
             return status
 
-    elif isinstance(sendobj, (types.Array, np.ndarray)):
+    elif isinstance(sendobj, types.Array):
+        # reduce an array
 
         def impl(sendobj, recvobj, operator=Operator.SUM):
             sendobj = np.ascontiguousarray(sendobj)
@@ -188,6 +277,7 @@ def allreduce(
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="numba_mpi.api.allreduce.allreduce" href="#numba_mpi.api.allreduce.allreduce">allreduce</a></code></li>
+<li><code><a title="numba_mpi.api.allreduce.ol_allreduce" href="#numba_mpi.api.allreduce.ol_allreduce">ol_allreduce</a></code></li>
 </ul>
 </li>
 </ul>
