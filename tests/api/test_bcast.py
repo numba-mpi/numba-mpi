@@ -23,10 +23,11 @@ def test_bcast_np_array(data_type):
     np.testing.assert_equal(data, datatobcast)
 
 
-def test_bcast_string():
+@pytest.mark.parametrize("stringtobcast", ("test bcast",))
+def test_bcast_string(stringtobcast):
     root = 0
-    data = ""
-    datatobcast = "bcast test"
+    datatobcast = np.array(stringtobcast, "c")
+    data = np.empty_like(datatobcast)
 
     if mpi.rank() == root:
         data = datatobcast
@@ -34,4 +35,4 @@ def test_bcast_string():
     status = mpi.bcast(data, root)
 
     assert status == MPI_SUCCESS
-    assert data == datatobcast
+    assert str(data) == str(datatobcast)

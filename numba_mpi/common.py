@@ -9,6 +9,7 @@ from mpi4py import MPI
 _MPI_Comm_World_ptr = MPI._addressof(MPI.COMM_WORLD)
 
 _MPI_DTYPES = {
+    np.dtype("uint8"): MPI._addressof(MPI.CHAR),
     np.dtype("int32"): MPI._addressof(MPI.INT32_T),
     np.dtype("int64"): MPI._addressof(MPI.INT64_T),
     np.dtype("float"): MPI._addressof(MPI.FLOAT),
