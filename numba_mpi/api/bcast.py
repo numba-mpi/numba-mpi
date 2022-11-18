@@ -2,13 +2,7 @@
 import ctypes
 
 import numpy as np
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 from mpi4py import MPI
->>>>>>> d7e6de2 (add support for strings)
-=======
->>>>>>> 433a786 (fix pylint)
 from numba.core.extending import overload
 
 from numba_mpi.common import _MPI_Comm_World_ptr, libmpi
@@ -26,13 +20,8 @@ _MPI_Bcast.argtypes = [
 
 
 def impl_ndarray(data, root):
-<<<<<<< HEAD
     """MPI_Bcast implementation for ndarray datatype"""
     assert data.flags.c_contiguous
-=======
-    assert data.flags.c_contiguous
-    data = data
->>>>>>> d7e6de2 (add support for strings)
 
     status = _MPI_Bcast(
         data.ctypes.data,
@@ -45,10 +34,7 @@ def impl_ndarray(data, root):
 
 
 def impl_chararray(data, root):
-<<<<<<< HEAD
     """MPI_Bcast implementation for chararray datatype"""
-=======
->>>>>>> d7e6de2 (add support for strings)
     assert data.flags.c_contiguous
     data = data.view(np.uint8)
 
@@ -66,18 +52,10 @@ def bcast(data, root):
     """wrapper for MPI_Bcast(). Returns integer status code (0 == MPI_SUCCESS)"""
     if data.dtype == np.dtype("S1"):
         return impl_chararray(data, root)
-<<<<<<< HEAD
     if isinstance(data, np.ndarray):
         return impl_ndarray(data, root)
 
     raise TypeError(f"Unsupported type {data.__class__.__name__}")
-=======
-    elif isinstance(data, np.ndarray):
-        return impl_ndarray(data, root)
-
-    else:
-        raise TypeError(f"Unsupported type {data.__class__.__name__}")
->>>>>>> d7e6de2 (add support for strings)
 
 
 @overload(bcast)
@@ -97,15 +75,7 @@ def __bcast_njit(data, root):
 
         return status
 
-<<<<<<< HEAD
     if isinstance(data, np.ndarray):
         return impl_ndarray(data, root)
 
     raise TypeError(f"Unsupported type {data.__class__.__name__}")
-=======
-    elif isinstance(data, np.ndarray):
-        return impl_ndarray(data, root)
-
-    else:
-        raise TypeError(f"Unsupported type {data.__class__.__name__}")
->>>>>>> d7e6de2 (add support for strings)
