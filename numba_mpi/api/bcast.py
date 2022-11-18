@@ -3,9 +3,12 @@ import ctypes
 
 import numpy as np
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 from mpi4py import MPI
 >>>>>>> d7e6de2 (add support for strings)
+=======
+>>>>>>> 433a786 (fix pylint)
 from numba.core.extending import overload
 
 from numba_mpi.common import _MPI_Comm_World_ptr, libmpi
