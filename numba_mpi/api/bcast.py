@@ -53,8 +53,8 @@ def bcast(data, root):
         return impl_chararray(data, root)
     if isinstance(data, np.ndarray):
         return impl_ndarray(data, root)
-    else:
-        raise TypeError(f"Unsupported type {data.__class__.__name__}")
+
+    raise TypeError(f"Unsupported type {data.__class__.__name__}")
 
 
 @overload(bcast)
@@ -76,5 +76,5 @@ def __bcast_njit(data, root):
 
     if isinstance(data, np.ndarray):
         return impl_ndarray(data, root)
-    else:
-        raise TypeError(f"Unsupported type {data.__class__.__name__}")
+
+    raise TypeError(f"Unsupported type {data.__class__.__name__}")
