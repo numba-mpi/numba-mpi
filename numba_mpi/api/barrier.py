@@ -1,3 +1,4 @@
+"""file contains MPI_Barrier() implementation"""
 import ctypes
 
 from numba_mpi.common import _MPI_Comm_World_ptr, libmpi
