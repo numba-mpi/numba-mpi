@@ -9,4 +9,5 @@ _MPI_Barrier.argtypes = [_MpiComm]
 
 
 def barrier():
+    """wrapper for MPI_Barrier(). Returns integer status code (0 == MPI_SUCCESS)"""
     return _MPI_Barrier(_mpi_addr(_MPI_Comm_World_ptr))

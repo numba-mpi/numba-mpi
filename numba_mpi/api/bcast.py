@@ -2,7 +2,6 @@
 import ctypes
 
 import numpy as np
-from mpi4py import MPI
 from numba.core.extending import overload
 
 from numba_mpi.common import _MPI_Comm_World_ptr, libmpi

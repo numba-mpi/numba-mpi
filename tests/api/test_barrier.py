@@ -1,3 +1,4 @@
+# pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring
 import numba_mpi
 from tests.common import MPI_SUCCESS
 
