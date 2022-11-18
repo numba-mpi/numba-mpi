@@ -13,7 +13,7 @@
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/numba-mpi/badges/version.svg)](https://anaconda.org/conda-forge/numba-mpi)
 
 #### Numba @njittable MPI wrappers
-- covering: `size`/`rank`, `send`/`recv`, `allreduce`, `bcast` 
+- covering: `size`/`rank`, `send`/`recv`, `allreduce`, `bcast`, `barrier` 
 - API based on NumPy and supporting numeric and character datatypes 
 - auto-generated docstring-based API docs on the web: https://atmos-cloud-sim-uj.github.io/numba-mpi
 - pure-Python implementation with packages available on [PyPI](https://pypi.org/project/numba-mpi) and [Conda Forge](https://anaconda.org/conda-forge/numba-mpi)
