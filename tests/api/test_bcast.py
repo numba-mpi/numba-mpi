@@ -8,7 +8,7 @@ from tests.utils import get_random_array
 
 
 @pytest.mark.parametrize("data_type", data_types)
-def test_bcast(data_type):
+def test_bcast_np_array(data_type):
     root = 0
     data = np.empty(5, data_type).astype(dtype=data_type)
     datatobcast = get_random_array(5, data_type).astype(dtype=data_type)
@@ -21,3 +21,17 @@ def test_bcast(data_type):
     assert status == MPI_SUCCESS
 
     np.testing.assert_equal(data, datatobcast)
+
+
+def test_bcast_string():
+    root = 0
+    data = ""
+    datatobcast = "bcast test"
+
+    if mpi.rank() == root:
+        data = datatobcast
+
+    status = mpi.bcast(data, root)
+
+    assert status == MPI_SUCCESS
+    assert data == datatobcast
