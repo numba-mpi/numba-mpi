@@ -23,7 +23,10 @@ def test_bcast_np_array(data_type):
     np.testing.assert_equal(data, datatobcast)
 
 
-@pytest.mark.parametrize("stringtobcast", ("test bcast",))
+@pytest.mark.parametrize(
+    "stringtobcast",
+    ("test bcast", pytest.param("żółć", marks=pytest.mark.xfail(strict=True))),
+)
 def test_bcast_string(stringtobcast):
     root = 0
     datatobcast = np.array(stringtobcast, "c")
