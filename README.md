@@ -12,9 +12,12 @@
 [![PyPI version](https://badge.fury.io/py/numba-mpi.svg)](https://pypi.org/project/numba-mpi)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/numba-mpi/badges/version.svg)](https://anaconda.org/conda-forge/numba-mpi)
 
-#### Numba @njittable MPI wrappers tested on Linux, macOS and Windows
-
-API documentation is maintained at: https://atmos-cloud-sim-uj.github.io/numba-mpi
+#### Numba @njittable MPI wrappers
+- covering: `size`/`rank`, `send`/`recv`, `allreduce`, `bcast` 
+- API based on NumPy and supporting numeric and character datatypes 
+- auto-generated docstring-based API docs on the web: https://atmos-cloud-sim-uj.github.io/numba-mpi
+- pure-Python implementation with packages available on [PyPI](https://pypi.org/project/numba-mpi) and [Conda Forge](https://anaconda.org/conda-forge/numba-mpi)
+- CI-tested on: Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/) & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)), macOS ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)) and Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi))
 
 Hello world example:
 ```python
@@ -38,7 +41,4 @@ hello()
 
 For information on MPI, see:
 - https://www.mpi-forum.org/docs/
-- https://www.open-mpi.org/doc/
-- https://www.mpich.org/
-- https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi
 - https://mpi4py.readthedocs.io/en/stable/
