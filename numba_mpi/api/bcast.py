@@ -19,8 +19,8 @@ _MPI_Bcast.argtypes = [
 
 
 def impl_ndarray(data, root):
+    """MPI_Bcast implementation for ndarray datatype"""
     assert data.flags.c_contiguous
-    data = data
 
     status = _MPI_Bcast(
         data.ctypes.data,
@@ -33,6 +33,7 @@ def impl_ndarray(data, root):
 
 
 def impl_chararray(data, root):
+    """MPI_Bcast implementation for chararray datatype"""
     assert data.flags.c_contiguous
     data = data.view(np.uint8)
 
@@ -50,9 +51,8 @@ def bcast(data, root):
     """wrapper for MPI_Bcast(). Returns integer status code (0 == MPI_SUCCESS)"""
     if data.dtype == np.dtype("S1"):
         return impl_chararray(data, root)
-    elif isinstance(data, np.ndarray):
+    if isinstance(data, np.ndarray):
         return impl_ndarray(data, root)
-
     else:
         raise TypeError(f"Unsupported type {data.__class__.__name__}")
 
@@ -74,8 +74,7 @@ def __bcast_njit(data, root):
 
         return status
 
-    elif isinstance(data, np.ndarray):
+    if isinstance(data, np.ndarray):
         return impl_ndarray(data, root)
-
     else:
         raise TypeError(f"Unsupported type {data.__class__.__name__}")
