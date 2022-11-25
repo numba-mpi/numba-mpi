@@ -106,7 +106,7 @@ jobs:
       - run: python -We -c "import numba_mpi"
       
       # related (but not exactly the same): https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=979041
-      - if: matrix.mpi == 'mpich' && matrix.python-version == '3.7'
+      - if: matrix.mpi == 'mpich' && startsWith(matrix.platform, 'ubuntu-')
         run: echo RDMAV_FORK_SAFE=1 >> $GITHUB_ENV
       
       - run: mpiexec -n 2 pytest -p no:unraisableexception -We
