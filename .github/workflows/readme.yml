@@ -25,4 +25,9 @@ jobs:
       - run: pip install pytest-codeblocks pytest
       - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()"
       - run: cat -n readme.py
+      
+      # related (but not exactly the same): https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=979041
+      - if: matrix.mpi == 'mpich' && startsWith(matrix.platform, 'ubuntu-')
+        run: echo RDMAV_FORK_SAFE=1 >> $GITHUB_ENV
+      
       - run: mpiexec -n 2 python -We readme.py
