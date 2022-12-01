@@ -9,7 +9,7 @@ from tests.utils import get_random_array
 
 
 @pytest.mark.parametrize(
-    "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
+    "snd, rcv", ((mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func))
 )
 @pytest.mark.parametrize("fortran_order", [True, False])
 @pytest.mark.parametrize("data_type", data_types)
