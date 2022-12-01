@@ -63,7 +63,6 @@ def bcast(data, root):
 @overload(bcast)
 def __bcast_njit(data, root):
     """wrapper for MPI_Bcast(). Returns integer status code (0 == MPI_SUCCESS)"""
-
     if isinstance(data, types.Array):
 
         def impl(data, root):

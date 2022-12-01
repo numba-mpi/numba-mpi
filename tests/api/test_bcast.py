@@ -42,8 +42,6 @@ def test_bcast_string(stringtobcast):
     if mpi.rank() == root:
         data = datatobcast
 
-    print("before bcast -->", mpi.rank(), "<>", datatobcast, "<>", data)
     status = mpi.bcast(data, root)
-    print("after bcast -->", mpi.rank(), "<>", datatobcast, "<>", data)
     assert status == MPI_SUCCESS
     assert str(data) == str(datatobcast)
