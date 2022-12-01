@@ -30,6 +30,8 @@
 <pre><code class="python">&#34;&#34;&#34;file contains MPI_Barrier() implementation&#34;&#34;&#34;
 import ctypes
 
+import numba
+
 from numba_mpi.common import _MPI_Comm_World_ptr, libmpi
 from numba_mpi.utils import _mpi_addr, _MpiComm
 
@@ -38,6 +40,7 @@ _MPI_Barrier.restype = ctypes.c_int
 _MPI_Barrier.argtypes = [_MpiComm]
 
 
+@numba.njit()
 def barrier():
     &#34;&#34;&#34;wrapper for MPI_Barrier(). Returns integer status code (0 == MPI_SUCCESS)&#34;&#34;&#34;
     return _MPI_Barrier(_mpi_addr(_MPI_Comm_World_ptr))</code></pre>
@@ -59,7 +62,8 @@ def barrier():
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def barrier():
+<pre><code class="python">@numba.njit()
+def barrier():
     &#34;&#34;&#34;wrapper for MPI_Barrier(). Returns integer status code (0 == MPI_SUCCESS)&#34;&#34;&#34;
     return _MPI_Barrier(_mpi_addr(_MPI_Comm_World_ptr))</code></pre>
 </details>

@@ -30,7 +30,9 @@
 <pre><code class="python">&#34;&#34;&#34;MPI_Bcast() implementation&#34;&#34;&#34;
 import ctypes
 
+import numba
 import numpy as np
+from numba.core import types
 from numba.core.extending import overload
 
 from numba_mpi.common import _MPI_Comm_World_ptr, libmpi
@@ -47,9 +49,10 @@ _MPI_Bcast.argtypes = [
 ]
 
 
+@numba.njit()
 def impl_ndarray(data, root):
     &#34;&#34;&#34;MPI_Bcast implementation for ndarray datatype&#34;&#34;&#34;
-    assert data.flags.c_contiguous
+    assert data.flags.c_contiguous  # TODO #60
 
     status = _MPI_Bcast(
         data.ctypes.data,
@@ -63,7 +66,7 @@ def impl_ndarray(data, root):
 
 def impl_chararray(data, root):
     &#34;&#34;&#34;MPI_Bcast implementation for chararray datatype&#34;&#34;&#34;
-    assert data.flags.c_contiguous
+    assert data.flags.c_contiguous  # TODO #60
     data = data.view(np.uint8)
 
     status = _MPI_Bcast(
@@ -89,24 +92,15 @@ def bcast(data, root):
 @overload(bcast)
 def __bcast_njit(data, root):
     &#34;&#34;&#34;wrapper for MPI_Bcast(). Returns integer status code (0 == MPI_SUCCESS)&#34;&#34;&#34;
+    if isinstance(data, types.Array):
 
-    if isinstance(data, str):
-        data = np.ascontiguousarray(data)
+        def impl(data, root):
+            return impl_ndarray(data, root)
 
-        status = _MPI_Bcast(
-            data.ctypes.data,
-            data.size,
-            _mpi_dtype(data),
-            root,
-            _mpi_addr(_MPI_Comm_World_ptr),
-        )
+    else:
+        raise TypeError(f&#34;Unsupported type {data.__class__.__name__}&#34;)
 
-        return status
-
-    if isinstance(data, np.ndarray):
-        return impl_ndarray(data, root)
-
-    raise TypeError(f&#34;Unsupported type {data.__class__.__name__}&#34;)</code></pre>
+    return impl</code></pre>
 </details>
 </section>
 <section>
@@ -146,7 +140,7 @@ def __bcast_njit(data, root):
 </summary>
 <pre><code class="python">def impl_chararray(data, root):
     &#34;&#34;&#34;MPI_Bcast implementation for chararray datatype&#34;&#34;&#34;
-    assert data.flags.c_contiguous
+    assert data.flags.c_contiguous  # TODO #60
     data = data.view(np.uint8)
 
     status = _MPI_Bcast(
@@ -168,9 +162,10 @@ def __bcast_njit(data, root):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def impl_ndarray(data, root):
+<pre><code class="python">@numba.njit()
+def impl_ndarray(data, root):
     &#34;&#34;&#34;MPI_Bcast implementation for ndarray datatype&#34;&#34;&#34;
-    assert data.flags.c_contiguous
+    assert data.flags.c_contiguous  # TODO #60
 
     status = _MPI_Bcast(
         data.ctypes.data,
