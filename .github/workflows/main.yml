@@ -32,7 +32,7 @@ jobs:
         pip install -r *.egg-info/requires.txt
     - name: Analysing the code with pylint
       run: |
-        pylint --unsafe-load-any-extension=y $(git ls-files '*.py')
+        pylint --unsafe-load-any-extension=y --disable=fixme $(git ls-files '*.py')
 
   precommit:
     runs-on: ubuntu-latest
