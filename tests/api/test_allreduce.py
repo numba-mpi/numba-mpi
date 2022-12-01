@@ -14,14 +14,14 @@ def jit_allreduce(sendobj, recvobj, operator):
     return mpi.allreduce(sendobj, recvobj, operator)
 
 
-@pytest.mark.parametrize("allreduce", [mpi.allreduce, jit_allreduce])
+@pytest.mark.parametrize("allreduce", (mpi.allreduce, jit_allreduce))
 @pytest.mark.parametrize(
     "op_mpi, op_np",
-    [
+    (
         (mpi.Operator.SUM, np.sum),
         (mpi.Operator.MIN, np.min),
         (mpi.Operator.MAX, np.max),
-    ],
+    ),
 )
 @pytest.mark.parametrize("data_type", data_types_real)
 def test_allreduce(allreduce, op_mpi, op_np, data_type):
