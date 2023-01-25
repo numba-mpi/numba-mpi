@@ -90,8 +90,6 @@ jobs:
           mpi: mpich
         - platform: windows-latest
           mpi: openmpi
-        - platform: windows-latest
-          mpi: intelmpi
           
         # https://github.com/atmos-cloud-sim-uj/numba-mpi/issues/69
         - platform: ubuntu-latest
