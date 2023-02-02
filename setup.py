@@ -11,8 +11,8 @@ def get_long_description():
 
 setup(
     name="numba-mpi",
-    url="https://github.com/atmos-cloud-sim-uj/numba-mpi",
-    author="https://github.com/atmos-cloud-sim-uj/numba-mpi/graphs/contributors",
+    url="https://github.com/numba-mpi/numba-mpi",
+    author="https://github.com/numba-mpi/numba-mpi/graphs/contributors",
     use_scm_version={
         "local_scheme": lambda _: "",
         "version_scheme": "post-release",
@@ -25,8 +25,8 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(include=["numba_mpi", "numba_mpi.*"]),
     project_urls={
-        "Tracker": "https://github.com/atmos-cloud-sim-uj/numba-mpi/issues",
-        "Documentation": "https://atmos-cloud-sim-uj.github.io/numba-mpi",
-        "Source": "https://github.com/atmos-cloud-sim-uj/numba-mpi",
+        "Tracker": "https://github.com/numba-mpi/numba-mpi/issues",
+        "Documentation": "https://numba-mpi.github.io/numba-mpi",
+        "Source": "https://github.com/numba-mpi/numba-mpi",
     },
 )
