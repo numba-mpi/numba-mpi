@@ -93,17 +93,6 @@ jobs:
         - platform: windows-latest
           mpi: intelmpi
           
-        # https://github.com/atmos-cloud-sim-uj/numba-mpi/issues/69
-        - platform: ubuntu-latest
-          python-version: 3.7
-          mpi: mpich
-        - platform: ubuntu-latest
-          python-version: 3.8
-          mpi: mpich
-        - platform: ubuntu-latest
-          python-version: 3.9
-          mpi: mpich
-          
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
