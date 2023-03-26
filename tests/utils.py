@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def get_random_array(shape, data_type):
+def get_random_array(shape, data_type=int):
     """helper function creating the same random array in each process"""
     rng = np.random.default_rng(0)
     if np.issubdtype(data_type, np.complexfloating):
