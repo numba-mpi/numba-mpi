@@ -77,7 +77,24 @@ def test_send_0d_arrays(snd, rcv, data_type):
 @pytest.mark.parametrize(
     "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
 )
-def test_send_recv_default_tag(snd, rcv):
+def test_send_default_tag(snd, rcv):
+    src = get_random_array(())
+    dst_tst = np.empty_like(src)
+
+    if mpi.rank() == 0:
+        status = snd(src, dest=1)
+        assert status == MPI_SUCCESS
+    elif mpi.rank() == 1:
+        status = rcv(dst_tst, source=0, tag=0)
+        assert status == MPI_SUCCESS
+
+        np.testing.assert_equal(dst_tst, src)
+
+
+@pytest.mark.parametrize(
+    "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
+)
+def test_recv_default_tag(snd, rcv):
     src = get_random_array(())
     dst_tst = np.empty_like(src)
 
@@ -94,7 +111,7 @@ def test_send_recv_default_tag(snd, rcv):
 @pytest.mark.parametrize(
     "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
 )
-def test_send_recv_default_source(snd, rcv):
+def test_recv_default_source(snd, rcv):
     src = get_random_array(())
     dst_tst = np.empty_like(src)
 
