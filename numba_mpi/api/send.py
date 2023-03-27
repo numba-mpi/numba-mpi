@@ -13,8 +13,10 @@ _MPI_Send.argtypes = send_recv_args
 
 
 @numba.njit
-def send(data, dest, tag):
-    """wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS)"""
+def send(data, dest, tag=0):
+    """Wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS).
+    Mimicking `mpi4py`, default value for `tag` is set to zero.
+    """
     data = np.ascontiguousarray(data)
     status = _MPI_Send(
         data.ctypes.data,
