@@ -1,4 +1,4 @@
-name: main
+name: tests+pypi
 
 defaults:
   run:
@@ -126,7 +126,7 @@ jobs:
       - run: pip install pytest
       - run: python -We -c "import mpi4py"
       - run: python -We -c "import numba_mpi"
-      - run: mpiexec -n 2 pytest -p no:unraisableexception -We
+      - run: mpiexec -n 2 pytest --durations=10 -p no:unraisableexception -We
 
   dist:
     runs-on: ubuntu-latest
