@@ -112,7 +112,7 @@ jobs:
         - platform: ubuntu-latest
           python-version: 3.9
           mpi: mpich
-          
+      fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
