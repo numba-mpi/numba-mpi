@@ -101,7 +101,7 @@ jobs:
       - uses: mpi4py/setup-mpi@v1
         with:
           mpi: ${{ matrix.mpi }}
-      - run: pip install -e .
+      - run: pip install --pre -e .
       - run: pip install pytest
       - run: python -We -c "import numba_mpi"
       - run: mpiexec -n 2 pytest -p no:unraisableexception -We
