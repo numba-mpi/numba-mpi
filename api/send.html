@@ -42,8 +42,10 @@ _MPI_Send.argtypes = send_recv_args
 
 
 @numba.njit
-def send(data, dest, tag):
-    &#34;&#34;&#34;wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS)&#34;&#34;&#34;
+def send(data, dest, tag=0):
+    &#34;&#34;&#34;Wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS).
+    Mimicking `mpi4py`, default value for `tag` is set to zero.
+    &#34;&#34;&#34;
     data = np.ascontiguousarray(data)
     status = _MPI_Send(
         data.ctypes.data,
@@ -69,17 +71,20 @@ def send(data, dest, tag):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="numba_mpi.api.send.send"><code class="name flex">
-<span>def <span class="ident">send</span></span>(<span>data, dest, tag)</span>
+<span>def <span class="ident">send</span></span>(<span>data, dest, tag=0)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS)</p></div>
+<div class="desc"><p>Wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS).
+Mimicking <code>mpi4py</code>, default value for <code>tag</code> is set to zero.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@numba.njit
-def send(data, dest, tag):
-    &#34;&#34;&#34;wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS)&#34;&#34;&#34;
+def send(data, dest, tag=0):
+    &#34;&#34;&#34;Wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS).
+    Mimicking `mpi4py`, default value for `tag` is set to zero.
+    &#34;&#34;&#34;
     data = np.ascontiguousarray(data)
     status = _MPI_Send(
         data.ctypes.data,
