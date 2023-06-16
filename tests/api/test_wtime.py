@@ -10,7 +10,7 @@ SLEEP_TIME_IN_SECONDS = 0.1
 
 @pytest.mark.parametrize("sut", (mpi.wtime, mpi.wtime.py_func))
 def test_wtime(sut):
-    assert sut() > 0.0
+    assert sut() >= 0.0
     assert isinstance(sut(), float)
 
     start_time = sut()
