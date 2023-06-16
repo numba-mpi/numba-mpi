@@ -6,7 +6,7 @@ import numpy as np
 
 from numba_mpi.common import libmpi
 
-_MPI_Wtime = libmpi.MPI_Get_wtime
+_MPI_Wtime = libmpi.MPI_Wtime
 _MPI_Wtime.restype = ctypes.c_double
 _MPI_Wtime.argtypes = []
 
