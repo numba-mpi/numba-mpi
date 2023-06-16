@@ -10,6 +10,7 @@ _MPI_Wtime = libmpi.MPI_Wtime
 _MPI_Wtime.restype = ctypes.c_double
 _MPI_Wtime.argtypes = []
 
+
 @numba.njit()
 def wtime():
     """wrapper for MPI_Wtime()"""
