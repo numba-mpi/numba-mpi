@@ -2,7 +2,6 @@
 import ctypes
 
 import numba
-import numpy as np
 
 from numba_mpi.common import libmpi
 
