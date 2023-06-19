@@ -13,7 +13,7 @@
 [![DOI](https://zenodo.org/badge/316911228.svg)](https://zenodo.org/badge/latestdoi/316911228)
 
 #### Numba @njittable MPI wrappers
-- covering: `size`/`rank`, `send`/`recv`, `allreduce`, `bcast`, `barrier` 
+- covering: `size`/`rank`, `send`/`recv`, `allreduce`, `bcast`, `barrier` and `wtime`
 - API based on NumPy and supporting numeric and character datatypes 
 - auto-generated docstring-based API docs on the web: https://numba-mpi.github.io/numba-mpi
 - pure-Python implementation with packages available on [PyPI](https://pypi.org/project/numba-mpi) and [Conda Forge](https://anaconda.org/conda-forge/numba-mpi)
