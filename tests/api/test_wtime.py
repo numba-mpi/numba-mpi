@@ -8,11 +8,27 @@ import numba_mpi as mpi
 SLEEP_TIME_IN_SECONDS = 0.1
 
 
-@pytest.mark.parametrize("sut", (mpi.wtime, mpi.wtime.py_func))
-def test_wtime(sut):
-    assert sut() >= 0.0
-    assert isinstance(sut(), float)
+@pytest.mark.parametrize(
+    "sut",
+    (
+        pytest.param(mpi.wtime, id="JIT if enabled"),
+        pytest.param(mpi.wtime.py_func, id="py_func"),
+    ),
+)
+class TestWtime:
+    @staticmethod
+    def test_returns_value_ge_zero(sut):
+        value = sut()
+        assert value >= 0.0
 
-    start_time = sut()
-    time.sleep(SLEEP_TIME_IN_SECONDS)
-    assert sut() - start_time > (SLEEP_TIME_IN_SECONDS * 0.9)
+    @staticmethod
+    def test_returns_a_float(sut):
+        value = sut()
+        assert isinstance(value, float)
+
+    @staticmethod
+    def test_returned_time_matches_sleep_time(sut):
+        start_time = sut()
+        time.sleep(SLEEP_TIME_IN_SECONDS)
+        value = sut() - start_time
+        assert value > (SLEEP_TIME_IN_SECONDS * 0.9)
