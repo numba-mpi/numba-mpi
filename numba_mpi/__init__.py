@@ -10,6 +10,7 @@ from .api.rank import rank
 from .api.recv import recv
 from .api.send import send
 from .api.size import size
+from .api.wtime import wtime
 
 try:
     __version__ = get_distribution(__name__).version
