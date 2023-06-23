@@ -8,6 +8,7 @@ from .api.initialized import initialized
 from .api.operator import Operator
 from .api.rank import rank
 from .api.recv import recv
+from .api.scatter_gather import gather, scatter
 from .api.send import send
 from .api.size import size
 from .api.wtime import wtime
