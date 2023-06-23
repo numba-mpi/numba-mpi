@@ -41,6 +41,7 @@ from numba_mpi.utils import _mpi_addr, _mpi_dtype, _MpiComm, _MpiDatatype
 _MPI_Bcast = libmpi.MPI_Bcast
 _MPI_Bcast.restype = ctypes.c_int
 _MPI_Bcast.argtypes = [
+    # pylint:disable=duplicate-code
     ctypes.c_void_p,
     ctypes.c_int,
     _MpiDatatype,
