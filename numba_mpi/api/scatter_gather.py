@@ -8,7 +8,8 @@ from numba_mpi.utils import _mpi_addr, _mpi_dtype, _MpiComm, _MpiDatatype
 
 _MPI_Scatter = libmpi.MPI_Scatter
 _MPI_Scatter.restype = ctypes.c_int
-_MPI_Scatter.argtypes = [  # pylint:disable=duplicate-code
+_MPI_Scatter.argtypes = [
+    # pylint:disable=duplicate-code
     ctypes.c_void_p,  # send_data
     ctypes.c_int,  # send_count
     _MpiDatatype,  # send_data_type
