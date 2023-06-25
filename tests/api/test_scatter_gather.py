@@ -18,6 +18,11 @@ def jit_gather(send_data, send_count, recv_data, root):
     return mpi.gather(send_data, send_count, recv_data, root)
 
 
+@numba.njit()
+def jit_allgather(send_data, send_count, recv_data):
+    return mpi.allgather(send_data, send_count, recv_data)
+
+
 @pytest.mark.parametrize("send_count, data_size", ((1, 5), (2, 10), (3, 10)))
 @pytest.mark.parametrize("scatter", (mpi.scatter, jit_scatter))
 @pytest.mark.parametrize("data_type", data_types)
@@ -70,3 +75,29 @@ def test_gather(data_type, gather, recv_count, data_size):
     valid_range = slice(0, mpi.size() * recv_count)
     if rank == root:
         np.testing.assert_equal(data[valid_range], recv_data[valid_range])
+
+
+@pytest.mark.parametrize("recv_count, data_size", ((1, 5), (2, 10), (3, 10)))
+@pytest.mark.parametrize(
+    "allgather",
+    (
+        mpi.allgather,
+        jit_allgather,
+    ),
+)
+@pytest.mark.parametrize("data_type", data_types)
+def test_allgather(data_type, allgather, recv_count, data_size):
+    if recv_count * mpi.size() > data_size:
+        pytest.skip()
+
+    rank = mpi.rank()
+    data = get_random_array(data_size, data_type).astype(dtype=data_type)
+    send_data = data[rank * recv_count : (rank + 1) * recv_count]
+
+    recv_data = np.empty(shape=(data_size,), dtype=data_type).astype(dtype=data_type)
+
+    status = allgather(send_data, recv_data, recv_count)
+
+    assert status == MPI_SUCCESS
+    valid_range = slice(0, mpi.size() * recv_count)
+    np.testing.assert_equal(data[valid_range], recv_data[valid_range])

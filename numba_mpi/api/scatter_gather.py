@@ -24,6 +24,10 @@ _MPI_Gather = libmpi.MPI_Gather
 _MPI_Gather.restype = ctypes.c_int
 _MPI_Gather.argtypes = _MPI_Scatter.argtypes
 
+_MPI_Allgather = libmpi.MPI_Allgather
+_MPI_Allgather.restype = ctypes.c_int
+_MPI_Allgather.argtypes = [*_MPI_Scatter.argtypes[:-2], _MPI_Scatter.argtypes[-1]]
+
 
 @numba.njit()
 def scatter(send_data, recv_data, count, root):
@@ -58,6 +62,24 @@ def gather(send_data, recv_data, count, root):
         count,
         _mpi_dtype(recv_data),
         root,
+        _mpi_addr(_MPI_Comm_World_ptr),
+    )
+    return status
+
+
+@numba.njit()
+def allgather(send_data, recv_data, count):
+    """wrapper for MPI_Allgather(). Returns integer status code (0 == MPI_SUCCESS)"""
+    assert send_data.flags.c_contiguous  # TODO #60
+    assert recv_data.flags.c_contiguous  # TODO #60
+
+    status = _MPI_Allgather(
+        send_data.ctypes.data,
+        send_data.size,
+        _mpi_dtype(send_data),
+        recv_data.ctypes.data,
+        count,
+        _mpi_dtype(recv_data),
         _mpi_addr(_MPI_Comm_World_ptr),
     )
     return status
