@@ -53,6 +53,10 @@ _MPI_Gather = libmpi.MPI_Gather
 _MPI_Gather.restype = ctypes.c_int
 _MPI_Gather.argtypes = _MPI_Scatter.argtypes
 
+_MPI_Allgather = libmpi.MPI_Allgather
+_MPI_Allgather.restype = ctypes.c_int
+_MPI_Allgather.argtypes = [*_MPI_Scatter.argtypes[:-2], _MPI_Scatter.argtypes[-1]]
+
 
 @numba.njit()
 def scatter(send_data, recv_data, count, root):
@@ -89,6 +93,24 @@ def gather(send_data, recv_data, count, root):
         root,
         _mpi_addr(_MPI_Comm_World_ptr),
     )
+    return status
+
+
+@numba.njit()
+def allgather(send_data, recv_data, count):
+    &#34;&#34;&#34;wrapper for MPI_Allgather(). Returns integer status code (0 == MPI_SUCCESS)&#34;&#34;&#34;
+    assert send_data.flags.c_contiguous  # TODO #60
+    assert recv_data.flags.c_contiguous  # TODO #60
+
+    status = _MPI_Allgather(
+        send_data.ctypes.data,
+        send_data.size,
+        _mpi_dtype(send_data),
+        recv_data.ctypes.data,
+        count,
+        _mpi_dtype(recv_data),
+        _mpi_addr(_MPI_Comm_World_ptr),
+    )
     return status</code></pre>
 </details>
 </section>
@@ -99,6 +121,33 @@ def gather(send_data, recv_data, count, root):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="numba_mpi.api.scatter_gather.allgather"><code class="name flex">
+<span>def <span class="ident">allgather</span></span>(<span>send_data, recv_data, count)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>wrapper for MPI_Allgather(). Returns integer status code (0 == MPI_SUCCESS)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@numba.njit()
+def allgather(send_data, recv_data, count):
+    &#34;&#34;&#34;wrapper for MPI_Allgather(). Returns integer status code (0 == MPI_SUCCESS)&#34;&#34;&#34;
+    assert send_data.flags.c_contiguous  # TODO #60
+    assert recv_data.flags.c_contiguous  # TODO #60
+
+    status = _MPI_Allgather(
+        send_data.ctypes.data,
+        send_data.size,
+        _mpi_dtype(send_data),
+        recv_data.ctypes.data,
+        count,
+        _mpi_dtype(recv_data),
+        _mpi_addr(_MPI_Comm_World_ptr),
+    )
+    return status</code></pre>
+</details>
+</dd>
 <dt id="numba_mpi.api.scatter_gather.gather"><code class="name flex">
 <span>def <span class="ident">gather</span></span>(<span>send_data, recv_data, count, root)</span>
 </code></dt>
@@ -173,6 +222,7 @@ def scatter(send_data, recv_data, count, root):
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="numba_mpi.api.scatter_gather.allgather" href="#numba_mpi.api.scatter_gather.allgather">allgather</a></code></li>
 <li><code><a title="numba_mpi.api.scatter_gather.gather" href="#numba_mpi.api.scatter_gather.gather">gather</a></code></li>
 <li><code><a title="numba_mpi.api.scatter_gather.scatter" href="#numba_mpi.api.scatter_gather.scatter">scatter</a></code></li>
 </ul>
