@@ -23,6 +23,10 @@ if MPI._sizeof(MPI.Comm) == ctypes.sizeof(ctypes.c_int):
 else:
     _MpiComm = ctypes.c_void_p
 
+if MPI._sizeof(MPI.Request) == ctypes.sizeof(ctypes.c_int):
+    _MpiRequest = ctypes.c_int
+else:
+    _MpiRequest = ctypes.c_void_p
 
 if MPI._sizeof(MPI.Datatype) == ctypes.sizeof(ctypes.c_int):
     _MpiDatatype = ctypes.c_int
@@ -33,6 +37,11 @@ else:
 
 # pylint: enable=protected-access
 _MpiStatusPtr = ctypes.c_void_p
+
+# TODO: add proper handling of status objects
+def create_status_buffer(count = 1):
+    return np.empty(count * 5, dtype=np.intc)
+
 
 for name in ("mpi", "msmpi", "impi"):
     LIB = find_library(name)
@@ -52,3 +61,5 @@ send_recv_args = [
     ctypes.c_int,
     _MpiComm,
 ]
+
+send_recv_async_args = send_recv_args + [_MpiRequest]
