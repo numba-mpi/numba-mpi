@@ -2,6 +2,7 @@
 import ctypes
 from ctypes.util import find_library
 
+import numba
 import numpy as np
 from mpi4py import MPI
 
@@ -38,6 +39,7 @@ _MpiRequestPtr = ctypes.c_void_p
 
 
 # TODO: add proper handling of status objects
+@numba.njit
 def create_status_buffer(count=1):
     """Helper function for creating numpy array storing pointers to MPI_Request handles"""
     return np.empty(count * 5, dtype=np.intc)
