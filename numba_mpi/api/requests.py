@@ -13,6 +13,7 @@ from numba_mpi.common import _MpiRequestPtr, _MpiStatusPtr, create_status_buffer
 
 @numba.njit
 def create_requests_array(count=1):
+    """Helper function for creating numpy array storing pointers to MPI_Request handles."""
     return np.empty(count, dtype=np.uintp)
 
 

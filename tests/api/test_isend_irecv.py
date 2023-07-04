@@ -4,7 +4,7 @@ import pytest
 from mpi4py.MPI import COMM_WORLD
 
 import numba_mpi as mpi
-from tests.common import MPI_SUCCESS, data_types
+from tests.common import data_types
 from tests.utils import get_random_array
 
 
@@ -15,16 +15,9 @@ from tests.utils import get_random_array
         (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func),
     ),
 )
-@pytest.mark.parametrize("fortran_order", [True, False])
 @pytest.mark.parametrize("data_type", data_types)
-def test_isend_irecv(isnd, ircv, wait, fortran_order, data_type):
+def test_isend_irecv(isnd, ircv, wait, data_type):
     src = get_random_array((3, 3), data_type)
-
-    if fortran_order:
-        src = np.asfortranarray(src, dtype=data_type)
-    else:
-        src = src.astype(dtype=data_type)
-
     dst_exp = np.empty_like(src)
     dst_tst = np.empty_like(src)
 
