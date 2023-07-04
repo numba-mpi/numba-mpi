@@ -14,7 +14,7 @@ _MPI_Irecv.argtypes = send_recv_async_args
 
 
 @numba.njit()
-def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
+def irecv(data, source=ANY_SOURCE, tag=ANY_TAG):
     """Wrapper for MPI_Irecv (only handles contiguous arrays, at least for now).
     If successful (i.e. result is MPI_SUCCESS), returns c-style pointer to valid
     MPI_Request handle that may be used with appropriate wait and test functions."""
