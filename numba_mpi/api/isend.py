@@ -14,10 +14,10 @@ _MPI_Isend.argtypes = send_recv_async_args
 
 @numba.njit
 def isend(data, dest, tag=0):
-    """Wrapper for MPI_Send. If successful (i.e. result is MPI_SUCCESS), 
-        returns c-style pointer to valid MPI_Request handle that may be used
-        with appropriate wait and test functions. Mimicking `mpi4py`, default
-        value for `tag` is set to zero.
+    """Wrapper for MPI_Send. If successful (i.e. result is MPI_SUCCESS),
+    returns c-style pointer to valid MPI_Request handle that may be used
+    with appropriate wait and test functions. Mimicking `mpi4py`, default
+    value for `tag` is set to zero.
     """
     data = np.ascontiguousarray(data)
     request = np.empty(1, np.uintp)
@@ -28,7 +28,7 @@ def isend(data, dest, tag=0):
         dest,
         tag,
         _mpi_addr(_MPI_Comm_World_ptr),
-        request.ctypes.data
+        request.ctypes.data,
     )
 
     assert status == 0

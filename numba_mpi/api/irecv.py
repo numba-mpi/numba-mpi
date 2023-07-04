@@ -30,7 +30,7 @@ def irecv(data, source=ANY_SOURCE, tag=ANY_TAG):
         source,
         tag,
         _mpi_addr(_MPI_Comm_World_ptr),
-        request.ctypes.data
+        request.ctypes.data,
     )
 
     assert status == 0

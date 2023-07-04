@@ -9,11 +9,11 @@ from tests.utils import get_random_array
 
 
 @pytest.mark.parametrize(
-    "isnd, ircv, wait", 
+    "isnd, ircv, wait",
     (
-        (mpi.isend, mpi.irecv, mpi.wait), 
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func)
-    )
+        (mpi.isend, mpi.irecv, mpi.wait),
+        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func),
+    ),
 )
 @pytest.mark.parametrize("fortran_order", [True, False])
 @pytest.mark.parametrize("data_type", data_types)
@@ -47,8 +47,13 @@ def test_isend_irecv(isnd, ircv, wait, fortran_order, data_type):
     "isnd, ircv, wall, create_reqs",
     [
         (mpi.isend, mpi.irecv, mpi.waitall, mpi.create_requests_array),
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.waitall.py_func, mpi.create_requests_array.py_func)
-    ]
+        (
+            mpi.isend.py_func,
+            mpi.irecv.py_func,
+            mpi.waitall.py_func,
+            mpi.create_requests_array.py_func,
+        ),
+    ],
 )
 @pytest.mark.parametrize("data_type", data_types)
 def test_isend_irecv_exchange(isnd, ircv, wall, create_reqs, data_type):
@@ -68,11 +73,11 @@ def test_isend_irecv_exchange(isnd, ircv, wall, create_reqs, data_type):
 
 
 @pytest.mark.parametrize(
-    "isnd, ircv, wait", 
+    "isnd, ircv, wait",
     (
-        (mpi.isend, mpi.irecv, mpi.wait), 
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func)
-    )
+        (mpi.isend, mpi.irecv, mpi.wait),
+        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func),
+    ),
 )
 def test_send_default_tag(isnd, ircv, wait):
     src = get_random_array(())
@@ -89,11 +94,11 @@ def test_send_default_tag(isnd, ircv, wait):
 
 
 @pytest.mark.parametrize(
-    "isnd, ircv, wait", 
+    "isnd, ircv, wait",
     (
-        (mpi.isend, mpi.irecv, mpi.wait), 
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func)
-    )
+        (mpi.isend, mpi.irecv, mpi.wait),
+        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func),
+    ),
 )
 def test_recv_default_tag(isnd, ircv, wait):
     src = get_random_array(())
@@ -110,11 +115,11 @@ def test_recv_default_tag(isnd, ircv, wait):
 
 
 @pytest.mark.parametrize(
-    "isnd, ircv, wait", 
+    "isnd, ircv, wait",
     (
-        (mpi.isend, mpi.irecv, mpi.wait), 
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func)
-    )
+        (mpi.isend, mpi.irecv, mpi.wait),
+        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func),
+    ),
 )
 def test_recv_default_source(isnd, ircv, wait):
     src = get_random_array(())

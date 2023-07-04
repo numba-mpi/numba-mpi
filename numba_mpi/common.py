@@ -36,8 +36,9 @@ _MpiStatusPtr = ctypes.c_void_p
 # pylint: enable=protected-access
 _MpiRequestPtr = ctypes.c_void_p
 
+
 # TODO: add proper handling of status objects
-def create_status_buffer(count = 1):
+def create_status_buffer(count=1):
     """Helper function for creating numpy array storing pointers to MPI_Request handles"""
     return np.empty(count * 5, dtype=np.intc)
 
