@@ -6,9 +6,9 @@ import ctypes
 import numba
 import numpy as np
 
-from numba_mpi.common import libmpi, _MpiRequestPtr, _MpiStatusPtr, create_status_buffer
+from numba_mpi.common import (_MpiRequestPtr, _MpiStatusPtr,
+                              create_status_buffer, libmpi)
 from numba_mpi.utils import _mpi_addr
-
 
 # helper function to allocate numpy array of request handles
 

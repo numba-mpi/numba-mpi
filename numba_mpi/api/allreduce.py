@@ -7,7 +7,8 @@ from numba.core import types
 from numba.extending import overload
 
 from numba_mpi.api.operator import Operator
-from numba_mpi.common import _MPI_Comm_World_ptr, _MpiComm, _MpiDatatype, _MpiOp, libmpi
+from numba_mpi.common import (_MPI_Comm_World_ptr, _MpiComm, _MpiDatatype,
+                              _MpiOp, libmpi)
 from numba_mpi.utils import _mpi_addr, _mpi_dtype
 
 _MPI_Allreduce = libmpi.MPI_Allreduce

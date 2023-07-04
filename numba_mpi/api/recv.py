@@ -5,7 +5,8 @@ import numba
 import numpy as np
 from mpi4py.MPI import ANY_SOURCE, ANY_TAG
 
-from numba_mpi.common import _MPI_Comm_World_ptr, _MpiStatusPtr, libmpi, send_recv_args, create_status_buffer
+from numba_mpi.common import (_MPI_Comm_World_ptr, _MpiStatusPtr,
+                              create_status_buffer, libmpi, send_recv_args)
 from numba_mpi.utils import _mpi_addr, _mpi_dtype
 
 _MPI_Recv = libmpi.MPI_Recv
