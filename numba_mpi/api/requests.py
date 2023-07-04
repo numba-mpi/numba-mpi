@@ -8,7 +8,6 @@ import numpy as np
 
 from numba_mpi.common import (_MpiRequestPtr, _MpiStatusPtr,
                               create_status_buffer, libmpi)
-from numba_mpi.utils import _mpi_addr
 
 # helper function to allocate numpy array of request handles
 
@@ -70,7 +69,7 @@ def waitany(requests):
     """Wrapper for MPI_Waitany. Returns integer which is non-negative when call
         succeeded and is the index of request that was completed, otherwise -
         if result is negative - error occurred and its code may be obtained by
-        negating returned integer. Status is currently not handled. 
+        negating returned integer. Status is currently not handled.
         Requires 'requests' parameter to be an array of c-style pointers to
         MPI_Requests (e.g. created by 'create_requests_array' and popuated by
         'isend'/'irecv').
@@ -99,9 +98,9 @@ _MPI_Test.argtypes = [_MpiRequestPtr, ctypes.c_void_p, _MpiStatusPtr]
 
 @numba.njit
 def test(request):
-    """Wrapper for MPI_Test. Returns boolean flag indicating whether given 
+    """Wrapper for MPI_Test. Returns boolean flag indicating whether given
         request is completed. Status is currently not handled. Requires
-        'request' parameter to be a c-style pointer to MPI_Request 
+        'request' parameter to be a c-style pointer to MPI_Request
         (such as returned by 'isend'/'irecv').
     """
 
@@ -124,7 +123,7 @@ _MPI_Testall.argtypes = [ctypes.c_int, _MpiRequestPtr, ctypes.c_void_p, _MpiStat
 
 @numba.njit
 def testall(requests):
-    """Wrapper for MPI_Testall. Returns boolean flag indicating whether all 
+    """Wrapper for MPI_Testall. Returns boolean flag indicating whether all
         requests in question are completed. Status is currently not handled.
         Requires 'requests' parameter to be an array of c-style pointers to
         MPI_Requests (e.g. created by 'create_requests_array' and popuated by
@@ -147,18 +146,29 @@ def testall(requests):
 
 _MPI_Testall = libmpi.MPI_Testany
 _MPI_Testall.restype = ctypes.c_int
-_MPI_Testall.argtypes = [ctypes.c_int, _MpiRequestPtr, ctypes.c_void_p, ctypes.c_void_p, _MpiStatusPtr]
+_MPI_Testall.argtypes = [
+    ctypes.c_int,
+    _MpiRequestPtr,
+    ctypes.c_void_p,
+    ctypes.c_void_p,
+    _MpiStatusPtr]
 
 
 class TestAnyResult():
+    """Helper class for storing results of calls to MPI_Testany wrapper."""
 
     def __init__(self, flag, index):
+        """Initializes instance from returned flag and indx parameters."""
         self._value = index if flag else -1
 
     def __bool__(self):
+        """Returns true when flag parameter was true."""
         return self._value >= 0
-    
+
     def index(self):
+        """Returns index of request that is ensured to be completed. Valid if
+            returned flag value was true.
+        """
         return self._value
 
 
