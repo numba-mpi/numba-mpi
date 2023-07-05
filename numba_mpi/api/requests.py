@@ -20,7 +20,7 @@ from numba_mpi.common import (
 @numba.njit
 def create_requests_array(count=1):
     """Helper function for creating numpy array storing pointers to MPI_Request handles."""
-    return np.empty(count * MPI_REQUEST_SIZE, dtype=np.uintp)
+    return np.empty(count * MPI_REQUEST_SIZE, dtype=np.byte)
 
 
 # Wait* functions

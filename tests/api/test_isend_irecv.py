@@ -114,8 +114,9 @@ def test_recv_default_source(isnd, ircv, wait):
     ],
 )
 @pytest.mark.parametrize("data_type", data_types)
-def test_isend_irecv_waitall_oneway(isnd, ircv, wall, create_reqs, data_type):
-    src1 = get_random_array((mpi.common.MPI_REQUEST_SIZE,), data_type)
+@pytest.mark.parameterize("size", [mpi.common.MPI_REQUEST_SIZE, 5])
+def test_isend_irecv_waitall_oneway(isnd, ircv, wall, create_reqs, data_type, size):
+    src1 = get_random_array((size,), data_type)
     src2 = get_random_array((5,), data_type)
     dst1 = np.empty_like(src1)
     dst2 = np.empty_like(src2)
