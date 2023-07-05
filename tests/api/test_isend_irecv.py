@@ -23,17 +23,17 @@ def test_isend_irecv(isnd, ircv, wait):
     dst_tst = np.empty_like(src)
 
     if mpi.rank() == 0:
-        # req = isnd(src, dest=1, tag=11)
+        req = isnd(src, dest=1, tag=11)
         req_exp = COMM_WORLD.Isend(src, dest=1, tag=22)
-        # wait(req)
+        wait(req)
         req_exp.wait()
     elif mpi.rank() == 1:
-        # req = ircv(dst_tst, source=0, tag=11)
+        req = ircv(dst_tst, source=0, tag=11)
         req_exp = COMM_WORLD.Irecv(dst_exp, source=0, tag=22)
-        # wait(req)
+        wait(req)
         req_exp.wait()
 
-        # np.testing.assert_equal(dst_tst, src)
+        np.testing.assert_equal(dst_tst, src)
         np.testing.assert_equal(dst_exp, src)
 
 
