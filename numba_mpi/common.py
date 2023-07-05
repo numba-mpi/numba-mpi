@@ -32,7 +32,7 @@ else:
     _MpiOp = ctypes.c_void_p
 
 if MPI._sizeof(MPI.Request) == ctypes.sizeof(ctypes.c_int):
-    _MpiRequestNpType = np.cint
+    _MpiRequestNpType = np.intc
 else:
     _MpiRequestNpType = np.uintp
 
