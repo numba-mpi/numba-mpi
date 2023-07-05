@@ -238,6 +238,8 @@ def test_isend_irecv_waitany(isnd, ircv, wany, wall, create_reqs, rcv_order, dat
         else:
             assert False
 
+        wall(reqs)
+
 
 @pytest.mark.parametrize(
     "isnd, ircv, tany, wall, create_reqs",
