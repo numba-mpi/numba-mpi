@@ -37,6 +37,8 @@ _MpiStatusPtr = ctypes.c_void_p
 # pylint: enable=protected-access
 _MpiRequestPtr = ctypes.c_void_p
 
+MPI_REQUEST_SIZE = MPI._sizeof(MPI.Request) // ctypes.sizeof(ctypes.c_void_p)
+
 
 # TODO: add proper handling of status objects
 @numba.njit

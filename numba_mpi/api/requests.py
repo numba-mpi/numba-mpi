@@ -6,7 +6,13 @@ import ctypes
 import numba
 import numpy as np
 
-from numba_mpi.common import _MpiRequestPtr, _MpiStatusPtr, create_status_buffer, libmpi
+from numba_mpi.common import (
+    MPI_REQUEST_SIZE,
+    _MpiRequestPtr,
+    _MpiStatusPtr,
+    create_status_buffer,
+    libmpi,
+)
 
 # helper function to allocate numpy array of request handles
 
@@ -14,7 +20,7 @@ from numba_mpi.common import _MpiRequestPtr, _MpiStatusPtr, create_status_buffer
 @numba.njit
 def create_requests_array(count=1):
     """Helper function for creating numpy array storing pointers to MPI_Request handles."""
-    return np.empty(count, dtype=np.uintp)
+    return np.empty(count * MPI_REQUEST_SIZE, dtype=np.uintp)
 
 
 # Wait* functions

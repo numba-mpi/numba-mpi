@@ -116,26 +116,19 @@ def test_recv_default_source(isnd, ircv, wait):
 @pytest.mark.parametrize("data_type", data_types)
 def test_isend_irecv_waitall_oneway(isnd, ircv, wall, create_reqs, data_type):
     src1 = get_random_array((5,), data_type)
-    src2 = get_random_array((10,), data_type)
+    src2 = get_random_array((mpi.common.MPI_REQUEST_SIZE,), data_type)
     dst1 = np.empty_like(src1)
     dst2 = np.empty_like(src2)
 
     reqs = create_reqs(2)
     if mpi.rank() == 0:
-        reqs[0] = r1 = isnd(src1, dest=1, tag=11)
-        reqs[1] = r2 = isnd(src2, dest=1, tag=22)
-        print(r1)
-        print(r2)
-        print(reqs)
+        reqs[: mpi.common.MPI_REQUEST_SIZE] = isnd(src1, dest=1, tag=11)
+        reqs[mpi.common.MPI_REQUEST_SIZE :] = isnd(src2, dest=1, tag=22)
         wall(reqs)
-        mpi.wait(r1)
-        mpi.wait(r2)
     elif mpi.rank() == 1:
-        reqs[0] = r1 = ircv(dst1, source=0, tag=11)
-        reqs[1] = r2 = ircv(dst2, source=0, tag=22)
+        reqs[: mpi.common.MPI_REQUEST_SIZE] = r1 = ircv(dst1, source=0, tag=11)
+        reqs[mpi.common.MPI_REQUEST_SIZE :] = r2 = ircv(dst2, source=0, tag=22)
         wall(reqs)
-        mpi.wait(r1)
-        mpi.wait(r2)
 
         np.testing.assert_equal(dst1, src1)
         np.testing.assert_equal(dst2, src2)
