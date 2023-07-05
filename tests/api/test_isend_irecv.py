@@ -38,7 +38,6 @@ def test_isend_irecv(isnd, ircv, wait, data_type):
         np.testing.assert_equal(dst_exp, src)
 
 
-"""
 @pytest.mark.parametrize(
     "isnd, ircv, wall, create_reqs",
     [
@@ -129,4 +128,3 @@ def test_recv_default_source(isnd, ircv, wait):
         wait(req)
 
         np.testing.assert_equal(dst_tst, src)
-"""
