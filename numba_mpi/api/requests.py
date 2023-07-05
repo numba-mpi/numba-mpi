@@ -31,9 +31,8 @@ def wait(request):
     c-style pointer to MPI_Request (such as returned by 'isend'/'irecv').
     """
 
-    request_p = ctypes.c_void_p(request)
     status_buffer = create_status_buffer()
-    status = _MPI_Wait(request_p, status_buffer.ctypes.data)
+    status = _MPI_Wait(request.ctypes.data, status_buffer.ctypes.data)
 
     return status
 
