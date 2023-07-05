@@ -1,5 +1,3 @@
-# pylint: skip-file
-
 # pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring
 import numpy as np
 import pytest
@@ -134,7 +132,6 @@ def test_isend_irecv_waitall_oneway(isnd, ircv, wall, create_reqs, data_type):
         np.testing.assert_equal(dst2, src2)
 
 
-"""
 @pytest.mark.parametrize(
     "isnd, ircv, wall, create_reqs",
     [
@@ -162,4 +159,3 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall, create_reqs, data_type):
     wall(reqs)
 
     np.testing.assert_equal(dst, src)
-"""
