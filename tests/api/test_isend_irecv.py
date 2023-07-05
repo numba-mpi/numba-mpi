@@ -9,8 +9,8 @@ import numba_mpi as mpi
 from tests.common import data_types
 from tests.utils import get_random_array
 
-TEST_WAIT_FULL_IN_MS = 500
-TEST_WAIT_INCREMENT_IN_MS = 100
+TEST_WAIT_FULL_IN_SECONDS = 0.5
+TEST_WAIT_INCREMENT_IN_SECONDS = 0.1
 
 
 @pytest.mark.parametrize(
@@ -117,14 +117,14 @@ def test_isend_irecv_test(isnd, ircv, tst, wait, data_type):
     dst = np.empty_like(src)
 
     if mpi.rank() == 0:
-        time.sleep(TEST_WAIT_FULL_IN_MS)
+        time.sleep(TEST_WAIT_FULL_IN_SECONDS)
         req = isnd(src, dest=1, tag=11)
         wait(req)
     elif mpi.rank() == 1:
         req = ircv(dst, source=0, tag=11)
 
         while not tst(req):
-            time.sleep(TEST_WAIT_INCREMENT_IN_MS)
+            time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
 
         np.testing.assert_equal(dst, src)
         wait(req)
@@ -185,7 +185,7 @@ def test_isend_irecv_testall(isnd, ircv, tall, wall, create_reqs, data_type):
 
     reqs = create_reqs(2)
     if mpi.rank() == 0:
-        time.sleep(TEST_WAIT_FULL_IN_MS)
+        time.sleep(TEST_WAIT_FULL_IN_SECONDS)
         reqs[0] = isnd(src1, dest=1, tag=11)
         reqs[1] = isnd(src2, dest=1, tag=22)
         wall(reqs)
@@ -194,7 +194,7 @@ def test_isend_irecv_testall(isnd, ircv, tall, wall, create_reqs, data_type):
         reqs[1] = ircv(dst2, source=0, tag=22)
 
         while not tall(reqs):
-            time.sleep(TEST_WAIT_INCREMENT_IN_MS)
+            time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
 
         np.testing.assert_equal(dst1, src1)
         np.testing.assert_equal(dst2, src2)
@@ -261,7 +261,7 @@ def test_isend_irecv_testall_oneway(isnd, ircv, tany, wall, create_reqs, data_ty
 
     reqs = create_reqs(2)
     if mpi.rank() == 0:
-        time.sleep(TEST_WAIT_FULL_IN_MS)
+        time.sleep(TEST_WAIT_FULL_IN_SECONDS)
         reqs[0] = isnd(src1, dest=1, tag=11)
         reqs[1] = isnd(src2, dest=1, tag=22)
         wall(reqs)
@@ -271,7 +271,7 @@ def test_isend_irecv_testall_oneway(isnd, ircv, tany, wall, create_reqs, data_ty
 
         result = tany(reqs)
         while not result:
-            time.sleep(TEST_WAIT_INCREMENT_IN_MS)
+            time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
 
         if result.index() == 0:
             np.testing.assert_equal(dst1, src1)
