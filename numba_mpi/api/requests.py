@@ -162,9 +162,9 @@ class TestAnyResult:
         return self.value
 
 
-_MPI_Testall = libmpi.MPI_Testany
-_MPI_Testall.restype = ctypes.c_int
-_MPI_Testall.argtypes = [
+_MPI_Testany = libmpi.MPI_Testany
+_MPI_Testany.restype = ctypes.c_int
+_MPI_Testany.argtypes = [
     ctypes.c_int,
     _MpiRequestPtr,
     ctypes.c_void_p,

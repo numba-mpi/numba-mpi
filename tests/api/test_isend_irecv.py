@@ -250,7 +250,7 @@ def test_isend_irecv_waitany(isnd, ircv, wany, wall, create_reqs, data_type):
         ),
     ],
 )
-def test_isend_irecv_testany(isnd, ircv, tany, wall, create_reqs, data_type):
+def test_isend_irecv_testany(isnd, ircv, tany, wall, create_reqs):
     src1 = get_random_array((5,), data_type)
     src2 = get_random_array((5,), data_type)
     dst1 = np.empty_like(src1)
