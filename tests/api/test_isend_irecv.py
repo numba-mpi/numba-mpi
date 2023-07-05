@@ -122,12 +122,12 @@ def test_isend_irecv_waitall_oneway(isnd, ircv, wall, create_reqs, data_type):
 
     reqs = create_reqs(2)
     if mpi.rank() == 0:
-        reqs[: mpi.common.MPI_REQUEST_SIZE] = isnd(src1, dest=1, tag=11)
-        reqs[mpi.common.MPI_REQUEST_SIZE :] = isnd(src2, dest=1, tag=22)
+        reqs[0] = isnd(src1, dest=1, tag=11)
+        reqs[1] = isnd(src2, dest=1, tag=22)
         wall(reqs)
     elif mpi.rank() == 1:
-        reqs[: mpi.common.MPI_REQUEST_SIZE] = r1 = ircv(dst1, source=0, tag=11)
-        reqs[mpi.common.MPI_REQUEST_SIZE :] = r2 = ircv(dst2, source=0, tag=22)
+        reqs[0] = r1 = ircv(dst1, source=0, tag=11)
+        reqs[1] = r2 = ircv(dst2, source=0, tag=22)
         wall(reqs)
 
         np.testing.assert_equal(dst1, src1)
