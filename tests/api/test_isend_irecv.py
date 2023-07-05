@@ -269,6 +269,7 @@ def test_isend_irecv_testany(isnd, ircv, tany, wall, create_reqs):
         result = tany(reqs)
         while not result:
             time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
+            result = tany(reqs)
 
         if result.index() == 0:
             np.testing.assert_equal(dst1, src1)
