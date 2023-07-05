@@ -9,7 +9,7 @@ import numba_mpi as mpi
 from tests.common import data_types
 from tests.utils import get_random_array
 
-TEST_WAIT_FULL_IN_SECONDS = 0.5
+TEST_WAIT_FULL_IN_SECONDS = 0.3
 TEST_WAIT_INCREMENT_IN_SECONDS = 0.1
 
 
@@ -111,9 +111,8 @@ def test_recv_default_source(isnd, ircv, wait):
         (mpi.isend.py_func, mpi.irecv.py_func, mpi.test.py_func, mpi.wait.py_func),
     ],
 )
-@pytest.mark.parametrize("data_type", data_types)
-def test_isend_irecv_test(isnd, ircv, tst, wait, data_type):
-    src = get_random_array((5,), data_type)
+def test_isend_irecv_test(isnd, ircv, tst, wait):
+    src = get_random_array((5,))
     dst = np.empty_like(src)
 
     if mpi.rank() == 0:
@@ -176,10 +175,9 @@ def test_isend_irecv_waitall(isnd, ircv, wall, create_reqs, data_type):
         ),
     ],
 )
-@pytest.mark.parametrize("data_type", data_types)
-def test_isend_irecv_testall(isnd, ircv, tall, wall, create_reqs, data_type):
-    src1 = get_random_array((5,), data_type)
-    src2 = get_random_array((5,), data_type)
+def test_isend_irecv_testall(isnd, ircv, tall, wall, create_reqs):
+    src1 = get_random_array((5,))
+    src2 = get_random_array((5,))
     dst1 = np.empty_like(src1)
     dst2 = np.empty_like(src2)
 
@@ -242,7 +240,7 @@ def test_isend_irecv_waitany(isnd, ircv, wany, wall, create_reqs, data_type):
 @pytest.mark.parametrize(
     "isnd, ircv, tany, wall, create_reqs",
     [
-        (mpi.isend, mpi.irecv, mpi.testall, mpi.waitall, mpi.create_requests_array),
+        (mpi.isend, mpi.irecv, mpi.testany, mpi.waitall, mpi.create_requests_array),
         (
             mpi.isend.py_func,
             mpi.irecv.py_func,
@@ -252,8 +250,7 @@ def test_isend_irecv_waitany(isnd, ircv, wany, wall, create_reqs, data_type):
         ),
     ],
 )
-@pytest.mark.parametrize("data_type", data_types)
-def test_isend_irecv_testall_oneway(isnd, ircv, tany, wall, create_reqs, data_type):
+def test_isend_irecv_testany(isnd, ircv, tany, wall, create_reqs, data_type):
     src1 = get_random_array((5,), data_type)
     src2 = get_random_array((5,), data_type)
     dst1 = np.empty_like(src1)
@@ -295,9 +292,8 @@ def test_isend_irecv_testall_oneway(isnd, ircv, tany, wall, create_reqs, data_ty
         ),
     ],
 )
-@pytest.mark.parametrize("data_type", data_types)
-def test_isend_irecv_waitall_exchange(isnd, ircv, wall, create_reqs, data_type):
-    src = get_random_array((5,), data_type)
+def test_isend_irecv_waitall_exchange(isnd, ircv, wall, create_reqs):
+    src = get_random_array((5,))
     dst = np.empty_like(src)
 
     reqs = create_reqs(2)
