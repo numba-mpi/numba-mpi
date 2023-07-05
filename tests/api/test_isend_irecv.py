@@ -57,11 +57,11 @@ def test_isend_irecv_exchange(isnd, ircv, wall, create_reqs, data_type):
 
     reqs = create_reqs(2)
     if mpi.rank() == 0:
-        reqs[0] = isnd(src, dest=1, tag=11)
-        reqs[1] = ircv(dst, source=1, tag=22)
+        reqs[0] = isnd(src, dest=1, tag=11)[0]
+        reqs[1] = ircv(dst, source=1, tag=22)[0]
     elif mpi.rank() == 1:
-        reqs[0] = isnd(src, dest=0, tag=22)
-        reqs[1] = ircv(dst, source=0, tag=11)
+        reqs[0] = isnd(src, dest=0, tag=22)[0]
+        reqs[1] = ircv(dst, source=0, tag=11)[0]
     wall(reqs)
 
     np.testing.assert_equal(dst, src)
