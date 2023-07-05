@@ -186,7 +186,7 @@ def testany(requests):
     status_buffer = create_status_buffer()
     flag = np.empty(1, dtype=np.intc)
     index = np.empty(1, dtype=np.intc)
-    status = _MPI_Waitany(
+    status = _MPI_Testany(
         requests.size,
         requests.ctypes.data,
         index.ctypes.data,
@@ -196,4 +196,4 @@ def testany(requests):
 
     assert status == 0
 
-    return TestAnyResult(flag, index)
+    return TestAnyResult(flag[0], index[0])
