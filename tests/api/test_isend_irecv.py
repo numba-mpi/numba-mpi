@@ -212,7 +212,7 @@ def test_isend_irecv_testall(isnd, ircv, tall, wall, create_reqs):
         ),
     ],
 )
-@pytest.mark.parametrize("send_order", [0, 1])
+@pytest.mark.parametrize("rcv_order", [0, 1])
 @pytest.mark.parametrize("data_type", data_types)
 def test_isend_irecv_waitany(isnd, ircv, wany, wall, create_reqs, rcv_order, data_type):
     src1 = get_random_array((5,), data_type)
