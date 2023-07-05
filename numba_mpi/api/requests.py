@@ -105,7 +105,7 @@ def test(request):
 
     status_buffer = create_status_buffer()
     flag = np.empty(1, dtype=np.intc)
-    status = _MPI_Test(request, flag.ctypes.data, status_buffer.ctypes.data)
+    status = _MPI_Test(request.ctypes.data, flag.ctypes.data, status_buffer.ctypes.data)
 
     assert status == 0
 
