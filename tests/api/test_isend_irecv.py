@@ -1,4 +1,6 @@
 # pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring
+import time
+
 import numpy as np
 import pytest
 from mpi4py.MPI import COMM_WORLD
@@ -6,6 +8,9 @@ from mpi4py.MPI import COMM_WORLD
 import numba_mpi as mpi
 from tests.common import data_types
 from tests.utils import get_random_array
+
+TEST_WAIT_FULL_IN_MS = 500
+TEST_WAIT_INCREMENT_IN_MS = 100
 
 
 @pytest.mark.parametrize(
@@ -100,6 +105,32 @@ def test_recv_default_source(isnd, ircv, wait):
 
 
 @pytest.mark.parametrize(
+    "isnd, ircv, tst, wait",
+    [
+        (mpi.isend, mpi.irecv, mpi.test, mpi.wait),
+        (mpi.isend.py_func, mpi.irecv.py_func, mpi.test.py_func, mpi.wait.py_func),
+    ],
+)
+@pytest.mark.parametrize("data_type", data_types)
+def test_isend_irecv_test(isnd, ircv, tst, wait, data_type):
+    src = get_random_array((5,), data_type)
+    dst = np.empty_like(src)
+
+    if mpi.rank() == 0:
+        time.sleep(TEST_WAIT_FULL_IN_MS)
+        req = isnd(src, dest=1, tag=11)
+        wait(req)
+    elif mpi.rank() == 1:
+        req = ircv(dst, source=0, tag=11)
+
+        while not tst(req):
+            time.sleep(TEST_WAIT_INCREMENT_IN_MS)
+
+        np.testing.assert_equal(dst, src)
+        wait(req)
+
+
+@pytest.mark.parametrize(
     "isnd, ircv, wall, create_reqs",
     [
         (mpi.isend, mpi.irecv, mpi.waitall, mpi.create_requests_array),
@@ -159,3 +190,41 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall, create_reqs, data_type):
     wall(reqs)
 
     np.testing.assert_equal(dst, src)
+
+
+@pytest.mark.parametrize(
+    "isnd, ircv, tall, wall, create_reqs",
+    [
+        (mpi.isend, mpi.irecv, mpi.testall, mpi.waitall, mpi.create_requests_array),
+        (
+            mpi.isend.py_func,
+            mpi.irecv.py_func,
+            mpi.testall.py_func,
+            mpi.waitall.py_func,
+            mpi.create_requests_array.py_func,
+        ),
+    ],
+)
+@pytest.mark.parametrize("data_type", data_types)
+def test_isend_irecv_testall_oneway(isnd, ircv, tall, wall, create_reqs, data_type):
+    src1 = get_random_array((5,), data_type)
+    src2 = get_random_array((5,), data_type)
+    dst1 = np.empty_like(src1)
+    dst2 = np.empty_like(src2)
+
+    reqs = create_reqs(2)
+    if mpi.rank() == 0:
+        time.sleep(TEST_WAIT_FULL_IN_MS)
+        reqs[0] = isnd(src1, dest=1, tag=11)
+        reqs[1] = isnd(src2, dest=1, tag=22)
+        wall(reqs)
+    elif mpi.rank() == 1:
+        reqs[0] = ircv(dst1, source=0, tag=11)
+        reqs[1] = ircv(dst2, source=0, tag=22)
+
+        while not tall(reqs):
+            time.sleep(TEST_WAIT_INCREMENT_IN_MS)
+
+        np.testing.assert_equal(dst1, src1)
+        np.testing.assert_equal(dst2, src2)
+        wall(reqs)
