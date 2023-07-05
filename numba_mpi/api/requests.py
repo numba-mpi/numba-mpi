@@ -143,6 +143,25 @@ def testall(requests):
     return flag[0] != 0
 
 
+@numba.experimental.jitclass([("value", numba.int32)])
+class TestAnyResult:
+    """Helper class for storing results of calls to MPI_Testany wrapper."""
+
+    def __init__(self, flag, index):
+        """Initializes instance from returned flag and indx parameters."""
+        self.value = index if flag else -1
+
+    def __bool__(self):
+        """Returns true when flag parameter was true."""
+        return self.value >= 0
+
+    def index(self):
+        """Returns index of request that is ensured to be completed. Valid if
+        returned flag value was true.
+        """
+        return self.value
+
+
 _MPI_Testall = libmpi.MPI_Testany
 _MPI_Testall.restype = ctypes.c_int
 _MPI_Testall.argtypes = [
@@ -152,24 +171,6 @@ _MPI_Testall.argtypes = [
     ctypes.c_void_p,
     _MpiStatusPtr,
 ]
-
-
-class TestAnyResult:
-    """Helper class for storing results of calls to MPI_Testany wrapper."""
-
-    def __init__(self, flag, index):
-        """Initializes instance from returned flag and indx parameters."""
-        self._value = index if flag else -1
-
-    def __bool__(self):
-        """Returns true when flag parameter was true."""
-        return self._value >= 0
-
-    def index(self):
-        """Returns index of request that is ensured to be completed. Valid if
-        returned flag value was true.
-        """
-        return self._value
 
 
 @numba.njit

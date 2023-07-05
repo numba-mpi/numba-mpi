@@ -1,4 +1,4 @@
-# pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring
+# pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring,too-many-arguments
 import time
 
 import numpy as np
@@ -143,7 +143,7 @@ def test_isend_irecv_test(isnd, ircv, tst, wait, data_type):
     ],
 )
 @pytest.mark.parametrize("data_type", data_types)
-def test_isend_irecv_waitall_oneway(isnd, ircv, wall, create_reqs, data_type):
+def test_isend_irecv_waitall(isnd, ircv, wall, create_reqs, data_type):
     src1 = get_random_array((5,), data_type)
     src2 = get_random_array((5,), data_type)
     dst1 = np.empty_like(src1)
@@ -161,6 +161,126 @@ def test_isend_irecv_waitall_oneway(isnd, ircv, wall, create_reqs, data_type):
 
         np.testing.assert_equal(dst1, src1)
         np.testing.assert_equal(dst2, src2)
+
+
+@pytest.mark.parametrize(
+    "isnd, ircv, tall, wall, create_reqs",
+    [
+        (mpi.isend, mpi.irecv, mpi.testall, mpi.waitall, mpi.create_requests_array),
+        (
+            mpi.isend.py_func,
+            mpi.irecv.py_func,
+            mpi.testall.py_func,
+            mpi.waitall.py_func,
+            mpi.create_requests_array.py_func,
+        ),
+    ],
+)
+@pytest.mark.parametrize("data_type", data_types)
+def test_isend_irecv_testall(isnd, ircv, tall, wall, create_reqs, data_type):
+    src1 = get_random_array((5,), data_type)
+    src2 = get_random_array((5,), data_type)
+    dst1 = np.empty_like(src1)
+    dst2 = np.empty_like(src2)
+
+    reqs = create_reqs(2)
+    if mpi.rank() == 0:
+        time.sleep(TEST_WAIT_FULL_IN_MS)
+        reqs[0] = isnd(src1, dest=1, tag=11)
+        reqs[1] = isnd(src2, dest=1, tag=22)
+        wall(reqs)
+    elif mpi.rank() == 1:
+        reqs[0] = ircv(dst1, source=0, tag=11)
+        reqs[1] = ircv(dst2, source=0, tag=22)
+
+        while not tall(reqs):
+            time.sleep(TEST_WAIT_INCREMENT_IN_MS)
+
+        np.testing.assert_equal(dst1, src1)
+        np.testing.assert_equal(dst2, src2)
+        wall(reqs)
+
+
+@pytest.mark.parametrize(
+    "isnd, ircv, wany, wall, create_reqs",
+    [
+        (mpi.isend, mpi.irecv, mpi.waitany, mpi.waitall, mpi.create_requests_array),
+        (
+            mpi.isend.py_func,
+            mpi.irecv.py_func,
+            mpi.waitany.py_func,
+            mpi.waitall.py_func,
+            mpi.create_requests_array.py_func,
+        ),
+    ],
+)
+@pytest.mark.parametrize("data_type", data_types)
+def test_isend_irecv_waitany(isnd, ircv, wany, wall, create_reqs, data_type):
+    src1 = get_random_array((5,), data_type)
+    src2 = get_random_array((5,), data_type)
+    dst1 = np.empty_like(src1)
+    dst2 = np.empty_like(src2)
+
+    reqs = create_reqs(2)
+    if mpi.rank() == 0:
+        reqs[0] = isnd(src1, dest=1, tag=11)
+        reqs[1] = isnd(src2, dest=1, tag=22)
+        wall(reqs)
+    elif mpi.rank() == 1:
+        reqs[0] = ircv(dst1, source=0, tag=11)
+        reqs[1] = ircv(dst2, source=0, tag=22)
+        result = wany(reqs)
+
+        if result == 0:
+            np.testing.assert_equal(dst1, src1)
+        elif result == 1:
+            np.testing.assert_equal(dst2, src2)
+        else:
+            assert False
+
+
+@pytest.mark.parametrize(
+    "isnd, ircv, tany, wall, create_reqs",
+    [
+        (mpi.isend, mpi.irecv, mpi.testall, mpi.waitall, mpi.create_requests_array),
+        (
+            mpi.isend.py_func,
+            mpi.irecv.py_func,
+            mpi.testany.py_func,
+            mpi.waitall.py_func,
+            mpi.create_requests_array.py_func,
+        ),
+    ],
+)
+@pytest.mark.parametrize("data_type", data_types)
+def test_isend_irecv_testall_oneway(isnd, ircv, tany, wall, create_reqs, data_type):
+    src1 = get_random_array((5,), data_type)
+    src2 = get_random_array((5,), data_type)
+    dst1 = np.empty_like(src1)
+    dst2 = np.empty_like(src2)
+
+    reqs = create_reqs(2)
+    if mpi.rank() == 0:
+        time.sleep(TEST_WAIT_FULL_IN_MS)
+        reqs[0] = isnd(src1, dest=1, tag=11)
+        reqs[1] = isnd(src2, dest=1, tag=22)
+        wall(reqs)
+    elif mpi.rank() == 1:
+        reqs[0] = ircv(dst1, source=0, tag=11)
+        reqs[1] = ircv(dst2, source=0, tag=22)
+
+        result = tany(reqs)
+        while not result:
+            time.sleep(TEST_WAIT_INCREMENT_IN_MS)
+
+        if result.index() == 0:
+            np.testing.assert_equal(dst1, src1)
+        elif result.index() == 1:
+            np.testing.assert_equal(dst2, src2)
+        else:
+            assert False
+
+        wall(reqs)
 
 
 @pytest.mark.parametrize(
@@ -190,41 +310,3 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall, create_reqs, data_type):
     wall(reqs)
 
     np.testing.assert_equal(dst, src)
-
-
-@pytest.mark.parametrize(
-    "isnd, ircv, tall, wall, create_reqs",
-    [
-        (mpi.isend, mpi.irecv, mpi.testall, mpi.waitall, mpi.create_requests_array),
-        (
-            mpi.isend.py_func,
-            mpi.irecv.py_func,
-            mpi.testall.py_func,
-            mpi.waitall.py_func,
-            mpi.create_requests_array.py_func,
-        ),
-    ],
-)
-@pytest.mark.parametrize("data_type", data_types)
-def test_isend_irecv_testall_oneway(isnd, ircv, tall, wall, create_reqs, data_type):
-    src1 = get_random_array((5,), data_type)
-    src2 = get_random_array((5,), data_type)
-    dst1 = np.empty_like(src1)
-    dst2 = np.empty_like(src2)
-
-    reqs = create_reqs(2)
-    if mpi.rank() == 0:
-        time.sleep(TEST_WAIT_FULL_IN_MS)
-        reqs[0] = isnd(src1, dest=1, tag=11)
-        reqs[1] = isnd(src2, dest=1, tag=22)
-        wall(reqs)
-    elif mpi.rank() == 1:
-        reqs[0] = ircv(dst1, source=0, tag=11)
-        reqs[1] = ircv(dst2, source=0, tag=22)
-
-        while not tall(reqs):
-            time.sleep(TEST_WAIT_INCREMENT_IN_MS)
-
-        np.testing.assert_equal(dst1, src1)
-        np.testing.assert_equal(dst2, src2)
-        wall(reqs)
