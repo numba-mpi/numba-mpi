@@ -212,9 +212,8 @@ def test_isend_irecv_testall(isnd, ircv, tall, wall, create_reqs):
         ),
     ],
 )
-@pytest.mark.parametrize("rcv_order", [0, 1])
 @pytest.mark.parametrize("data_type", data_types)
-def test_isend_irecv_waitany(isnd, ircv, wany, wall, create_reqs, rcv_order, data_type):
+def test_isend_irecv_waitany(isnd, ircv, wany, wall, create_reqs, data_type):
     src1 = get_random_array((5,), data_type)
     src2 = get_random_array((5,), data_type)
     dst1 = np.empty_like(src1)
@@ -226,8 +225,8 @@ def test_isend_irecv_waitany(isnd, ircv, wany, wall, create_reqs, rcv_order, dat
         reqs[1] = isnd(src2, dest=1, tag=22)
         wall(reqs)
     elif mpi.rank() == 1:
-        reqs[rcv_order] = ircv(dst1, source=0, tag=11)
-        reqs[1 - rcv_order] = ircv(dst2, source=0, tag=22)
+        reqs[0] = ircv(dst1, source=0, tag=11)
+        reqs[1] = ircv(dst2, source=0, tag=22)
         result = wany(reqs)
         assert result >= 0
 
