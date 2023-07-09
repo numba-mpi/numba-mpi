@@ -62,8 +62,7 @@ def _waitall_array_impl(requests):
 def waitall(requests):
     """Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).
     Status is currently not handled. Requires 'requests' parameter to be an
-    array of c-style pointers to MPI_Requests (e.g. created by
-    'create_requests_array' and popuated by 'isend'/'irecv').
+    array or tuple of MPI_Request objects.
     """
     if isinstance(requests, np.ndarray):
         return _waitall_array_impl(requests)
@@ -102,31 +101,58 @@ _MPI_Waitany.argtypes = [ctypes.c_int, _MpiRequestPtr, ctypes.c_void_p, _MpiStat
 
 
 @numba.njit
-def waitany(requests):
-    """Wrapper for MPI_Waitany. Returns integer which is non-negative when call
-    succeeded and is the index of request that was completed, otherwise -
-    if result is negative - error occurred and its code may be obtained by
-    negating returned integer. Status is currently not handled.
-    Requires 'requests' parameter to be an array of c-style pointers to
-    MPI_Requests (e.g. created by 'create_requests_array' and popuated by
-    'isend'/'irecv').
-    """
-
-    request_buffer = requests
+def _waitany_array_impl(requests):
+    """MPI_Waitany implementation for contiguous numpy arrays of MPI_Requests"""
 
     status_buffer = create_status_buffer()
     index = np.empty(1, dtype=np.intc)
 
     status = _MPI_Waitany(
-        request_buffer.size,
-        request_buffer.ctypes.data,
+        requests.size,
+        requests.ctypes.data,
         index.ctypes.data,
         status_buffer.ctypes.data,
     )
 
-    if status > 0:
-        return -status
-    return index[0]
+    return status, index[0]
+
+
+def waitany(requests):
+    """Wrapper for MPI_Waitany. Returns tuple of integers, first representing
+    status; second - the index of request that was completed. Status is
+    currently not handled. Requires 'requests' parameter to be an array
+    or tuple of MPI_Request objects.
+    """
+
+    if isinstance(requests, np.ndarray):
+        return _waitany_array_impl(requests)
+
+    if isinstance(requests, (list, tuple)):
+        request_buffer = np.hstack(requests)
+        return _waitany_array_impl(request_buffer)
+
+    raise TypeError("Invalid type for array of MPI_Request objects")
+
+
+@overload(waitany)
+def _waitany_impl(requests):
+    """List of overloads for MPI_Waitany implementation"""
+
+    if isinstance(requests, types.Array):
+
+        def impl(requests):
+            return _waitany_array_impl(requests)
+
+    elif isinstance(requests, types.UniTuple):
+
+        def impl(requests):
+            req_buffer = np.hstack(requests)
+            return _waitany_array_impl(req_buffer)
+
+    else:
+        raise TypeError("Invalid type for array of MPI_Request objects")
+
+    return impl
 
 
 _MPI_Test = libmpi.MPI_Test
