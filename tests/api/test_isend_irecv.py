@@ -174,3 +174,40 @@ def test_isend_irecv_test(isnd, ircv, tst, wait):
 
         np.testing.assert_equal(dst, src)
         wait(req)
+
+
+@pytest.mark.parametrize(
+    "isnd, ircv, wall",
+    [
+        (jit_isend, jit_irecv, jit_waitall),
+        (jit_isend.py_func, jit_irecv.py_func, jit_waitall.py_func),
+    ],
+)
+@pytest.mark.parametrize("data_type", data_types)
+def test_isend_irecv_waitall(isnd, ircv, wall, data_type):
+    src1 = get_random_array((5,), data_type)
+    src2 = get_random_array((5,), data_type)
+    dst1 = np.empty_like(src1)
+    dst2 = np.empty_like(src2)
+
+    reqs = np.empty((2,), dtype=mpi.RequestType)
+    if mpi.rank() == 0:
+        status, reqs[0] = isnd(src1, dest=1, tag=11)
+        assert status == MPI_SUCCESS
+        status, reqs[1] = isnd(src2, dest=1, tag=22)
+        assert status == MPI_SUCCESS
+
+        status = wall(reqs)
+        assert status == MPI_SUCCESS
+
+    elif mpi.rank() == 1:
+        status, reqs[0] = ircv(dst1, source=0, tag=11)
+        assert status == MPI_SUCCESS
+        status, reqs[1] = ircv(dst2, source=0, tag=22)
+        assert status == MPI_SUCCESS
+
+        status = wall(reqs)
+        assert status == MPI_SUCCESS
+
+        np.testing.assert_equal(dst1, src1)
+        np.testing.assert_equal(dst2, src2)
