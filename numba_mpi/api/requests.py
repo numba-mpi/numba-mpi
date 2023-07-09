@@ -81,13 +81,13 @@ def _waitall_impl(requests):
 
     if isinstance(requests, types.Array):
 
-        def impl(reqs):
-            return _waitall_array_impl(reqs)
+        def impl(requests):
+            return _waitall_array_impl(requests)
 
     elif isinstance(requests, tuple):
 
-        def impl(reqs):
-            req_buffer = np.hstack(reqs)
+        def impl(requests):
+            req_buffer = np.hstack(requests)
             return _waitall_array_impl(req_buffer)
 
     else:
