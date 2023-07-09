@@ -76,11 +76,11 @@ def waitall(requests):
     """
     if isinstance(requests, types.Array(dtype=RequestType, ndim=1, layout="C")):
         return _waitall_array_impl(requests)
-    elif isinstance(requests, (list, tuple)):
+    if isinstance(requests, (list, tuple)):
         request_buffer = np.array(requests, dtype=RequestType)
         return _waitall_array_impl(request_buffer)
-    else:
-        raise TypeError("Invalid type for array of MPI_Request objects")
+
+    raise TypeError("Invalid type for array of MPI_Request objects")
 
 
 @overload(waitall)
