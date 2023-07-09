@@ -65,7 +65,7 @@ def waitall(requests):
     array of c-style pointers to MPI_Requests (e.g. created by
     'create_requests_array' and popuated by 'isend'/'irecv').
     """
-    if isinstance(requests, types.Array):
+    if isinstance(requests, np.ndarray):
         return _waitall_array_impl(requests)
 
     if isinstance(requests, (list, tuple)):
