@@ -5,6 +5,8 @@ import ctypes
 
 import numba
 import numpy as np
+from numba.core import types
+from numba.core.extending import overload
 
 from numba_mpi.common import (
     RequestType,
@@ -49,12 +51,9 @@ _MPI_Waitall.argtypes = [ctypes.c_int, _MpiRequestPtr, _MpiStatusPtr]
 
 
 @numba.njit
-def waitall(requests):
-    """Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).
-    Status is currently not handled. Requires 'requests' parameter to be an
-    array of c-style pointers to MPI_Requests (e.g. created by
-    'create_requests_array' and popuated by 'isend'/'irecv').
-    """
+def _waitall_array_impl(requests):
+    """MPI_Waitall implementation for contiguous numpy arrays of MPI_Requests"""
+
     status_buffer = create_status_buffer(requests.size)
 
     status = _MPI_Waitall(
@@ -62,6 +61,41 @@ def waitall(requests):
     )
 
     return status
+
+
+def waitall(requests):
+    """Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).
+    Status is currently not handled. Requires 'requests' parameter to be an
+    array of c-style pointers to MPI_Requests (e.g. created by
+    'create_requests_array' and popuated by 'isend'/'irecv').
+    """
+    if isinstance(requests, types.Array(dtype=RequestType, ndim=1, layout="C")):
+        return _waitall_array_impl(requests)
+    if isinstance(requests, (list, tuple)):
+        request_buffer = np.hstack(requests)
+        return _waitall_array_impl(request_buffer)
+
+    raise TypeError("Invalid type for array of MPI_Request objects")
+
+
+@overload(waitall)
+def _waitall_impl(requests):
+    """List of overloads for MPI_Waitall implementation"""
+    if isinstance(requests, types.Array(dtype=RequestType, ndim=1, layout="C")):
+
+        def impl(reqs):
+            return _waitall_array_impl(reqs)
+
+    elif isinstance(requests, tuple):
+
+        def impl(reqs):
+            req_buffer = np.hstack(reqs)
+            return _waitall_array_impl(req_buffer)
+
+    else:
+        raise TypeError("Invalid type for array of MPI_Request objects")
+
+    return impl
 
 
 _MPI_Waitany = libmpi.MPI_Waitany
