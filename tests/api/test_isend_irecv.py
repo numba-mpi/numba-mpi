@@ -211,3 +211,38 @@ def test_isend_irecv_waitall(isnd, ircv, wall, data_type):
 
         np.testing.assert_equal(dst1, src1)
         np.testing.assert_equal(dst2, src2)
+
+
+@pytest.mark.parametrize(
+    "isnd, ircv, wall",
+    [
+        (jit_isend.py_func, jit_irecv.py_func, jit_waitall.py_func),
+        (jit_isend, jit_irecv, jit_waitall),
+    ],
+)
+def test_isend_irecv_waitall_tuple(isnd, ircv, wall):
+    src1 = get_random_array((5,))
+    src2 = get_random_array((5,))
+    dst1 = np.empty_like(src1)
+    dst2 = np.empty_like(src2)
+
+    if mpi.rank() == 0:
+        status, req_1 = isnd(src1, dest=1, tag=11)
+        assert status == MPI_SUCCESS
+        status, req_2 = isnd(src2, dest=1, tag=22)
+        assert status == MPI_SUCCESS
+
+        status = wall((req_1, req_2))
+        assert status == MPI_SUCCESS
+
+    elif mpi.rank() == 1:
+        status, req_1 = ircv(dst1, source=0, tag=11)
+        assert status == MPI_SUCCESS
+        status, req_2 = ircv(dst2, source=0, tag=22)
+        assert status == MPI_SUCCESS
+
+        status = wall((req_1, req_2))
+        assert status == MPI_SUCCESS
+
+        np.testing.assert_equal(dst1, src1)
+        np.testing.assert_equal(dst2, src2)
