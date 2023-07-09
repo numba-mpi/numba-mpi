@@ -7,7 +7,7 @@ import pytest
 from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD
 
 import numba_mpi as mpi
-from tests.common import data_types
+from tests.common import MPI_SUCCESS, data_types
 from tests.utils import get_random_array
 
 TEST_WAIT_FULL_IN_SECONDS = 0.3
@@ -53,14 +53,25 @@ def test_isend_irecv(isnd, ircv, wait, data_type):
     dst_tst = np.empty_like(src)
 
     if mpi.rank() == 0:
-        req = isnd(src, dest=1, tag=11)
+        status, req = isnd(src, dest=1, tag=11)
+        assert status == MPI_SUCCESS
+
         req_exp = COMM_WORLD.Isend(src, dest=1, tag=22)
-        wait(req)
+
+        status = wait(req)
+        assert status == MPI_SUCCESS
+
         req_exp.wait()
+
     elif mpi.rank() == 1:
-        req = ircv(dst_tst, source=0, tag=11)
+        status, req = ircv(dst_tst, source=0, tag=11)
+        assert status == MPI_SUCCESS
+
         req_exp = COMM_WORLD.Irecv(dst_exp, source=0, tag=22)
-        wait(req)
+
+        status = wait(req)
+        assert status == MPI_SUCCESS
+
         req_exp.wait()
 
         np.testing.assert_equal(dst_tst, src)
@@ -79,10 +90,12 @@ def test_send_default_tag(isnd, ircv, wait):
     dst_tst = np.empty_like(src)
 
     if mpi.rank() == 0:
-        req = isnd(src, dest=1)
+        status, req = isnd(src, dest=1)
+        assert status == MPI_SUCCESS
         wait(req)
     elif mpi.rank() == 1:
-        req = ircv(dst_tst, source=0, tag=0)
+        status, req = ircv(dst_tst, source=0, tag=0)
+        assert status == MPI_SUCCESS
         wait(req)
 
         np.testing.assert_equal(dst_tst, src)
@@ -100,10 +113,12 @@ def test_recv_default_tag(isnd, ircv, wait):
     dst_tst = np.empty_like(src)
 
     if mpi.rank() == 0:
-        req = isnd(src, dest=1, tag=44)
+        status, req = isnd(src, dest=1, tag=44)
+        assert status == MPI_SUCCESS
         wait(req)
     elif mpi.rank() == 1:
-        req = ircv(dst_tst, source=0)
+        status, req = ircv(dst_tst, source=0)
+        assert status == MPI_SUCCESS
         wait(req)
 
         np.testing.assert_equal(dst_tst, src)
@@ -121,10 +136,12 @@ def test_recv_default_source(isnd, ircv, wait):
     dst_tst = np.empty_like(src)
 
     if mpi.rank() == 0:
-        req = isnd(src, dest=1, tag=44)
+        status, req = isnd(src, dest=1, tag=44)
+        assert status == MPI_SUCCESS
         wait(req)
     elif mpi.rank() == 1:
-        req = ircv(dst_tst, tag=44)
+        status, req = ircv(dst_tst, tag=44)
+        assert status == MPI_SUCCESS
         wait(req)
 
         np.testing.assert_equal(dst_tst, src)
@@ -143,13 +160,17 @@ def test_isend_irecv_test(isnd, ircv, tst, wait):
 
     if mpi.rank() == 0:
         time.sleep(TEST_WAIT_FULL_IN_SECONDS)
-        req = isnd(src, dest=1, tag=11)
+        status, req = isnd(src, dest=1, tag=11)
+        assert status == MPI_SUCCESS
         wait(req)
     elif mpi.rank() == 1:
-        req = ircv(dst, source=0, tag=11)
+        status, req = ircv(dst, source=0, tag=11)
+        assert status == MPI_SUCCESS
 
-        while not tst(req):
+        status, flag = tst(req)
+        while status == MPI_SUCCESS and not flag:
             time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
+            status, flag = tst(req)
 
         np.testing.assert_equal(dst, src)
         wait(req)

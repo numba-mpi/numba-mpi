@@ -36,6 +36,4 @@ def isend(data, dest, tag=0):
         request_buffer.ctypes.data,
     )
 
-    assert status == 0
-
-    return request_buffer
+    return status, request_buffer

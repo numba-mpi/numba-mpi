@@ -35,6 +35,4 @@ def irecv(data, source=ANY_SOURCE, tag=ANY_TAG):
         request_buffer.ctypes.data,
     )
 
-    assert status == 0
-
-    return request_buffer
+    return status, request_buffer

@@ -120,9 +120,7 @@ def test(request):
 
     status = _MPI_Test(request.ctypes.data, flag.ctypes.data, status_buffer.ctypes.data)
 
-    assert status == 0
-
-    return flag[0] != 0
+    return status, flag[0] != 0
 
 
 _MPI_Testall = libmpi.MPI_Testall
