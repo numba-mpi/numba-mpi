@@ -21,7 +21,7 @@ def irecv(data, source=ANY_SOURCE, tag=ANY_TAG):
     If successful (i.e. result is MPI_SUCCESS), returns c-style pointer to valid
     MPI_Request handle that may be used with appropriate wait and test functions."""
 
-    assert data.flags.c_contiguous
+    assert data.flags.c_contiguous  # TODO #60
 
     request_buffer = _allocate_numpy_array_of_request_handles()
 

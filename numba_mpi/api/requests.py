@@ -59,8 +59,13 @@ def waitall(requests):
     'create_requests_array' and popuated by 'isend'/'irecv').
     """
 
+    if isinstance(requests, np.ndarray):
+        assert requests.dtype == RequestType
+        request_buffer = requests
+    else:
+        assert False
+
     status_buffer = create_status_buffer(requests.size)
-    request_buffer = np.array(requests, dtype=RequestType)
 
     status = _MPI_Waitall(
         request_buffer.size, request_buffer.ctypes.data, status_buffer.ctypes.data
@@ -85,8 +90,13 @@ def waitany(requests):
     'isend'/'irecv').
     """
 
+    if isinstance(requests, np.ndarray):
+        assert requests.dtype == RequestType
+        request_buffer = requests
+    else:
+        assert False
+
     status_buffer = create_status_buffer()
-    request_buffer = np.array(requests, dtype=RequestType)
     index = np.empty(1, dtype=np.intc)
 
     status = _MPI_Waitany(
@@ -144,8 +154,13 @@ def testall(requests):
     'isend'/'irecv').
     """
 
+    if isinstance(requests, np.ndarray):
+        assert requests.dtype == RequestType
+        request_buffer = requests
+    else:
+        assert False
+
     status_buffer = create_status_buffer(requests.size)
-    request_buffer = np.array(requests, dtype=RequestType)
     flag = np.empty(1, dtype=np.intc)
     status = _MPI_Testall(
         request_buffer.size,
@@ -199,8 +214,13 @@ def testany(requests):
     'create_requests_array' and popuated by 'isend'/'irecv').
     """
 
+    if isinstance(requests, np.ndarray):
+        assert requests.dtype == RequestType
+        request_buffer = requests
+    else:
+        assert False
+
     status_buffer = create_status_buffer()
-    request_buffer = np.array(requests, dtype=RequestType)
     flag = np.empty(1, dtype=np.intc)
     index = np.empty(1, dtype=np.intc)
     status = _MPI_Testany(
