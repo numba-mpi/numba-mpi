@@ -197,7 +197,6 @@ def _testall_array_impl(requests):
     return status, flag[0] != 0
 
 
-@numba.njit
 def testall(requests):
     """Wrapper for MPI_Testall. Returns tuple containing both status and boolean
     flag that indicates whether given request is completed. Status is currently
@@ -264,7 +263,6 @@ def _testany_array_impl(requests):
     return status, flag[0] != 0, index[0]
 
 
-@numba.njit
 def testany(requests):
     """Wrapper for MPI_Testany. Returns tuple containing status, boolean flag
     that indicates whether any of requests is completed, and index of request
