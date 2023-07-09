@@ -32,9 +32,9 @@ else:
     _MpiOp = ctypes.c_void_p
 
 if MPI._sizeof(MPI.Request) == ctypes.sizeof(ctypes.c_int):
-    _MpiRequestNpType = np.intc
+    RequestType = np.intc
 else:
-    _MpiRequestNpType = np.uintp
+    RequestType = np.uintp
 
 # pylint: enable=protected-access
 _MpiStatusPtr = ctypes.c_void_p

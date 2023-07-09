@@ -7,7 +7,7 @@ import numba
 import numpy as np
 
 from numba_mpi.common import (
-    _MpiRequestNpType,
+    RequestType,
     _MpiRequestPtr,
     _MpiStatusPtr,
     create_status_buffer,
@@ -18,9 +18,9 @@ from numba_mpi.common import (
 
 
 @numba.njit
-def create_requests_array(count=1):
+def _allocate_numpy_array_of_request_handles(count=1):
     """Helper function for creating numpy array storing pointers to MPI_Request handles."""
-    return np.empty(count, dtype=_MpiRequestNpType)
+    return np.empty(count, dtype=RequestType)
 
 
 # Wait* functions
@@ -38,7 +38,10 @@ def wait(request):
     """
 
     status_buffer = create_status_buffer()
-    status = _MPI_Wait(request.ctypes.data, status_buffer.ctypes.data)
+    request_buffer = _allocate_numpy_array_of_request_handles()
+    request_buffer[0] = request
+
+    status = _MPI_Wait(request_buffer.ctypes.data, status_buffer.ctypes.data)
 
     return status
 
@@ -57,8 +60,10 @@ def waitall(requests):
     """
 
     status_buffer = create_status_buffer(requests.size)
+    request_buffer = np.array(requests, dtype=RequestType)
+
     status = _MPI_Waitall(
-        requests.size, requests.ctypes.data, status_buffer.ctypes.data
+        request_buffer.size, request_buffer.ctypes.data, status_buffer.ctypes.data
     )
 
     return status
@@ -81,10 +86,12 @@ def waitany(requests):
     """
 
     status_buffer = create_status_buffer()
+    request_buffer = np.array(requests, dtype=RequestType)
     index = np.empty(1, dtype=np.intc)
+
     status = _MPI_Waitany(
-        requests.size,
-        requests.ctypes.data,
+        request_buffer.size,
+        request_buffer.ctypes.data,
         index.ctypes.data,
         status_buffer.ctypes.data,
     )
@@ -110,8 +117,13 @@ def test(request):
     """
 
     status_buffer = create_status_buffer()
+    request_buffer = _allocate_numpy_array_of_request_handles()
+    request_buffer[0] = request
     flag = np.empty(1, dtype=np.intc)
-    status = _MPI_Test(request.ctypes.data, flag.ctypes.data, status_buffer.ctypes.data)
+
+    status = _MPI_Test(
+        request_buffer.ctypes.data, flag.ctypes.data, status_buffer.ctypes.data
+    )
 
     assert status == 0
 
@@ -133,9 +145,13 @@ def testall(requests):
     """
 
     status_buffer = create_status_buffer(requests.size)
+    request_buffer = np.array(requests, dtype=RequestType)
     flag = np.empty(1, dtype=np.intc)
     status = _MPI_Testall(
-        requests.size, requests.ctypes.data, flag.ctypes.data, status_buffer.ctypes.data
+        request_buffer.size,
+        request_buffer.ctypes.data,
+        flag.ctypes.data,
+        status_buffer.ctypes.data,
     )
 
     assert status == 0
@@ -184,11 +200,12 @@ def testany(requests):
     """
 
     status_buffer = create_status_buffer()
+    request_buffer = np.array(requests, dtype=RequestType)
     flag = np.empty(1, dtype=np.intc)
     index = np.empty(1, dtype=np.intc)
     status = _MPI_Testany(
-        requests.size,
-        requests.ctypes.data,
+        request_buffer.size,
+        request_buffer.ctypes.data,
         index.ctypes.data,
         flag.ctypes.data,
         status_buffer.ctypes.data,

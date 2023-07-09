@@ -6,7 +6,7 @@ import ctypes
 import numba
 from mpi4py.MPI import ANY_SOURCE, ANY_TAG
 
-from numba_mpi.api.requests import create_requests_array
+from numba_mpi.api.requests import _allocate_numpy_array_of_request_handles
 from numba_mpi.common import _MPI_Comm_World_ptr, libmpi, send_recv_async_args
 from numba_mpi.utils import _mpi_addr, _mpi_dtype
 
@@ -23,7 +23,7 @@ def irecv(data, source=ANY_SOURCE, tag=ANY_TAG):
 
     assert data.flags.c_contiguous
 
-    request = create_requests_array()
+    request_buffer = _allocate_numpy_array_of_request_handles()
 
     status = _MPI_Irecv(
         data.ctypes.data,
@@ -32,9 +32,9 @@ def irecv(data, source=ANY_SOURCE, tag=ANY_TAG):
         source,
         tag,
         _mpi_addr(_MPI_Comm_World_ptr),
-        request.ctypes.data,
+        request_buffer.ctypes.data,
     )
 
     assert status == 0
 
-    return request
+    return request_buffer[0]

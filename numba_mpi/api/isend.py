@@ -6,7 +6,7 @@ import ctypes
 import numba
 import numpy as np
 
-from numba_mpi.api.requests import create_requests_array
+from numba_mpi.api.requests import _allocate_numpy_array_of_request_handles
 from numba_mpi.common import _MPI_Comm_World_ptr, libmpi, send_recv_async_args
 from numba_mpi.utils import _mpi_addr, _mpi_dtype
 
@@ -23,7 +23,9 @@ def isend(data, dest, tag=0):
     value for `tag` is set to zero.
     """
     data = np.ascontiguousarray(data)
-    request = create_requests_array()
+
+    request_buffer = _allocate_numpy_array_of_request_handles()
+
     status = _MPI_Isend(
         data.ctypes.data,
         data.size,
@@ -31,9 +33,9 @@ def isend(data, dest, tag=0):
         dest,
         tag,
         _mpi_addr(_MPI_Comm_World_ptr),
-        request.ctypes.data,
+        request_buffer.ctypes.data,
     )
 
     assert status == 0
 
-    return request
+    return request_buffer[0]
