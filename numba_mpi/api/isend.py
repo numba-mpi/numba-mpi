@@ -38,4 +38,4 @@ def isend(data, dest, tag=0):
 
     assert status == 0
 
-    return request_buffer[0]
+    return request_buffer

@@ -37,4 +37,4 @@ def irecv(data, source=ANY_SOURCE, tag=ANY_TAG):
 
     assert status == 0
 
-    return request_buffer[0]
+    return request_buffer

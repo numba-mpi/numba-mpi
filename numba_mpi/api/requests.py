@@ -38,10 +38,7 @@ def wait(request):
     """
 
     status_buffer = create_status_buffer()
-    request_buffer = _allocate_numpy_array_of_request_handles()
-    request_buffer[0] = request
-
-    status = _MPI_Wait(request_buffer.ctypes.data, status_buffer.ctypes.data)
+    status = _MPI_Wait(request.ctypes.data, status_buffer.ctypes.data)
 
     return status
 
@@ -123,9 +120,7 @@ def test(request):
     request_buffer[0] = request
     flag = np.empty(1, dtype=np.intc)
 
-    status = _MPI_Test(
-        request_buffer.ctypes.data, flag.ctypes.data, status_buffer.ctypes.data
-    )
+    status = _MPI_Test(request.ctypes.data, flag.ctypes.data, status_buffer.ctypes.data)
 
     assert status == 0
 
