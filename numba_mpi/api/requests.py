@@ -5,7 +5,6 @@ import ctypes
 
 import numba
 import numpy as np
-from numba.core import types
 from numba.core.extending import overload
 
 from numba_mpi.common import (
