@@ -84,7 +84,7 @@ def _waitall_impl(requests):
         def impl(requests):
             return _waitall_array_impl(requests)
 
-    elif isinstance(requests, types.Tuple):
+    elif isinstance(requests, types.UniTuple):
 
         def impl(requests):
             req_buffer = np.hstack(requests)
