@@ -138,8 +138,8 @@ def test_isend_irecv_test(isnd, ircv, tst, wait):
 @pytest.mark.parametrize(
     "isnd, ircv, wall",
     [
-        (mpi.isend, mpi.irecv, mpi.waitall),
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.waitall.py_func),
+        (mpi.isend, mpi.irecv, jit_waitall),
+        (mpi.isend.py_func, mpi.irecv.py_func, jit_waitall.py_func),
     ],
 )
 @pytest.mark.parametrize("data_type", data_types)
