@@ -55,9 +55,6 @@ def waitall(requests):
     array of c-style pointers to MPI_Requests (e.g. created by
     'create_requests_array' and popuated by 'isend'/'irecv').
     """
-    if requests.dtype != RequestType:
-        raise TypeError("Invalid underlying type for MPI_Request.")
-
     status_buffer = create_status_buffer(requests.size)
 
     status = _MPI_Waitall(
