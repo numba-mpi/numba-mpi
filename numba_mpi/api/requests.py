@@ -51,6 +51,7 @@ _MPI_Waitall.restype = ctypes.c_int
 _MPI_Waitall.argtypes = [ctypes.c_int, _MpiRequestPtr, _MpiStatusPtr]
 
 
+@numba.njit
 def waitall(requests):
     """Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).
     Status is currently not handled. Requires 'requests' parameter to be an
