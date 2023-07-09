@@ -5,6 +5,8 @@ import ctypes
 
 import numba
 import numpy as np
+from numba.core import types
+from numba.core.extending import overload
 
 from numba_mpi.common import (
     RequestType,
@@ -52,26 +54,47 @@ _MPI_Waitall.argtypes = [ctypes.c_int, _MpiRequestPtr, _MpiStatusPtr]
 
 
 @numba.njit
+def _waitall_array_impl(requests):
+    """MPI_Waitall implementation for contiguous numpy arrays of MPI_Requests"""
+    if requests.dtype != RequestType:
+        raise TypeError("Invalid underlying type for MPI_Request.")
+
+    status_buffer = create_status_buffer(requests.size)
+
+    status = _MPI_Waitall(
+        requests.size, requests.ctypes.data, status_buffer.ctypes.data
+    )
+
+    return status
+
+
+def _waitall_impl(requests):
+    """List of overloads for MPI_Waitall implementation"""
+    if isinstance(requests, types.Array(dtype=RequestType, ndim=1, layout="C")):
+
+        def impl(reqs):
+            return _waitall_array_impl(reqs)
+
+    elif isinstance(requests, (list, tuple)):
+
+        def impl(reqs):
+            req_buffer = np.array(reqs, dtype=RequestType)
+            return _waitall_array_impl(req_buffer)
+
+    else:
+        raise TypeError("Invalid type for array of MPI_Request objects")
+
+    return impl
+
+
+@numba.njit
 def waitall(requests):
     """Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).
     Status is currently not handled. Requires 'requests' parameter to be an
     array of c-style pointers to MPI_Requests (e.g. created by
     'create_requests_array' and popuated by 'isend'/'irecv').
     """
-
-    if isinstance(requests, np.ndarray):
-        assert requests.dtype == RequestType
-        request_buffer = requests
-    else:
-        assert False
-
-    status_buffer = create_status_buffer(requests.size)
-
-    status = _MPI_Waitall(
-        request_buffer.size, request_buffer.ctypes.data, status_buffer.ctypes.data
-    )
-
-    return status
+    pass
 
 
 _MPI_Waitany = libmpi.MPI_Waitany
@@ -154,11 +177,7 @@ def testall(requests):
     'isend'/'irecv').
     """
 
-    if isinstance(requests, np.ndarray):
-        assert requests.dtype == RequestType
-        request_buffer = requests
-    else:
-        assert False
+    request_buffer = requests
 
     status_buffer = create_status_buffer(requests.size)
     flag = np.empty(1, dtype=np.intc)
@@ -214,11 +233,7 @@ def testany(requests):
     'create_requests_array' and popuated by 'isend'/'irecv').
     """
 
-    if isinstance(requests, np.ndarray):
-        assert requests.dtype == RequestType
-        request_buffer = requests
-    else:
-        assert False
+    request_buffer = requests
 
     status_buffer = create_status_buffer()
     flag = np.empty(1, dtype=np.intc)
