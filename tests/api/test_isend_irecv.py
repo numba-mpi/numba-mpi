@@ -345,13 +345,13 @@ def test_isend_irecv_waitall_tuple(isnd, ircv, wall):
     dst2 = np.empty_like(src2)
 
     if mpi.rank() == 0:
-        r1 = isnd(src1, dest=1, tag=11)
-        r2 = isnd(src2, dest=1, tag=22)
-        wall((r1, r2))
+        req_1 = isnd(src1, dest=1, tag=11)
+        req_2 = isnd(src2, dest=1, tag=22)
+        wall((req_1, req_2))
     elif mpi.rank() == 1:
-        r1 = ircv(dst1, source=0, tag=11)
-        r2 = ircv(dst2, source=0, tag=22)
-        wall((r1, r2))
+        req_1 = ircv(dst1, source=0, tag=11)
+        req_2 = ircv(dst2, source=0, tag=22)
+        wall((req_1, req_2))
 
         np.testing.assert_equal(dst1, src1)
         np.testing.assert_equal(dst2, src2)
