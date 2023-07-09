@@ -116,8 +116,6 @@ def test(request):
     """
 
     status_buffer = create_status_buffer()
-    request_buffer = _allocate_numpy_array_of_request_handles()
-    request_buffer[0] = request
     flag = np.empty(1, dtype=np.intc)
 
     status = _MPI_Test(request.ctypes.data, flag.ctypes.data, status_buffer.ctypes.data)
