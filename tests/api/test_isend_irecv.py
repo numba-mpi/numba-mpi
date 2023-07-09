@@ -1,6 +1,7 @@
 # pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring,too-many-arguments
 import time
 
+import numba
 import numpy as np
 import pytest
 from mpi4py.MPI import COMM_WORLD
@@ -11,6 +12,11 @@ from tests.utils import get_random_array
 
 TEST_WAIT_FULL_IN_SECONDS = 0.3
 TEST_WAIT_INCREMENT_IN_SECONDS = 0.1
+
+
+@numba.njit
+def jit_waitall(requests):
+    return mpi.waitall(requests)
 
 
 @pytest.mark.parametrize(
@@ -164,13 +170,13 @@ def test_isend_irecv_waitall(isnd, ircv, wall, data_type):
             mpi.isend,
             mpi.irecv,
             mpi.testall,
-            mpi.waitall,
+            jit_waitall,
         ),
         (
             mpi.isend.py_func,
             mpi.irecv.py_func,
             mpi.testall.py_func,
-            mpi.waitall.py_func,
+            jit_waitall.py_func,
         ),
     ],
 )
@@ -201,12 +207,12 @@ def test_isend_irecv_testall(isnd, ircv, tall, wall):
 @pytest.mark.parametrize(
     "isnd, ircv, wany, wall",
     [
-        (mpi.isend, mpi.irecv, mpi.waitany, mpi.waitall),
+        (mpi.isend, mpi.irecv, mpi.waitany, jit_waitall),
         (
             mpi.isend.py_func,
             mpi.irecv.py_func,
             mpi.waitany.py_func,
-            mpi.waitall.py_func,
+            jit_waitall.py_func,
         ),
     ],
 )
@@ -241,12 +247,12 @@ def test_isend_irecv_waitany(isnd, ircv, wany, wall, data_type):
 @pytest.mark.parametrize(
     "isnd, ircv, tany, wall",
     [
-        (mpi.isend, mpi.irecv, mpi.testany, mpi.waitall),
+        (mpi.isend, mpi.irecv, mpi.testany, jit_waitall),
         (
             mpi.isend.py_func,
             mpi.irecv.py_func,
             mpi.testany.py_func,
-            mpi.waitall.py_func,
+            jit_waitall.py_func,
         ),
     ],
 )
@@ -284,8 +290,8 @@ def test_isend_irecv_testany(isnd, ircv, tany, wall):
 @pytest.mark.parametrize(
     "isnd, ircv, wall",
     [
-        (mpi.isend, mpi.irecv, mpi.waitall),
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.waitall.py_func),
+        (mpi.isend, mpi.irecv, jit_waitall),
+        (mpi.isend.py_func, mpi.irecv.py_func, jit_waitall.py_func),
     ],
 )
 def test_isend_irecv_waitall_exchange(isnd, ircv, wall):
@@ -307,8 +313,8 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall):
 @pytest.mark.parametrize(
     "isnd, ircv, wall",
     [
-        (mpi.isend, mpi.irecv, mpi.waitall),
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.waitall.py_func),
+        (mpi.isend, mpi.irecv, jit_waitall),
+        (mpi.isend.py_func, mpi.irecv.py_func, jit_waitall.py_func),
     ],
 )
 def test_isend_irecv_waitall_list(isnd, ircv, wall):
@@ -334,8 +340,8 @@ def test_isend_irecv_waitall_list(isnd, ircv, wall):
 @pytest.mark.parametrize(
     "isnd, ircv, wall",
     [
-        (mpi.isend, mpi.irecv, mpi.waitall),
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.waitall.py_func),
+        (mpi.isend, mpi.irecv, jit_waitall),
+        (mpi.isend.py_func, mpi.irecv.py_func, jit_waitall.py_func),
     ],
 )
 def test_isend_irecv_waitall_tuple(isnd, ircv, wall):
