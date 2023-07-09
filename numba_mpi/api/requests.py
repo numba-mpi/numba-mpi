@@ -162,10 +162,10 @@ _MPI_Test.argtypes = [_MpiRequestPtr, ctypes.c_void_p, _MpiStatusPtr]
 
 @numba.njit
 def test(request):
-    """Wrapper for MPI_Test. Returns boolean flag indicating whether given
-    request is completed. Status is currently not handled. Requires
-    'request' parameter to be a c-style pointer to MPI_Request
-    (such as returned by 'isend'/'irecv').
+    """Wrapper for MPI_Test. Returns tuple containing both status and boolean
+    flag that indicates whether given request is completed. Status is currently
+    not handled. Requires 'request' parameter to be a c-style pointer to
+    MPI_Request (such as returned by 'isend'/'irecv').
     """
 
     status_buffer = create_status_buffer()
@@ -182,47 +182,57 @@ _MPI_Testall.argtypes = [ctypes.c_int, _MpiRequestPtr, ctypes.c_void_p, _MpiStat
 
 
 @numba.njit
-def testall(requests):
-    """Wrapper for MPI_Testall. Returns boolean flag indicating whether all
-    requests in question are completed. Status is currently not handled.
-    Requires 'requests' parameter to be an array of c-style pointers to
-    MPI_Requests (e.g. created by 'create_requests_array' and popuated by
-    'isend'/'irecv').
-    """
-
-    request_buffer = requests
+def _testall_array_impl(requests):
+    """MPI_Testall implementation for contiguous numpy arrays of MPI_Requests"""
 
     status_buffer = create_status_buffer(requests.size)
     flag = np.empty(1, dtype=np.intc)
     status = _MPI_Testall(
-        request_buffer.size,
-        request_buffer.ctypes.data,
+        requests.size,
+        requests.ctypes.data,
         flag.ctypes.data,
         status_buffer.ctypes.data,
     )
 
-    assert status == 0
-
-    return flag[0] != 0
+    return status, flag[0] != 0
 
 
-@numba.experimental.jitclass([("value", numba.int32)])
-class TestAnyResult:
-    """Helper class for storing results of calls to MPI_Testany wrapper."""
+@numba.njit
+def testall(requests):
+    """Wrapper for MPI_Testall. Returns tuple containing both status and boolean
+    flag that indicates whether given request is completed. Status is currently
+    not handled. Requires 'requests' parameter to be an array or tuple of
+    MPI_Request objects.
+    """
+    if isinstance(requests, np.ndarray):
+        return _testall_array_impl(requests)
 
-    def __init__(self, flag, index):
-        """Initializes instance from returned flag and indx parameters."""
-        self.value = index if flag else -1
+    if isinstance(requests, (list, tuple)):
+        request_buffer = np.hstack(requests)
+        return _testall_array_impl(request_buffer)
 
-    def __bool__(self):
-        """Returns true when flag parameter was true."""
-        return self.value >= 0
+    raise TypeError("Invalid type for array of MPI_Request objects")
 
-    def index(self):
-        """Returns index of request that is ensured to be completed. Valid if
-        returned flag value was true.
-        """
-        return self.value
+
+@overload(testall)
+def _testall_impl(requests):
+    """List of overloads for MPI_Testall implementation"""
+
+    if isinstance(requests, types.Array):
+
+        def impl(requests):
+            return _testall_array_impl(requests)
+
+    elif isinstance(requests, types.UniTuple):
+
+        def impl(requests):
+            req_buffer = np.hstack(requests)
+            return _testall_array_impl(req_buffer)
+
+    else:
+        raise TypeError("Invalid type for array of MPI_Request objects")
+
+    return impl
 
 
 _MPI_Testany = libmpi.MPI_Testany
@@ -237,28 +247,57 @@ _MPI_Testany.argtypes = [
 
 
 @numba.njit
-def testany(requests):
-    """Wrapper for MPI_Testany. Returns simple helper class that is truthy if
-    any of requests in question was completed. Its 'index()' method may
-    be used to obtain index of request that is guaranteed to be completed.
-    Status is currently not handled. Requires 'requests' parameter to be an
-    array of c-style pointers to MPI_Requests (e.g. created by
-    'create_requests_array' and popuated by 'isend'/'irecv').
-    """
-
-    request_buffer = requests
+def _testany_array_impl(requests):
+    """MPI_Testany implementation for contiguous numpy arrays of MPI_Requests"""
 
     status_buffer = create_status_buffer()
     flag = np.empty(1, dtype=np.intc)
     index = np.empty(1, dtype=np.intc)
     status = _MPI_Testany(
-        request_buffer.size,
-        request_buffer.ctypes.data,
+        requests.size,
+        requests.ctypes.data,
         index.ctypes.data,
         flag.ctypes.data,
         status_buffer.ctypes.data,
     )
 
-    assert status == 0
+    return status, flag[0] != 0, index[0]
 
-    return TestAnyResult(flag[0], index[0])
+
+@numba.njit
+def testany(requests):
+    """Wrapper for MPI_Testany. Returns tuple containing status, boolean flag
+    that indicates whether any of requests is completed, and index of request
+    that is guaranteed to be completed. Requires 'requests' parameter to be an
+    array or tuple of MPI_Request objects.
+    """
+
+    if isinstance(requests, np.ndarray):
+        return _testany_array_impl(requests)
+
+    if isinstance(requests, (list, tuple)):
+        request_buffer = np.hstack(requests)
+        return _testany_array_impl(request_buffer)
+
+    raise TypeError("Invalid type for array of MPI_Request objects")
+
+
+@overload(testany)
+def _testany_impl(requests):
+    """List of overloads for MPI_Testany implementation"""
+
+    if isinstance(requests, types.Array):
+
+        def impl(requests):
+            return _testany_array_impl(requests)
+
+    elif isinstance(requests, types.UniTuple):
+
+        def impl(requests):
+            req_buffer = np.hstack(requests)
+            return _testany_array_impl(req_buffer)
+
+    else:
+        raise TypeError("Invalid type for array of MPI_Request objects")
+
+    return impl

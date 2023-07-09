@@ -30,11 +30,6 @@ def jit_wait(request):
 
 
 @numba.njit
-def jit_test(request):
-    return mpi.test(request)
-
-
-@numba.njit
 def jit_waitall(requests):
     return mpi.waitall(requests)
 
@@ -42,6 +37,21 @@ def jit_waitall(requests):
 @numba.njit
 def jit_waitany(requests):
     return mpi.waitany(requests)
+
+
+@numba.njit
+def jit_test(request):
+    return mpi.test(request)
+
+
+@numba.njit
+def jit_testall(requests):
+    return mpi.testall(requests)
+
+
+@numba.njit
+def jit_testany(requests):
+    return mpi.testany(requests)
 
 
 @pytest.mark.parametrize(
@@ -150,35 +160,6 @@ def test_recv_default_source(isnd, ircv, wait):
         wait(req)
 
         np.testing.assert_equal(dst_tst, src)
-
-
-@pytest.mark.parametrize(
-    "isnd, ircv, tst, wait",
-    [
-        (jit_isend, jit_irecv, jit_test, jit_wait),
-        (jit_isend.py_func, jit_irecv.py_func, jit_test.py_func, jit_wait.py_func),
-    ],
-)
-def test_isend_irecv_test(isnd, ircv, tst, wait):
-    src = get_random_array((5,))
-    dst = np.empty_like(src)
-
-    if mpi.rank() == 0:
-        time.sleep(TEST_WAIT_FULL_IN_SECONDS)
-        status, req = isnd(src, dest=1, tag=11)
-        assert status == MPI_SUCCESS
-        wait(req)
-    elif mpi.rank() == 1:
-        status, req = ircv(dst, source=0, tag=11)
-        assert status == MPI_SUCCESS
-
-        status, flag = tst(req)
-        while status == MPI_SUCCESS and not flag:
-            time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
-            status, flag = tst(req)
-
-        np.testing.assert_equal(dst, src)
-        wait(req)
 
 
 @pytest.mark.parametrize(
@@ -317,6 +298,131 @@ def test_isend_irecv_waitany(isnd, ircv, wany, wall, data_type):
 
         status, index = wany(reqs)
         assert status == MPI_SUCCESS
+
+        if index == 0:
+            np.testing.assert_equal(dst1, src1)
+        elif index == 1:
+            np.testing.assert_equal(dst2, src2)
+        else:
+            assert False
+
+        wall(reqs)
+
+
+@pytest.mark.parametrize(
+    "isnd, ircv, tst, wait",
+    [
+        (jit_isend, jit_irecv, jit_test, jit_wait),
+        (jit_isend.py_func, jit_irecv.py_func, jit_test.py_func, jit_wait.py_func),
+    ],
+)
+def test_isend_irecv_test(isnd, ircv, tst, wait):
+    src = get_random_array((5,))
+    dst = np.empty_like(src)
+
+    if mpi.rank() == 0:
+        time.sleep(TEST_WAIT_FULL_IN_SECONDS)
+        status, req = isnd(src, dest=1, tag=11)
+        assert status == MPI_SUCCESS
+        wait(req)
+    elif mpi.rank() == 1:
+        status, req = ircv(dst, source=0, tag=11)
+        assert status == MPI_SUCCESS
+
+        status, flag = tst(req)
+        while status == MPI_SUCCESS and not flag:
+            time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
+            status, flag = tst(req)
+
+        np.testing.assert_equal(dst, src)
+        wait(req)
+
+
+@pytest.mark.parametrize(
+    "isnd, ircv, tall, wall",
+    [
+        (
+            jit_isend.py_func,
+            jit_irecv.py_func,
+            jit_testall.py_func,
+            jit_waitall.py_func,
+        ),
+        (jit_isend, jit_irecv, jit_testall, jit_waitall),
+    ],
+)
+def test_isend_irecv_testall(isnd, ircv, tall, wall):
+    src1 = get_random_array((5,))
+    src2 = get_random_array((5,))
+    dst1 = np.empty_like(src1)
+    dst2 = np.empty_like(src2)
+
+    reqs = np.empty((2,), dtype=mpi.RequestType)
+    if mpi.rank() == 0:
+        time.sleep(TEST_WAIT_FULL_IN_SECONDS)
+
+        status, reqs[0] = isnd(src1, dest=1, tag=11)
+        assert status == MPI_SUCCESS
+        status, reqs[1] = isnd(src2, dest=1, tag=22)
+        assert status == MPI_SUCCESS
+
+        wall(reqs)
+
+    elif mpi.rank() == 1:
+        status, reqs[0] = ircv(dst1, source=0, tag=11)
+        assert status == MPI_SUCCESS
+        status, reqs[1] = ircv(dst2, source=0, tag=22)
+        assert status == MPI_SUCCESS
+
+        status, flag = tall(reqs)
+        while status == MPI_SUCCESS and not flag:
+            time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
+            status, flag = tall(reqs)
+
+        np.testing.assert_equal(dst1, src1)
+        np.testing.assert_equal(dst2, src2)
+
+        wall(reqs)
+
+
+@pytest.mark.parametrize(
+    "isnd, ircv, tany, wall",
+    [
+        (
+            jit_isend.py_func,
+            jit_irecv.py_func,
+            jit_testany.py_func,
+            jit_waitall.py_func,
+        ),
+        (jit_isend, jit_irecv, jit_testany, jit_waitall),
+    ],
+)
+def test_isend_irecv_testany(isnd, ircv, tany, wall):
+    src1 = get_random_array((5,))
+    src2 = get_random_array((5,))
+    dst1 = np.empty_like(src1)
+    dst2 = np.empty_like(src2)
+
+    reqs = np.empty((2,), dtype=mpi.RequestType)
+    if mpi.rank() == 0:
+        time.sleep(TEST_WAIT_FULL_IN_SECONDS)
+
+        status, reqs[0] = isnd(src1, dest=1, tag=11)
+        assert status == MPI_SUCCESS
+        status, reqs[1] = isnd(src2, dest=1, tag=22)
+        assert status == MPI_SUCCESS
+
+        wall(reqs)
+
+    elif mpi.rank() == 1:
+        status, reqs[0] = ircv(dst1, source=0, tag=11)
+        assert status == MPI_SUCCESS
+        status, reqs[1] = ircv(dst2, source=0, tag=22)
+        assert status == MPI_SUCCESS
+
+        status, flag, index = tany(reqs)
+        while status == MPI_SUCCESS and not flag:
+            time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
+            status, flag, index = tany(reqs)
 
         if index == 0:
             np.testing.assert_equal(dst1, src1)
