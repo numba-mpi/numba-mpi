@@ -16,16 +16,12 @@ from numba_mpi.common import (
     libmpi,
 )
 
-# helper function to allocate numpy array of request handles
-
 
 @numba.njit
 def _allocate_numpy_array_of_request_handles(count=1):
     """Helper function for creating numpy array storing pointers to MPI_Request handles."""
     return np.empty(count, dtype=RequestType)
 
-
-# Wait* functions
 
 _MPI_Wait = libmpi.MPI_Wait
 _MPI_Wait.restype = ctypes.c_int
@@ -69,8 +65,14 @@ def waitall(requests):
     array of c-style pointers to MPI_Requests (e.g. created by
     'create_requests_array' and popuated by 'isend'/'irecv').
     """
-    if isinstance(requests, types.Array(dtype=RequestType, ndim=1, layout="C")):
+    if (
+        isinstance(requests, types.Array)
+        and requests.dtype == RequestType
+        and requests.ndim == 1
+        and requests.flags.c_contiguous
+    ):
         return _waitall_array_impl(requests)
+
     if isinstance(requests, (list, tuple)):
         request_buffer = np.hstack(requests)
         return _waitall_array_impl(request_buffer)
@@ -81,7 +83,12 @@ def waitall(requests):
 @overload(waitall)
 def _waitall_impl(requests):
     """List of overloads for MPI_Waitall implementation"""
-    if isinstance(requests, types.Array(dtype=RequestType, ndim=1, layout="C")):
+    if (
+        isinstance(requests, types.Array)
+        and requests.dtype == RequestType
+        and requests.ndim == 1
+        and requests.flags.c_contiguous
+    ):
 
         def impl(reqs):
             return _waitall_array_impl(reqs)
@@ -130,8 +137,6 @@ def waitany(requests):
         return -status
     return index[0]
 
-
-# - Test* functions
 
 _MPI_Test = libmpi.MPI_Test
 _MPI_Test.restype = ctypes.c_int
