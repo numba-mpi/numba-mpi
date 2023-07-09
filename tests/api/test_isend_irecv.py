@@ -4,7 +4,7 @@ import time
 import numba
 import numpy as np
 import pytest
-from mpi4py.MPI import COMM_WORLD
+from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD
 
 import numba_mpi as mpi
 from tests.common import data_types
@@ -15,6 +15,26 @@ TEST_WAIT_INCREMENT_IN_SECONDS = 0.1
 
 
 @numba.njit
+def jit_isend(data, dest, tag=0):
+    return mpi.isend(data, dest, tag)
+
+
+@numba.njit
+def jit_irecv(data, source=ANY_SOURCE, tag=ANY_TAG):
+    return mpi.irecv(data, source, tag)
+
+
+@numba.njit
+def jit_wait(request):
+    return mpi.wait(request)
+
+
+@numba.njit
+def jit_test(request):
+    return mpi.test(request)
+
+
+@numba.njit
 def jit_waitall(requests):
     return mpi.waitall(requests)
 
@@ -22,8 +42,8 @@ def jit_waitall(requests):
 @pytest.mark.parametrize(
     "isnd, ircv, wait",
     (
-        (mpi.isend, mpi.irecv, mpi.wait),
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func),
+        (jit_isend.py_func, jit_irecv.py_func, jit_wait.py_func),
+        (jit_isend, jit_irecv, jit_wait),
     ),
 )
 @pytest.mark.parametrize("data_type", data_types)
@@ -50,8 +70,8 @@ def test_isend_irecv(isnd, ircv, wait, data_type):
 @pytest.mark.parametrize(
     "isnd, ircv, wait",
     (
-        (mpi.isend, mpi.irecv, mpi.wait),
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func),
+        (jit_isend.py_func, jit_irecv.py_func, jit_wait.py_func),
+        (jit_isend, jit_irecv, jit_wait),
     ),
 )
 def test_send_default_tag(isnd, ircv, wait):
@@ -71,8 +91,8 @@ def test_send_default_tag(isnd, ircv, wait):
 @pytest.mark.parametrize(
     "isnd, ircv, wait",
     (
-        (mpi.isend, mpi.irecv, mpi.wait),
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func),
+        (jit_isend.py_func, jit_irecv.py_func, jit_wait.py_func),
+        (jit_isend, jit_irecv, jit_wait),
     ),
 )
 def test_recv_default_tag(isnd, ircv, wait):
@@ -92,8 +112,8 @@ def test_recv_default_tag(isnd, ircv, wait):
 @pytest.mark.parametrize(
     "isnd, ircv, wait",
     (
-        (mpi.isend, mpi.irecv, mpi.wait),
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.wait.py_func),
+        (jit_isend.py_func, jit_irecv.py_func, jit_wait.py_func),
+        (jit_isend, jit_irecv, jit_wait),
     ),
 )
 def test_recv_default_source(isnd, ircv, wait):
@@ -113,8 +133,8 @@ def test_recv_default_source(isnd, ircv, wait):
 @pytest.mark.parametrize(
     "isnd, ircv, tst, wait",
     [
-        (mpi.isend, mpi.irecv, mpi.test, mpi.wait),
-        (mpi.isend.py_func, mpi.irecv.py_func, mpi.test.py_func, mpi.wait.py_func),
+        (jit_isend, jit_irecv, jit_test, jit_wait),
+        (jit_isend.py_func, jit_irecv.py_func, jit_test.py_func, jit_wait.py_func),
     ],
 )
 def test_isend_irecv_test(isnd, ircv, tst, wait):
