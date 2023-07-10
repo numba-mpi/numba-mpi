@@ -14,6 +14,7 @@
 
 #### Numba @njittable MPI wrappers
 - covering: `size`/`rank`, `send`/`recv`, `allreduce`, `bcast`, `scatter`/`gather` & `allgather`, `barrier` and `wtime`
+- basic asynchronous communication with `isend`/`irecv` (only for contiguous arrays); for request handling including `wait`/`waitall`/`waitany` and `test`/`testall`/`testany`
 - not yet implemented: support for non-default communicators, ...
 - API based on NumPy and supporting numeric and character datatypes 
 - auto-generated docstring-based API docs on the web: https://numba-mpi.github.io/numba-mpi
