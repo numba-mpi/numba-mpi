@@ -48,7 +48,7 @@ def create_status_buffer(count=1):
     return np.empty(count * 5, dtype=np.intc)
 
 
-for name in ("mpi", "msmpi", "impi"):
+for name in ("impi",) if "I_MPI_ROOT" in os.environ else ("mpi", "msmpi", "impi"):
     LIB = find_library(name)
     if LIB is not None:
         break
