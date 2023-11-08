@@ -1,6 +1,7 @@
 """variables used across API implementation"""
 import ctypes
 from ctypes.util import find_library
+import os
 
 import numba
 import numpy as np
