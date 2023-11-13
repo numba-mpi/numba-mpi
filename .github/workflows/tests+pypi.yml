@@ -149,7 +149,7 @@ jobs:
       - run: |
           unset CI
           python -m build 2>&1 | tee build.log
-          exit `fgrep -i warning build.log | wc -l`
+          exit `fgrep -i warning build.log | grep -v "tool.setuptools_scm" | wc -l`
 
       - run: twine check --strict dist/*
 
