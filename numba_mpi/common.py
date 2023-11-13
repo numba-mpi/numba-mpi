@@ -1,6 +1,7 @@
 """variables used across API implementation"""
 import ctypes
 import os
+from ctypes.util import find_library
 from pathlib import Path
 
 import numpy as np
@@ -50,7 +51,7 @@ if hasattr(ps, "memory_maps"):
                     break
 else:
     for name in names:
-        LIB = ctypes.util.find_library(name)
+        LIB = find_library(name)
         if LIB is not None:
             break
 
