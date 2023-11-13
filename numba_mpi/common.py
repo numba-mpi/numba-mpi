@@ -1,8 +1,11 @@
 """variables used across API implementation"""
 import ctypes
+import os
 from ctypes.util import find_library
+from pathlib import Path
 
 import numpy as np
+import psutil
 from mpi4py import MPI
 
 # pylint: disable=protected-access
@@ -34,9 +37,12 @@ else:
 # pylint: enable=protected-access
 _MpiStatusPtr = ctypes.c_void_p
 
-for name in ("mpi", "msmpi", "impi"):
-    LIB = find_library(name)
-    if LIB is not None:
+LIB = None
+
+for dll in psutil.Process(os.getpid()).memory_maps():
+    path = Path(dll.path)
+    if path.stem.startswith("lib") and "mpi." in path.stem:
+        LIB = path
         break
 
 if LIB is None:
