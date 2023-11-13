@@ -20,7 +20,7 @@ setup(
     setup_requires=["setuptools_scm"],
     license="GPL v3",
     description="Numba @njittable MPI wrappers tested on Linux, macOS and Windows",
-    install_requires=("numba", "numpy", "mpi4py"),
+    install_requires=("numba", "numpy<=1.24.4", "mpi4py"),
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     packages=find_packages(include=["numba_mpi", "numba_mpi.*"]),
