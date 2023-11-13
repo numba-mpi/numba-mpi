@@ -5,7 +5,13 @@ import numba
 import numpy as np
 from mpi4py.MPI import ANY_SOURCE, ANY_TAG
 
-from numba_mpi.common import _MPI_Comm_World_ptr, _MpiStatusPtr, libmpi, send_recv_args
+from numba_mpi.common import (
+    _MPI_Comm_World_ptr,
+    _MpiStatusPtr,
+    create_status_buffer,
+    libmpi,
+    send_recv_args,
+)
 from numba_mpi.utils import _mpi_addr, _mpi_dtype
 
 _MPI_Recv = libmpi.MPI_Recv
@@ -20,7 +26,7 @@ def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
     """file containing wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise
     allocates a buffer and later copies the data into non-contiguous `data` array).
     Returns integer status code (0 == MPI_SUCCESS)"""
-    status = np.empty(5, dtype=np.intc)
+    status_buffer = create_status_buffer()
 
     buffer = (
         data
@@ -37,7 +43,7 @@ def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
         source,
         tag,
         _mpi_addr(_MPI_Comm_World_ptr),
-        status.ctypes.data,
+        status_buffer.ctypes.data,
     )
 
     if not data.flags.c_contiguous:
