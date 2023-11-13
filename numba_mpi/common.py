@@ -48,7 +48,7 @@ if hasattr(ps, "memory_maps"):
         if windows or path.stem.startswith("lib"):
             for name in names:
                 if name + ("" if windows else ".") in path.stem:
-                    LIB = path
+                    LIB = str(path)
                     break
 else:
     for name in names:
