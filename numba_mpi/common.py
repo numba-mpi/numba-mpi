@@ -37,14 +37,23 @@ else:
 _MpiStatusPtr = ctypes.c_void_p
 
 LIB = None
+names = ("mpich", "mpi", "msmpi", "impi")
 
-for dll in psutil.Process(os.getpid()).memory_maps():
-    path = Path(dll.path)
-    if path.stem.startswith("lib"):
-        for key in ("mpich", "mpi", "msmpi", "impi"):
-            if key + "." in path.stem:
-                LIB = path
-                break
+ps = psutil.Process(os.getpid())
+if hasattr(ps, "memory_maps"):
+    for dll in ps.memory_maps():
+        path = Path(dll.path)
+        print("DEBUG", path.stem)
+        if path.stem.startswith("lib"):
+            for name in names:
+                if name + "." in path.stem:
+                    LIB = path
+                    break
+else:
+    for name in names:
+        LIB = ctypes.util.find_library(name)
+        if LIB is not None:
+            break
 
 if LIB is None:
     raise RuntimeError("no MPI library found")
