@@ -41,6 +41,7 @@ LIB = None
 
 for dll in psutil.Process(os.getpid()).memory_maps():
     path = Path(dll.path)
+    print("DEBUG", path.stem)
     if path.stem.startswith("lib") and "mpi." in path.stem:
         LIB = path
         break
