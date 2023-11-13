@@ -41,12 +41,13 @@ LIB = None
 names = ("mpich", "mpi", "msmpi", "impi")
 
 ps = psutil.Process(os.getpid())
+windows = os.name == "nt"
 if hasattr(ps, "memory_maps"):
     for dll in ps.memory_maps():
         path = Path(dll.path)
-        if os.name == "nt" or path.stem.startswith("lib"):
+        if windows or path.stem.startswith("lib"):
             for name in names:
-                if name + "." in path.stem:
+                if name + ("." if windows else "") in path.stem:
                     LIB = path
                     break
 else:
