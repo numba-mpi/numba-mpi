@@ -43,8 +43,7 @@ ps = psutil.Process(os.getpid())
 if hasattr(ps, "memory_maps"):
     for dll in ps.memory_maps():
         path = Path(dll.path)
-        print("DEBUG", path.stem)
-        if path.stem.startswith("lib"):
+        if os.name == "nt" or path.stem.startswith("lib"):
             for name in names:
                 if name + "." in path.stem:
                     LIB = path
