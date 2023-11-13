@@ -1,7 +1,6 @@
 """variables used across API implementation"""
 import ctypes
 import os
-from ctypes.util import find_library
 from pathlib import Path
 
 import numpy as np
