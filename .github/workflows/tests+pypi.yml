@@ -124,6 +124,10 @@ jobs:
       - uses: mpi4py/setup-mpi@v1
         with:
           mpi: ${{ matrix.mpi }}
+      - if: matrix.mpi == 'intelmpi'
+        run: |
+          # checking if multiple MPI libs are OK
+          sudo apt-get install mpi-default-bin
       - run: pip install -e .
       - run: pip install pytest
       - run: python -We -c "import mpi4py"
