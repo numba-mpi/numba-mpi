@@ -29,10 +29,13 @@
 </summary>
 <pre><code class="python">&#34;&#34;&#34;variables used across API implementation&#34;&#34;&#34;
 import ctypes
+import os
 from ctypes.util import find_library
+from pathlib import Path
 
 import numba
 import numpy as np
+import psutil
 from mpi4py import MPI
 
 # pylint: disable=protected-access
@@ -77,10 +80,24 @@ def create_status_buffer(count=1):
     return np.empty(count * 5, dtype=np.intc)
 
 
-for name in (&#34;mpi&#34;, &#34;msmpi&#34;, &#34;impi&#34;):
-    LIB = find_library(name)
-    if LIB is not None:
-        break
+LIB = None
+names = (&#34;mpich&#34;, &#34;mpi&#34;, &#34;msmpi&#34;, &#34;impi&#34;)
+
+ps = psutil.Process(os.getpid())
+windows = os.name == &#34;nt&#34;
+if hasattr(ps, &#34;memory_maps&#34;):
+    for dll in ps.memory_maps():
+        path = Path(dll.path)
+        if windows or path.stem.startswith(&#34;lib&#34;):
+            for name in names:
+                if name + (&#34;&#34; if windows else &#34;.&#34;) in path.stem:
+                    LIB = str(path)
+                    break
+else:
+    for name in names:
+        LIB = find_library(name)
+        if LIB is not None:
+            break
 
 if LIB is None:
     raise RuntimeError(&#34;no MPI library found&#34;)
