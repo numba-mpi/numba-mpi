@@ -128,7 +128,7 @@ jobs:
         run: |
           # checking if multiple MPI libs are OK
           sudo apt-get install mpi-default-bin
-          mpiexec bash -c "exit `printenv I_MPI_ROOT >/dev/null & echo $?`"
+          mpiexec python -c "import os; assert 'I_MPI_ROOT' in os.environ"
       - run: pip install -e .
       - run: pip install pytest
       - run: python -We -c "import mpi4py"
