@@ -18,7 +18,7 @@
 - not yet implemented: support for non-default communicators, ...
 - API based on NumPy and supporting numeric and character datatypes 
 - auto-generated docstring-based API docs on the web: https://numba-mpi.github.io/numba-mpi
-- pure-Python implementation with packages available on [PyPI](https://pypi.org/project/numba-mpi) and [Conda Forge](https://anaconda.org/conda-forge/numba-mpi)
+- pure-Python implementation with packages available at [PyPI](https://pypi.org/project/numba-mpi), [Conda Forge](https://anaconda.org/conda-forge/numba-mpi) and for [Arch Linux](https://aur.archlinux.org/packages/python-numba-mpi)
 - CI-tested on: Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/) & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)), macOS ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)) and Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi))
 
 Hello world example:
