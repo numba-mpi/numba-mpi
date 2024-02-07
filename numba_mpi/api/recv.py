@@ -1,4 +1,5 @@
 """MPI_Recv() implementation"""
+
 import ctypes
 
 import numba

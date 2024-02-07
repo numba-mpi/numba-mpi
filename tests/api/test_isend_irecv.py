@@ -178,18 +178,18 @@ def test_isend_irecv_waitall(isnd, ircv, wall, data_type):
 
     reqs = np.empty((2,), dtype=mpi.RequestType)
     if mpi.rank() == 0:
-        status, reqs[0] = isnd(src1, dest=1, tag=11)
+        status, reqs[0:1] = isnd(src1, dest=1, tag=11)
         assert status == MPI_SUCCESS
-        status, reqs[1] = isnd(src2, dest=1, tag=22)
+        status, reqs[1:2] = isnd(src2, dest=1, tag=22)
         assert status == MPI_SUCCESS
 
         status = wall(reqs)
         assert status == MPI_SUCCESS
 
     elif mpi.rank() == 1:
-        status, reqs[0] = ircv(dst1, source=0, tag=11)
+        status, reqs[0:1] = ircv(dst1, source=0, tag=11)
         assert status == MPI_SUCCESS
-        status, reqs[1] = ircv(dst2, source=0, tag=22)
+        status, reqs[1:2] = ircv(dst2, source=0, tag=22)
         assert status == MPI_SUCCESS
 
         status = wall(reqs)
@@ -247,15 +247,15 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall):
 
     reqs = np.empty((2,), dtype=mpi.RequestType)
     if mpi.rank() == 0:
-        status, reqs[0] = isnd(src, dest=1, tag=11)
+        status, reqs[0:1] = isnd(src, dest=1, tag=11)
         assert status == MPI_SUCCESS
-        status, reqs[1] = ircv(dst, source=1, tag=22)
+        status, reqs[1:2] = ircv(dst, source=1, tag=22)
         assert status == MPI_SUCCESS
 
     elif mpi.rank() == 1:
-        status, reqs[0] = isnd(src, dest=0, tag=22)
+        status, reqs[0:1] = isnd(src, dest=0, tag=22)
         assert status == MPI_SUCCESS
-        status, reqs[1] = ircv(dst, source=0, tag=11)
+        status, reqs[1:2] = ircv(dst, source=0, tag=11)
         assert status == MPI_SUCCESS
 
     wall(reqs)
@@ -284,16 +284,16 @@ def test_isend_irecv_waitany(isnd, ircv, wany, wall, data_type):
 
     reqs = np.empty((2,), dtype=mpi.RequestType)
     if mpi.rank() == 0:
-        status, reqs[0] = isnd(src1, dest=1, tag=11)
+        status, reqs[0:1] = isnd(src1, dest=1, tag=11)
         assert status == MPI_SUCCESS
-        status, reqs[1] = isnd(src2, dest=1, tag=22)
+        status, reqs[1:2] = isnd(src2, dest=1, tag=22)
         assert status == MPI_SUCCESS
         wall(reqs)
 
     elif mpi.rank() == 1:
-        status, reqs[0] = ircv(dst1, source=0, tag=11)
+        status, reqs[0:1] = ircv(dst1, source=0, tag=11)
         assert status == MPI_SUCCESS
-        status, reqs[1] = ircv(dst2, source=0, tag=22)
+        status, reqs[1:2] = ircv(dst2, source=0, tag=22)
         assert status == MPI_SUCCESS
 
         status, index = wany(reqs)
@@ -360,17 +360,17 @@ def test_isend_irecv_testall(isnd, ircv, tall, wall):
     if mpi.rank() == 0:
         time.sleep(TEST_WAIT_FULL_IN_SECONDS)
 
-        status, reqs[0] = isnd(src1, dest=1, tag=11)
+        status, reqs[0:1] = isnd(src1, dest=1, tag=11)
         assert status == MPI_SUCCESS
-        status, reqs[1] = isnd(src2, dest=1, tag=22)
+        status, reqs[1:2] = isnd(src2, dest=1, tag=22)
         assert status == MPI_SUCCESS
 
         wall(reqs)
 
     elif mpi.rank() == 1:
-        status, reqs[0] = ircv(dst1, source=0, tag=11)
+        status, reqs[0:1] = ircv(dst1, source=0, tag=11)
         assert status == MPI_SUCCESS
-        status, reqs[1] = ircv(dst2, source=0, tag=22)
+        status, reqs[1:2] = ircv(dst2, source=0, tag=22)
         assert status == MPI_SUCCESS
 
         status, flag = tall(reqs)
@@ -406,17 +406,17 @@ def test_isend_irecv_testany(isnd, ircv, tany, wall):
     if mpi.rank() == 0:
         time.sleep(TEST_WAIT_FULL_IN_SECONDS)
 
-        status, reqs[0] = isnd(src1, dest=1, tag=11)
+        status, reqs[0:1] = isnd(src1, dest=1, tag=11)
         assert status == MPI_SUCCESS
-        status, reqs[1] = isnd(src2, dest=1, tag=22)
+        status, reqs[1:2] = isnd(src2, dest=1, tag=22)
         assert status == MPI_SUCCESS
 
         wall(reqs)
 
     elif mpi.rank() == 1:
-        status, reqs[0] = ircv(dst1, source=0, tag=11)
+        status, reqs[0:1] = ircv(dst1, source=0, tag=11)
         assert status == MPI_SUCCESS
-        status, reqs[1] = ircv(dst2, source=0, tag=22)
+        status, reqs[1:2] = ircv(dst2, source=0, tag=22)
         assert status == MPI_SUCCESS
 
         status, flag, index = tany(reqs)

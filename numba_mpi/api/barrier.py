@@ -1,4 +1,5 @@
 """file contains MPI_Barrier() implementation"""
+
 import ctypes
 
 import numba

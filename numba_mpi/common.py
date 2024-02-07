@@ -1,9 +1,13 @@
 """variables used across API implementation"""
+
 import ctypes
+import os
 from ctypes.util import find_library
+from pathlib import Path
 
 import numba
 import numpy as np
+import psutil
 from mpi4py import MPI
 
 # pylint: disable=protected-access
@@ -48,10 +52,24 @@ def create_status_buffer(count=1):
     return np.empty(count * 5, dtype=np.intc)
 
 
-for name in ("mpi", "msmpi", "impi"):
-    LIB = find_library(name)
-    if LIB is not None:
-        break
+LIB = None
+names = ("mpich", "mpi", "msmpi", "impi")
+
+ps = psutil.Process(os.getpid())
+windows = os.name == "nt"
+if hasattr(ps, "memory_maps"):
+    for dll in ps.memory_maps():
+        path = Path(dll.path)
+        if windows or path.stem.startswith("lib"):
+            for name in names:
+                if name + ("" if windows else ".") in path.stem:
+                    LIB = str(path)
+                    break
+else:
+    for name in names:
+        LIB = find_library(name)
+        if LIB is not None:
+            break
 
 if LIB is None:
     raise RuntimeError("no MPI library found")
