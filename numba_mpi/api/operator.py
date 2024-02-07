@@ -1,4 +1,5 @@
 """operators supported by MPI"""
+
 from enum import IntEnum
 
 from mpi4py import MPI

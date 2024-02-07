@@ -1,4 +1,5 @@
 """MPI_Scatter() implementation"""
+
 import ctypes
 
 import numba

@@ -1,4 +1,5 @@
 """file contains MPI_Allreduce() implementations"""
+
 import ctypes
 from numbers import Number
 

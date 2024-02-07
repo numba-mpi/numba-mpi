@@ -1,4 +1,5 @@
 """MPI_Wtime() implementation"""
+
 import ctypes
 
 import numba
