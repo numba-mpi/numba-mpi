@@ -1,4 +1,5 @@
 """variables used across API implementation"""
+
 import ctypes
 import os
 from ctypes.util import find_library

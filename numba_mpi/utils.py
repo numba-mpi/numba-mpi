@@ -1,4 +1,5 @@
 """helper functions used across API implementation"""
+
 import numba
 import numpy as np
 from numba.core import cgutils, types

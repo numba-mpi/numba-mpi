@@ -1,4 +1,5 @@
 """file contains MPI_Initialized() implementation"""
+
 import ctypes
 
 import numba

@@ -1,4 +1,5 @@
 """MPI_Bcast() implementation"""
+
 import ctypes
 
 import numba
