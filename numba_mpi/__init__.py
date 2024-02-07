@@ -1,4 +1,5 @@
 """ Numba @njittable MPI wrappers tested on Linux, macOS and Windows """
+
 from importlib.metadata import PackageNotFoundError, version
 
 from .api.allreduce import allreduce
