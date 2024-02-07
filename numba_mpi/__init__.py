@@ -1,5 +1,5 @@
 """ Numba @njittable MPI wrappers tested on Linux, macOS and Windows """
-from pkg_resources import DistributionNotFound, VersionConflict, get_distribution
+from importlib.metadata import PackageNotFoundError, version
 
 from .api.allreduce import allreduce
 from .api.barrier import barrier
@@ -18,7 +18,7 @@ from .api.wtime import wtime
 from .common import RequestType
 
 try:
-    __version__ = get_distribution(__name__).version
+    __version__ = version(__name__)
 except (DistributionNotFound, VersionConflict):
     # package is not installed
     pass
