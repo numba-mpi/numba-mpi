@@ -159,6 +159,9 @@ jobs:
       - run: twine check --strict dist/*
 
       - run: |
+          python setup.py egg_info
+          ex -sc 'g/^\[tests\]$/d' -cx numba_mpi.egg-info/requires.txt
+          pip install -r numba_mpi.egg-info/requires.txt
           pip install --no-index --find-links file:./dist numba-mpi
           cd /tmp  # make sure local files are not picked up
           python -We -c "import numba_mpi"
