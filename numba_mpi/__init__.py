@@ -20,6 +20,6 @@ from .common import RequestType
 
 try:
     __version__ = version(__name__)
-except (DistributionNotFound, VersionConflict):
+except PackageNotFoundError:
     # package is not installed
     pass
