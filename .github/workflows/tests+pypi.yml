@@ -89,7 +89,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         mpi: [ 'mpich', 'openmpi', 'msmpi', 'intelmpi']
         exclude:
         - platform: macos-latest
@@ -105,10 +105,7 @@ jobs:
         - platform: windows-latest
           mpi: intelmpi
           
-        # https://github.com/atmos-cloud-sim-uj/numba-mpi/issues/69
-        - platform: ubuntu-latest
-          python-version: 3.7
-          mpi: mpich
+        # https://github.com/numba-mpi/numba-mpi/issues/69
         - platform: ubuntu-latest
           python-version: 3.8
           mpi: mpich
