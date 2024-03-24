@@ -45,3 +45,8 @@ hello()
 For information on MPI, see:
 - https://www.mpi-forum.org/docs/
 - https://mpi4py.readthedocs.io/en/stable/
+
+
+#### Acknowledgement:
+
+Development of numba-mpi has been supported by the [Polish National Science Centre](https://ncn.gov.pl/en) (grant no. 2020/39/D/ST10/01220).
