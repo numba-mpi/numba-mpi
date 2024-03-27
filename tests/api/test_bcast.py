@@ -15,10 +15,11 @@ def jit_bcast(data, root):
 
 @pytest.mark.parametrize("bcast", (jit_bcast.py_func, jit_bcast))
 @pytest.mark.parametrize("data_type", data_types)
-def test_bcast_np_array(data_type, bcast):
+@pytest.mark.parametrize("size", (1, 2, 5))
+def test_bcast_np_array(data_type, bcast, size):
     root = 0
-    data = np.empty(5, data_type).astype(dtype=data_type)
-    datatobcast = get_random_array(5, data_type).astype(dtype=data_type)
+    data = np.empty(size, data_type).astype(dtype=data_type)
+    datatobcast = get_random_array(size, data_type).astype(dtype=data_type)
 
     if mpi.rank() == root:
         data = datatobcast
