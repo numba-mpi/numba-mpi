@@ -1,69 +1,50 @@
-import math
-import time
+import timeit
 
+import mpi4py
 import numba
 import numpy
-import pytest
-from mpi4py import MPI
 
-import numba_mpi as mpi
+import numba_mpi
 
-PI25DT = 3.141592653589793238462643
-comm = MPI.COMM_WORLD
+INTERVALS = 5000
+N_TIMES = 50000
+RTOL = 1e-3
 
 
-@numba.njit(fastmath=True)
-def calculate_pi_numba_mpi(intervals):
-    pi = numpy.array(0.0, "d")
-    h = 1.0 / intervals
+@numba.njit
+def get_my_pi(out, rank, size):
+    h = 1 / INTERVALS
     partial_sum = 0.0
+    for i in range(rank + 1, INTERVALS, size):
+        x = h * (i - 0.5)
+        partial_sum += 4 / (1 + x**2)
+    out[0] = h * partial_sum
 
-    for i in range(mpi.rank() + 1, intervals, mpi.size()):
-        x = h * (float(i) - 0.5)
-        partial_sum += 4.0 / (1.0 + x**2)
-    mypi = numpy.array(h * partial_sum, "d")
 
-    mpi.allreduce(mypi, pi, mpi.Operator.SUM)
+@numba.njit
+def pi_numba_mpi():
+    pi = numpy.array(0.0)
+    mypi = numpy.empty(1)
+    for _ in range(N_TIMES):
+        get_my_pi(mypi, numba_mpi.rank(), numba_mpi.size())
+        numba_mpi.allreduce(mypi, pi, numba_mpi.Operator.SUM)
+        assert abs(pi - numpy.pi) / numpy.pi < RTOL
     return pi
 
 
-@numba.njit(fastmath=True)
-def get_my_pi(intervals, rank, size):
-    h = 1.0 / intervals
-    partial_sum = 0.0
-
-    for i in range(rank + 1, intervals, size):
-        x = h * (float(i) - 0.5)
-        partial_sum += 4.0 / (1.0 + x**2)
-
-    return numpy.array(h * partial_sum, "d")
-
-
-def calculate_pi_mpi4py(intervals):
-    pi = numpy.array(0.0, "d")
-    mypi = get_my_pi(intervals, comm.rank, comm.size)
-    comm.Reduce(mypi, [pi, MPI.DOUBLE], op=MPI.SUM, root=0)
+def pi_mpi4py():
+    pi = numpy.array(0.0)
+    mypi = numpy.empty(1)
+    for _ in range(N_TIMES):
+        get_my_pi(mypi, mpi4py.MPI.COMM_WORLD.rank, mpi4py.MPI.COMM_WORLD.size)
+        mpi4py.MPI.COMM_WORLD.Reduce(
+            mypi, [pi, mpi4py.MPI.DOUBLE], op=mpi4py.MPI.SUM, root=0
+        )
+        assert (pi - numpy.pi) / numpy.pi < RTOL
     return pi
 
 
-@pytest.mark.parametrize("intervals", (10000,))
-def test_calculate_pi(intervals):
-    # first run to compile things
-    calculate_pi_numba_mpi(intervals)
-    calculate_pi_mpi4py(intervals)
-
-    # proper time measure
-    start = time.time()
-    pi = calculate_pi_numba_mpi(intervals)
-    end_numba_mpi = time.time()
-
-    pi_mpi4py = calculate_pi_mpi4py(intervals)
-    end_mpi4py = time.time()
-
-    if comm.rank == 0:
-        print(
-            f"Calculated PI(numba_mpi): {pi} with error of {math.fabs(pi - PI25DT)}. Time elapsed: {end_numba_mpi - start}"
-        )
-        print(
-            f"Calculated PI(mpi4py): {pi_mpi4py} with error of {math.fabs(pi - PI25DT)}. Time elapsed: {end_mpi4py - end_numba_mpi}"
-        )
+for fun in ("pi_numba_mpi()", "pi_mpi4py()"):
+    time = min(timeit.repeat(fun, globals=locals(), number=1, repeat=10))
+    if numba_mpi.rank() == 0:
+        print(f"{N_TIMES} x {fun}:\t{time:.2} s\t(MPI comm size = {numba_mpi.size()})")
