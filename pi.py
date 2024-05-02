@@ -40,7 +40,7 @@ def pi_mpi4py():
         mpi4py.MPI.COMM_WORLD.Reduce(
             mypi, [pi, mpi4py.MPI.DOUBLE], op=mpi4py.MPI.SUM, root=0
         )
-        assert (pi - numpy.pi) / numpy.pi < RTOL
+        assert abs(pi - numpy.pi) / numpy.pi < RTOL
     return pi
 
 
