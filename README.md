@@ -22,7 +22,7 @@
 - pure-Python implementation with packages available at [PyPI](https://pypi.org/project/numba-mpi), [Conda Forge](https://anaconda.org/conda-forge/numba-mpi) and for [Arch Linux](https://aur.archlinux.org/packages/python-numba-mpi)
 - CI-tested on: Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/) & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)), macOS ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)) and Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi))
 
-Hello world example:
+Hello world send/recv example:
 ```python
 import numba, numba_mpi, numpy
 
@@ -40,6 +40,55 @@ def hello():
     numba_mpi.recv(dst_tst, source=0, tag=11)
 
 hello()
+```
+
+An example comparing Numba + mpi4py vs. Numba + numba-mpi performance by
+computing $\pi$ by integration of $4/(1+x^2)$ between 0 and 1 divided into
+`N_INTERVALS` handled by separate MPI processes and then obtaining a sum
+using `allreduce`. The computation is repeated `N_TIMES` within a JIT-compiled
+loop. Timing is repeated `N_REPEAT` times and the minimum time is reported.
+```python
+import timeit, mpi4py, numba, numpy, numba_mpi
+
+N_INTERVALS = 5000
+N_TIMES = 50000
+N_REPEAT = 10
+RTOL = 1e-3
+
+@numba.njit
+def compute_pi_part(out, rank, size):
+    h = 1 / N_INTERVALS
+    partial_sum = 0.0
+    for i in range(rank + 1, N_INTERVALS, size):
+        x = h * (i - 0.5)
+        partial_sum += 4 / (1 + x**2)
+    out[0] = h * partial_sum
+
+@numba.njit
+def pi_numba_mpi():
+    pi = numpy.array(0.0)
+    pi_part = numpy.empty(1)
+    for _ in range(N_TIMES):
+        compute_pi_part(pi_part, numba_mpi.rank(), numba_mpi.size())
+        numba_mpi.allreduce(pi_part, pi, numba_mpi.Operator.SUM)
+        assert abs(pi - numpy.pi) / numpy.pi < RTOL
+    return pi
+
+def pi_mpi4py():
+    pi = numpy.array(0.0)
+    pi_part = numpy.empty(1)
+    for _ in range(N_TIMES):
+        compute_pi_part(pi_part, mpi4py.MPI.COMM_WORLD.rank, mpi4py.MPI.COMM_WORLD.size)
+        mpi4py.MPI.COMM_WORLD.Reduce(
+            pi_part, [pi, mpi4py.MPI.DOUBLE], op=mpi4py.MPI.SUM, root=0
+        )
+        assert abs(pi - numpy.pi) / numpy.pi < RTOL
+    return pi
+
+for fun in ("pi_numba_mpi()", "pi_mpi4py()"):
+    time = min(timeit.repeat(fun, globals=locals(), number=1, repeat=N_REPEAT))
+    if numba_mpi.rank() == 0:
+        print(f"{N_TIMES} x {fun}:\t{time:.2} s\t(MPI comm size = {numba_mpi.size()})")
 ```
 
 For information on MPI, see:
