@@ -13,7 +13,7 @@
 [![AUR package](https://repology.org/badge/version-for-repo/aur/python:numba-mpi.svg)](https://aur.archlinux.org/packages/python-numba-mpi)
 [![DOI](https://zenodo.org/badge/316911228.svg)](https://zenodo.org/badge/latestdoi/316911228)
 
-## Overview
+### Overview
 numba-mpi provides Numba @njittable MPI wrappers:
 - covering: `size`/`rank`, `send`/`recv`, `allreduce`, `bcast`, `scatter`/`gather` & `allgather`, `barrier` and `wtime`
 - basic asynchronous communication with `isend`/`irecv` (only for contiguous arrays); for request handling including `wait`/`waitall`/`waitany` and `test`/`testall`/`testany`
@@ -23,7 +23,7 @@ numba-mpi provides Numba @njittable MPI wrappers:
 - pure-Python implementation with packages available at [PyPI](https://pypi.org/project/numba-mpi), [Conda Forge](https://anaconda.org/conda-forge/numba-mpi) and for [Arch Linux](https://aur.archlinux.org/packages/python-numba-mpi)
 - CI-tested on: Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/) & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)), macOS ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)) and Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi))
 
-## Hello world send/recv example:
+### Hello world send/recv example:
 ```python
 import numba, numba_mpi, numpy
 
@@ -40,13 +40,18 @@ def hello():
 hello()
 ```
 
-## numba-mpi vs. mpi4py:
+### numba-mpi vs. mpi4py:
 
-The example below compares Numba + mpi4py vs. Numba + numba-mpi performance by
-computing $\pi$ by integration of $4/(1+x^2)$ between 0 and 1 divided into
-`n_intervals` handled by separate MPI processes and then obtaining a sum
-using `allreduce`. The computation is repeated `N_TIMES` within a JIT-compiled
-loop. Timing is repeated `N_REPEAT` times and the minimum time is reported.
+The example below compares Numba + mpi4py vs. Numba + numba-mpi performance.
+The sample code estimates $\pi$ by integration of $4/(1+x^2)$ between 0 and 1
+dividing the workload into `n_intervals` handled by separate MPI processes 
+and then obtaining a sum using `allreduce`.
+The computation is repeated `N_TIMES` within a JIT-compiled loop.
+Timing is repeated `N_REPEAT` times and the minimum time is reported.
+The generated plot depicts the speedup obtained by replacing mpi4py
+with numba_mpi as a function of `n_intervals` - the more often communication
+is needed (smaller `n_intervals`), the larger the expected speedup.
+
 ```python
 import timeit, mpi4py, numba, numpy, numba_mpi
 
@@ -104,7 +109,10 @@ if numba_mpi.rank() == 0:
     pyplot.savefig('readme_plot.png')
 ```
 
-## Information on MPI
+![plot](https://github.com/numba-mpi/numba-mpi/releases/download/tip/readme_plot.png)
+
+
+### Information on MPI
 
 - MPI standard and general information:
     - https://www.mpi-forum.org/docs
@@ -121,6 +129,6 @@ if numba_mpi.rank() == 0:
     - C++: https://boost.org/doc/html/mpi.html
     - R: https://cran.r-project.org/web/packages/Rmpi
 
-#### Acknowledgement:
+### Acknowledgements:
 
 Development of numba-mpi has been supported by the [Polish National Science Centre](https://ncn.gov.pl/en) (grant no. 2020/39/D/ST10/01220).
