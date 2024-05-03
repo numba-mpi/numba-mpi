@@ -29,16 +29,13 @@ import numba, numba_mpi, numpy
 
 @numba.njit()
 def hello():
-  print(numba_mpi.rank())
-  print(numba_mpi.size())
+    src = numpy.array([1., 2., 3., 4., 5.])
+    dst_tst = numpy.empty_like(src)
 
-  src = numpy.array([1., 2., 3., 4., 5.])
-  dst_tst = numpy.empty_like(src)
-
-  if numba_mpi.rank() == 0:
-    numba_mpi.send(src, dest=1, tag=11)
-  elif numba_mpi.rank() == 1:
-    numba_mpi.recv(dst_tst, source=0, tag=11)
+    if numba_mpi.rank() == 0:
+        numba_mpi.send(src, dest=1, tag=11)
+    elif numba_mpi.rank() == 1:
+        numba_mpi.recv(dst_tst, source=0, tag=11)
 
 hello()
 ```
@@ -47,51 +44,64 @@ hello()
 
 The example below compares Numba + mpi4py vs. Numba + numba-mpi performance by
 computing $\pi$ by integration of $4/(1+x^2)$ between 0 and 1 divided into
-`N_INTERVALS` handled by separate MPI processes and then obtaining a sum
+`n_intervals` handled by separate MPI processes and then obtaining a sum
 using `allreduce`. The computation is repeated `N_TIMES` within a JIT-compiled
 loop. Timing is repeated `N_REPEAT` times and the minimum time is reported.
 ```python
 import timeit, mpi4py, numba, numpy, numba_mpi
 
-N_INTERVALS = 5000
-N_TIMES = 50000
+N_TIMES = 10000
 N_REPEAT = 10
 RTOL = 1e-3
 
 @numba.njit
-def compute_pi_part(out, rank, size):
-    h = 1 / N_INTERVALS
+def compute_pi_part(out, n_intervals, rank, size):
+    h = 1 / n_intervals
     partial_sum = 0.0
-    for i in range(rank + 1, N_INTERVALS, size):
+    for i in range(rank + 1, n_intervals, size):
         x = h * (i - 0.5)
         partial_sum += 4 / (1 + x**2)
     out[0] = h * partial_sum
 
 @numba.njit
-def pi_numba_mpi():
-    pi = numpy.array(0.0)
-    pi_part = numpy.empty(1)
+def pi_numba_mpi(n_intervals):
+    pi = numpy.array([0.])
+    pi_part = numpy.empty_like(pi)
     for _ in range(N_TIMES):
-        compute_pi_part(pi_part, numba_mpi.rank(), numba_mpi.size())
+        compute_pi_part(pi_part, n_intervals, numba_mpi.rank(), numba_mpi.size())
         numba_mpi.allreduce(pi_part, pi, numba_mpi.Operator.SUM)
-        assert abs(pi - numpy.pi) / numpy.pi < RTOL
+        assert abs(pi[0] - numpy.pi) / numpy.pi < RTOL
     return pi
 
-def pi_mpi4py():
-    pi = numpy.array(0.0)
-    pi_part = numpy.empty(1)
+def pi_mpi4py(n_intervals):
+    pi = numpy.array([0.])
+    pi_part = numpy.empty_like(pi)
     for _ in range(N_TIMES):
-        compute_pi_part(pi_part, mpi4py.MPI.COMM_WORLD.rank, mpi4py.MPI.COMM_WORLD.size)
-        mpi4py.MPI.COMM_WORLD.Reduce(
-            pi_part, [pi, mpi4py.MPI.DOUBLE], op=mpi4py.MPI.SUM, root=0
-        )
-        assert abs(pi - numpy.pi) / numpy.pi < RTOL
+        compute_pi_part(pi_part, n_intervals, mpi4py.MPI.COMM_WORLD.rank, mpi4py.MPI.COMM_WORLD.size)
+        mpi4py.MPI.COMM_WORLD.Allreduce(pi_part, [pi, mpi4py.MPI.DOUBLE], op=mpi4py.MPI.SUM)
+        assert abs(pi[0] - numpy.pi) / numpy.pi < RTOL
     return pi
 
-for fun in ("pi_numba_mpi()", "pi_mpi4py()"):
-    time = min(timeit.repeat(fun, globals=locals(), number=1, repeat=N_REPEAT))
-    if numba_mpi.rank() == 0:
-        print(f"{N_TIMES} x {fun}:\t{time:.2} s\t(MPI comm size = {numba_mpi.size()})")
+plot_x = [1000 * k for k in range(1, 11)]
+plot_y = {'numba_mpi': [], 'mpi4py': []}
+for n_intervals in plot_x:
+    for impl in plot_y:
+        plot_y[impl].append(min(timeit.repeat(
+            f"pi_{impl}({n_intervals})",
+            globals=locals(),
+            number=1,
+            repeat=N_REPEAT
+        )))
+
+if numba_mpi.rank() == 0:
+    from matplotlib import pyplot
+    pyplot.figure(figsize=(7, 3.5))
+    pyplot.plot(plot_x, numpy.asarray(plot_y['mpi4py']) / numpy.asarray(plot_y['numba_mpi']), marker='o')
+    pyplot.xlabel('n_intervals (workload in between communication)')
+    pyplot.ylabel('wall time ratio (mpi4py / numba_mpi)')
+    pyplot.title(f'mpiexec -np {numba_mpi.size()}')
+    pyplot.grid()
+    pyplot.savefig('readme_plot.png')
 ```
 
 ## Information on MPI
