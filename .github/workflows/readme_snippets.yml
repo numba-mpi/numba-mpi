@@ -25,7 +25,7 @@ jobs:
       - run: pip install pytest-codeblocks pytest matplotlib
       - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()"
       - run: cat -n readme.py
-      - run: mpiexec -oversubscribe -n 4 python -We readme.py
+      - run: mpiexec -n 4 python -We readme.py
       - uses: actions/upload-artifact@v3
         with:
           path: readme_plot.png
