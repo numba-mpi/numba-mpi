@@ -13,7 +13,8 @@
 [![AUR package](https://repology.org/badge/version-for-repo/aur/python:numba-mpi.svg)](https://aur.archlinux.org/packages/python-numba-mpi)
 [![DOI](https://zenodo.org/badge/316911228.svg)](https://zenodo.org/badge/latestdoi/316911228)
 
-#### Numba @njittable MPI wrappers
+### Overview
+numba-mpi provides Numba @njittable MPI wrappers:
 - covering: `size`/`rank`, `send`/`recv`, `allreduce`, `bcast`, `scatter`/`gather` & `allgather`, `barrier` and `wtime`
 - basic asynchronous communication with `isend`/`irecv` (only for contiguous arrays); for request handling including `wait`/`waitall`/`waitany` and `test`/`testall`/`testany`
 - not yet implemented: support for non-default communicators, ...
@@ -22,31 +23,112 @@
 - pure-Python implementation with packages available at [PyPI](https://pypi.org/project/numba-mpi), [Conda Forge](https://anaconda.org/conda-forge/numba-mpi) and for [Arch Linux](https://aur.archlinux.org/packages/python-numba-mpi)
 - CI-tested on: Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/) & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)), macOS ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)) and Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi))
 
-Hello world example:
+### Hello world send/recv example:
 ```python
 import numba, numba_mpi, numpy
 
 @numba.njit()
 def hello():
-  print(numba_mpi.rank())
-  print(numba_mpi.size())
+    src = numpy.array([1., 2., 3., 4., 5.])
+    dst_tst = numpy.empty_like(src)
 
-  src = numpy.array([1., 2., 3., 4., 5.])
-  dst_tst = numpy.empty_like(src)
-
-  if numba_mpi.rank() == 0:
-    numba_mpi.send(src, dest=1, tag=11)
-  elif numba_mpi.rank() == 1:
-    numba_mpi.recv(dst_tst, source=0, tag=11)
+    if numba_mpi.rank() == 0:
+        numba_mpi.send(src, dest=1, tag=11)
+    elif numba_mpi.rank() == 1:
+        numba_mpi.recv(dst_tst, source=0, tag=11)
 
 hello()
 ```
 
-For information on MPI, see:
-- https://www.mpi-forum.org/docs/
-- https://mpi4py.readthedocs.io/en/stable/
+### numba-mpi vs. mpi4py:
+
+The example below compares Numba + mpi4py vs. Numba + numba-mpi performance.
+The sample code estimates $\pi$ by integration of $4/(1+x^2)$ between 0 and 1
+dividing the workload into `n_intervals` handled by separate MPI processes 
+and then obtaining a sum using `allreduce`.
+The computation is repeated `N_TIMES` within a JIT-compiled loop.
+Timing is repeated `N_REPEAT` times and the minimum time is reported.
+The generated plot depicts the speedup obtained by replacing mpi4py
+with numba_mpi as a function of `n_intervals` - the more often communication
+is needed (smaller `n_intervals`), the larger the expected speedup.
+
+```python
+import timeit, mpi4py, numba, numpy, numba_mpi
+
+N_TIMES = 10000
+N_REPEAT = 10
+RTOL = 1e-3
+
+@numba.njit
+def compute_pi_part(out, n_intervals, rank, size):
+    h = 1 / n_intervals
+    partial_sum = 0.0
+    for i in range(rank + 1, n_intervals, size):
+        x = h * (i - 0.5)
+        partial_sum += 4 / (1 + x**2)
+    out[0] = h * partial_sum
+
+@numba.njit
+def pi_numba_mpi(n_intervals):
+    pi = numpy.array([0.])
+    pi_part = numpy.empty_like(pi)
+    for _ in range(N_TIMES):
+        compute_pi_part(pi_part, n_intervals, numba_mpi.rank(), numba_mpi.size())
+        numba_mpi.allreduce(pi_part, pi, numba_mpi.Operator.SUM)
+        assert abs(pi[0] - numpy.pi) / numpy.pi < RTOL
+    return pi
+
+def pi_mpi4py(n_intervals):
+    pi = numpy.array([0.])
+    pi_part = numpy.empty_like(pi)
+    for _ in range(N_TIMES):
+        compute_pi_part(pi_part, n_intervals, mpi4py.MPI.COMM_WORLD.rank, mpi4py.MPI.COMM_WORLD.size)
+        mpi4py.MPI.COMM_WORLD.Allreduce(pi_part, [pi, mpi4py.MPI.DOUBLE], op=mpi4py.MPI.SUM)
+        assert abs(pi[0] - numpy.pi) / numpy.pi < RTOL
+    return pi
+
+plot_x = [1000 * k for k in range(1, 11)]
+plot_y = {'numba_mpi': [], 'mpi4py': []}
+for n_intervals in plot_x:
+    for impl in plot_y:
+        plot_y[impl].append(min(timeit.repeat(
+            f"pi_{impl}({n_intervals})",
+            globals=locals(),
+            number=1,
+            repeat=N_REPEAT
+        )))
+
+if numba_mpi.rank() == 0:
+    from matplotlib import pyplot
+    pyplot.figure(figsize=(7, 3.5))
+    pyplot.plot(plot_x, numpy.asarray(plot_y['mpi4py']) / numpy.asarray(plot_y['numba_mpi']), marker='o')
+    pyplot.xlabel('n_intervals (workload in between communication)')
+    pyplot.ylabel('wall time ratio (mpi4py / numba_mpi)')
+    pyplot.title(f'mpiexec -np {numba_mpi.size()}')
+    pyplot.grid()
+    pyplot.savefig('readme_plot.png')
+```
+
+![plot](https://github.com/numba-mpi/numba-mpi/releases/download/tip/readme_plot.png)
 
 
-#### Acknowledgement:
+### Information on MPI
+
+- MPI standard and general information:
+    - https://www.mpi-forum.org/docs
+    - https://en.wikipedia.org/wiki/Message_Passing_Interface
+- MPI implementations:
+    - https://www.open-mpi.org
+    - https://www.mpich.org
+    - https://learn.microsoft.com/en-us/message-passing-interface
+    - https://intel.com/content/www/us/en/developer/tools/oneapi/mpi-library-documentation.html
+- MPI bindings:
+    - Python: https://mpi4py.readthedocs.io
+    - Julia: https://juliaparallel.org/MPI.jl
+    - Rust: https://docs.rs/mpi
+    - C++: https://boost.org/doc/html/mpi.html
+    - R: https://cran.r-project.org/web/packages/Rmpi
+
+### Acknowledgements:
 
 Development of numba-mpi has been supported by the [Polish National Science Centre](https://ncn.gov.pl/en) (grant no. 2020/39/D/ST10/01220).
