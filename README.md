@@ -13,7 +13,8 @@
 [![AUR package](https://repology.org/badge/version-for-repo/aur/python:numba-mpi.svg)](https://aur.archlinux.org/packages/python-numba-mpi)
 [![DOI](https://zenodo.org/badge/316911228.svg)](https://zenodo.org/badge/latestdoi/316911228)
 
-#### Numba @njittable MPI wrappers
+## Overview
+numba-mpi provides Numba @njittable MPI wrappers:
 - covering: `size`/`rank`, `send`/`recv`, `allreduce`, `bcast`, `scatter`/`gather` & `allgather`, `barrier` and `wtime`
 - basic asynchronous communication with `isend`/`irecv` (only for contiguous arrays); for request handling including `wait`/`waitall`/`waitany` and `test`/`testall`/`testany`
 - not yet implemented: support for non-default communicators, ...
@@ -22,7 +23,7 @@
 - pure-Python implementation with packages available at [PyPI](https://pypi.org/project/numba-mpi), [Conda Forge](https://anaconda.org/conda-forge/numba-mpi) and for [Arch Linux](https://aur.archlinux.org/packages/python-numba-mpi)
 - CI-tested on: Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/) & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)), macOS ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)) and Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi))
 
-Hello world send/recv example:
+## Hello world send/recv example:
 ```python
 import numba, numba_mpi, numpy
 
@@ -42,7 +43,9 @@ def hello():
 hello()
 ```
 
-An example comparing Numba + mpi4py vs. Numba + numba-mpi performance by
+## numba-mpi vs. mpi4py:
+
+The example below compares Numba + mpi4py vs. Numba + numba-mpi performance by
 computing $\pi$ by integration of $4/(1+x^2)$ between 0 and 1 divided into
 `N_INTERVALS` handled by separate MPI processes and then obtaining a sum
 using `allreduce`. The computation is repeated `N_TIMES` within a JIT-compiled
@@ -91,10 +94,22 @@ for fun in ("pi_numba_mpi()", "pi_mpi4py()"):
         print(f"{N_TIMES} x {fun}:\t{time:.2} s\t(MPI comm size = {numba_mpi.size()})")
 ```
 
-For information on MPI, see:
-- https://www.mpi-forum.org/docs/
-- https://mpi4py.readthedocs.io/en/stable/
+## Information on MPI
 
+- MPI standard and general information:
+    - https://www.mpi-forum.org/docs
+    - https://en.wikipedia.org/wiki/Message_Passing_Interface
+- MPI implementations:
+    - https://www.open-mpi.org
+    - https://www.mpich.org
+    - https://learn.microsoft.com/en-us/message-passing-interface
+    - https://intel.com/content/www/us/en/developer/tools/oneapi/mpi-library-documentation.html
+- MPI bindings:
+    - Python: https://mpi4py.readthedocs.io
+    - Julia: https://juliaparallel.org/MPI.jl
+    - Rust: https://docs.rs/mpi
+    - C++: https://boost.org/doc/html/mpi.html
+    - R: https://cran.r-project.org/web/packages/Rmpi
 
 #### Acknowledgement:
 
