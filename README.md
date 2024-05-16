@@ -104,12 +104,12 @@ def pi_mpi4py(n_intervals):
         mpi4py.MPI.COMM_WORLD.Allreduce(part, (pi, mpi4py.MPI.DOUBLE), op=mpi4py.MPI.SUM)
         assert abs(pi[0] - np.pi) / np.pi < RTOL
 
-plot_x = [k for k in range(1, 11)]
+plot_x = [x for x in range(1, 11)]
 plot_y = {'numba_mpi': [], 'mpi4py': []}
-for n_times_over_n_intervals in plot_x:
+for x in plot_x:
     for impl in plot_y:
         plot_y[impl].append(min(timeit.repeat(
-            f"pi_{impl}(n_intervals={N_TIMES // n_times_over_n_intervals})",
+            f"pi_{impl}(n_intervals={N_TIMES // x})",
             globals=locals(),
             number=1,
             repeat=10
