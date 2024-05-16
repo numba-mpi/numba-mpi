@@ -79,21 +79,21 @@ N_TIMES = 10000
 N_REPEAT = 10
 RTOL = 1e-3
 
-@numba.njit
-def get_pi_part(out, n_intervals, rank, size):
+@numba.jit
+def get_pi_part(n_intervals=1000000, rank=0, size=1):
     h = 1 / n_intervals
     partial_sum = 0.0
     for i in range(rank + 1, n_intervals, size):
         x = h * (i - 0.5)
         partial_sum += 4 / (1 + x**2)
-    out[0] = h * partial_sum
+    return h * partial_sum
 
-@numba.njit
+@numba.jit
 def pi_numba_mpi(n_intervals):
     pi = np.array([0.])
     part = np.empty_like(pi)
     for _ in range(N_TIMES):
-        get_pi_part(part, n_intervals, numba_mpi.rank(), numba_mpi.size())
+        part[0] = get_pi_part(n_intervals, numba_mpi.rank(), numba_mpi.size())
         numba_mpi.allreduce(part, pi, numba_mpi.Operator.SUM)
         assert abs(pi[0] - np.pi) / np.pi < RTOL
 
@@ -101,7 +101,7 @@ def pi_mpi4py(n_intervals):
     pi = np.array([0.])
     part = np.empty_like(pi)
     for _ in range(N_TIMES):
-        get_pi_part(part, n_intervals, mpi4py.MPI.COMM_WORLD.rank, mpi4py.MPI.COMM_WORLD.size)
+        part[0] = get_pi_part(n_intervals, mpi4py.MPI.COMM_WORLD.rank, mpi4py.MPI.COMM_WORLD.size)
         mpi4py.MPI.COMM_WORLD.Allreduce(part, (pi, mpi4py.MPI.DOUBLE), op=mpi4py.MPI.SUM)
         assert abs(pi[0] - np.pi) / np.pi < RTOL
 
