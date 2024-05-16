@@ -76,7 +76,6 @@ is needed (smaller `n_intervals`), the larger the expected speedup.
 import timeit, mpi4py, numba, numpy as np, numba_mpi
 
 N_TIMES = 10000
-N_REPEAT = 10
 RTOL = 1e-3
 
 @numba.jit
@@ -105,26 +104,26 @@ def pi_mpi4py(n_intervals):
         mpi4py.MPI.COMM_WORLD.Allreduce(part, (pi, mpi4py.MPI.DOUBLE), op=mpi4py.MPI.SUM)
         assert abs(pi[0] - np.pi) / np.pi < RTOL
 
-plot_x = [1000 * k for k in range(1, 11)]
+plot_x = [k for k in range(1, 11)]
 plot_y = {'numba_mpi': [], 'mpi4py': []}
-for n_intervals in plot_x:
+for n_times_over_n_intervals in plot_x:
     for impl in plot_y:
         plot_y[impl].append(min(timeit.repeat(
-            f"pi_{impl}({n_intervals})",
+            f"pi_{impl}(n_intervals={N_TIMES // n_times_over_n_intervals})",
             globals=locals(),
             number=1,
-            repeat=N_REPEAT
+            repeat=10
         )))
 
 if numba_mpi.rank() == 0:
     from matplotlib import pyplot
     pyplot.figure(figsize=(8.3, 3.5), tight_layout=True)
     pyplot.plot(plot_x, np.array(plot_y['mpi4py'])/np.array(plot_y['numba_mpi']), marker='o')
-    pyplot.xlabel('n_intervals (workload in between communication)')
-    pyplot.ylabel('wall time ratio (mpi4py / numba_mpi)')
+    pyplot.xlabel('number of MPI calls per interval')
+    pyplot.ylabel('mpi4py/numba_mpi wall-time ratio')
     pyplot.title(f'mpiexec -np {numba_mpi.size()}')
     pyplot.grid()
-    pyplot.savefig('readme_plot.png')
+    pyplot.savefig('readme_plot.svg')
 ```
 
 ![plot](https://github.com/numba-mpi/numba-mpi/releases/download/tip/readme_plot.png)
