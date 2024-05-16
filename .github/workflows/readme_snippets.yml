@@ -23,7 +23,7 @@ jobs:
       - uses: mpi4py/setup-mpi@v1
       - run: pip install -e .
       - run: pip install pytest-codeblocks pytest matplotlib
-      - run: apt-get install librsvg2-bin
+      - run: sudo apt-get install librsvg2-bin
       - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()"
       - run: cat -n readme.py
       - run: mpiexec -n 4 python -We readme.py
