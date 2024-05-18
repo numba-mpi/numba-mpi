@@ -127,7 +127,7 @@ if numba_mpi.rank() == 0:
     pyplot.figure(figsize=(8.3, 3.5), tight_layout=True)
     pyplot.plot(plot_x, np.array(plot_y['mpi4py'])/np.array(plot_y['numba_mpi']), marker='o')
     pyplot.xlabel('number of MPI calls per interval')
-    pyplot.ylabel('mpi4py/numba_mpi wall-time ratio')
+    pyplot.ylabel('mpi4py/numba-mpi wall-time ratio')
     pyplot.title(f'mpiexec -np {numba_mpi.size()}')
     pyplot.grid()
     pyplot.savefig('readme_plot.svg')
