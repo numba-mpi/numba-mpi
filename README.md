@@ -60,18 +60,25 @@ hello()
 
 ### Example comparing numba-mpi vs. mpi4py performance:
 
-The example below compares Numba + mpi4py vs. Numba + numba-mpi performance.
-The sample code estimates $\pi$ by integration of $4/(1+x^2)$ between 0 and 1
+The example below compares `Numba`+`mpi4py` vs. `Numba`+`numba-mpi` performance.
+The sample code estimates $\pi$ by numerical integration of $\int_0^1 (4/(1+x^2))dx=\pi$ 
 dividing the workload into `n_intervals` handled by separate MPI processes 
-and then obtaining a sum using `allreduce`.
-The computation is carried out in a JIT-compiled function and is repeated
-`N_TIMES`, the repetitions and the MPI-handled reduction are done outside or 
-inside of the JIT-compiled block for mpi4py and numba-mpi, respectively.
+and then obtaining a sum using `allreduce` (see, e.g., analogous [Matlab docs example](https://www.mathworks.com/help/parallel-computing/numerical-estimation-of-pi-using-message-passing.html)).
+The computation is carried out in a JIT-compiled function `get_pi_part()` and is repeated
+`N_TIMES`. The repetitions and the MPI-handled reduction are done outside or 
+inside of the JIT-compiled block for `mpi4py` and `numba-mpi`, respectively.
 Timing is repeated `N_REPEAT` times and the minimum time is reported.
-The generated plot shown below depicts the speedup obtained by replacing mpi4py
-with numba_mpi as a function of `n_intervals` - the more often communication
-is needed (smaller `n_intervals`), the larger the expected speedup.
-
+The generated plot shown below depicts the speedup obtained by replacing `mpi4py`
+with `numba_mpi`, plotted as a function of `N_TIMES / n_intervals` - the number of MPI calls per 
+interval. The speedup, which stems from avoiding roundtrips between JIT-compiled
+and Python code is significant (150%-300%) in all cases. The more often communication
+is needed (smaller `n_intervals`), the larger the measured speedup. Note that nothing 
+in the actual number crunching (within the `get_pi_part()` function) or in the employed communication logic
+(handled by the same MPI library) differs between the `mpi4py` or `numba-mpi` solutions.
+These are the overhead of `mpi4py` higher-level abstractions and the overhead of 
+repeatedly entering and leaving the JIT-compiled block if using `mpi4py`, which can be
+eliminated by using `numba-mpi`, and which the measured differences in execution time
+stem from.
 ```python
 import timeit, mpi4py, numba, numpy as np, numba_mpi
 
@@ -120,7 +127,7 @@ if numba_mpi.rank() == 0:
     pyplot.figure(figsize=(8.3, 3.5), tight_layout=True)
     pyplot.plot(plot_x, np.array(plot_y['mpi4py'])/np.array(plot_y['numba_mpi']), marker='o')
     pyplot.xlabel('number of MPI calls per interval')
-    pyplot.ylabel('mpi4py/numba_mpi wall-time ratio')
+    pyplot.ylabel('mpi4py/numba-mpi wall-time ratio')
     pyplot.title(f'mpiexec -np {numba_mpi.size()}')
     pyplot.grid()
     pyplot.savefig('readme_plot.svg')
