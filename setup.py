@@ -18,6 +18,7 @@ setup(
         "local_scheme": lambda _: "",
         "version_scheme": "post-release",
     },
+    python_requires=">=3.8",
     setup_requires=["setuptools_scm"],
     license="GPL v3",
     description="Numba @njittable MPI wrappers tested on Linux, macOS and Windows",
