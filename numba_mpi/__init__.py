@@ -1,4 +1,6 @@
-""" Numba @njittable MPI wrappers tested on Linux, macOS and Windows """
+"""
+.. include::../README.md
+"""
 
 from importlib.metadata import PackageNotFoundError, version
 
