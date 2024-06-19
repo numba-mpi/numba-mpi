@@ -176,7 +176,7 @@ def test_isend_irecv_waitall(isnd, ircv, wall, data_type):
     dst1 = np.empty_like(src1)
     dst2 = np.empty_like(src2)
 
-    reqs = np.empty((2,), dtype=mpi.RequestType)
+    reqs = np.zeros((2,), dtype=mpi.RequestType)
     if mpi.rank() == 0:
         status, reqs[0:1] = isnd(src1, dest=1, tag=11)
         assert status == MPI_SUCCESS
@@ -245,7 +245,7 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall):
     src = get_random_array((5,))
     dst = np.empty_like(src)
 
-    reqs = np.empty((2,), dtype=mpi.RequestType)
+    reqs = np.zeros((2,), dtype=mpi.RequestType)
     if mpi.rank() == 0:
         status, reqs[0:1] = isnd(src, dest=1, tag=11)
         assert status == MPI_SUCCESS
@@ -261,6 +261,24 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall):
     wall(reqs)
 
     np.testing.assert_equal(dst, src)
+
+
+@pytest.mark.parametrize(
+    "fun",
+    (
+        jit_waitany.py_func,
+        jit_waitall.py_func,
+        jit_testany.py_func,
+        jit_testall.py_func,
+        jit_waitany,
+        jit_waitall,
+        jit_testany,
+        jit_testall,
+    ),
+)
+def test_wall_segfault(fun):
+    reqs = np.zeros((2,), dtype=mpi.RequestType)
+    fun(reqs)
 
 
 @pytest.mark.parametrize(
@@ -282,7 +300,7 @@ def test_isend_irecv_waitany(isnd, ircv, wany, wall, data_type):
     dst1 = np.empty_like(src1)
     dst2 = np.empty_like(src2)
 
-    reqs = np.empty((2,), dtype=mpi.RequestType)
+    reqs = np.zeros((2,), dtype=mpi.RequestType)
     if mpi.rank() == 0:
         status, reqs[0:1] = isnd(src1, dest=1, tag=11)
         assert status == MPI_SUCCESS
@@ -356,7 +374,7 @@ def test_isend_irecv_testall(isnd, ircv, tall, wall):
     dst1 = np.empty_like(src1)
     dst2 = np.empty_like(src2)
 
-    reqs = np.empty((2,), dtype=mpi.RequestType)
+    reqs = np.zeros((2,), dtype=mpi.RequestType)
     if mpi.rank() == 0:
         time.sleep(TEST_WAIT_FULL_IN_SECONDS)
 
@@ -402,7 +420,7 @@ def test_isend_irecv_testany(isnd, ircv, tany, wall):
     dst1 = np.empty_like(src1)
     dst2 = np.empty_like(src2)
 
-    reqs = np.empty((2,), dtype=mpi.RequestType)
+    reqs = np.zeros((2,), dtype=mpi.RequestType)
     if mpi.rank() == 0:
         time.sleep(TEST_WAIT_FULL_IN_SECONDS)
 
