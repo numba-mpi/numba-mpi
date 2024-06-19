@@ -34,6 +34,9 @@ def wait(request):
     """Wrapper for MPI_Wait. Returns integer status code (0 == MPI_SUCCESS).
     Status is currently not handled. Requires 'request' parameter to be a
     c-style pointer to MPI_Request (such as returned by 'isend'/'irecv').
+
+    Uninitialized contents of 'request' (e.g., from numpy.empty()) may
+    cause invalid pointer dereference and segmentation faults.
     """
 
     status_buffer = create_status_buffer()
@@ -64,6 +67,9 @@ def waitall(requests):
     """Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).
     Status is currently not handled. Requires 'requests' parameter to be an
     array or tuple of MPI_Request objects.
+
+    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may
+    cause invalid pointer dereference and segmentation faults.
     """
     if isinstance(requests, np.ndarray):
         return _waitall_array_impl(requests)
@@ -123,6 +129,9 @@ def waitany(requests):
     status; second - the index of request that was completed. Status is
     currently not handled. Requires 'requests' parameter to be an array
     or tuple of MPI_Request objects.
+
+    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may
+    cause invalid pointer dereference and segmentation faults.
     """
 
     if isinstance(requests, np.ndarray):
@@ -167,6 +176,9 @@ def test(request):
     flag that indicates whether given request is completed. Status is currently
     not handled. Requires 'request' parameter to be a c-style pointer to
     MPI_Request (such as returned by 'isend'/'irecv').
+
+    Uninitialized contents of 'request' (e.g., from numpy.empty()) may
+    cause invalid pointer dereference and segmentation faults.
     """
 
     status_buffer = create_status_buffer()
@@ -203,6 +215,9 @@ def testall(requests):
     flag that indicates whether given request is completed. Status is currently
     not handled. Requires 'requests' parameter to be an array or tuple of
     MPI_Request objects.
+
+    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may
+    cause invalid pointer dereference and segmentation faults.
     """
     if isinstance(requests, np.ndarray):
         return _testall_array_impl(requests)
@@ -269,6 +284,9 @@ def testany(requests):
     that indicates whether any of requests is completed, and index of request
     that is guaranteed to be completed. Requires 'requests' parameter to be an
     array or tuple of MPI_Request objects.
+
+    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may
+    cause invalid pointer dereference and segmentation faults.
     """
 
     if isinstance(requests, np.ndarray):
