@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 import numba_mpi as mpi
-from tests.common import MPI_SUCCESS, data_types
+from tests.common import data_types
 from tests.utils import get_random_array
 
 
@@ -41,7 +41,7 @@ def test_scatter(data_type, scatter, send_count, data_size):
     recv_data = np.empty(send_count, data_type).astype(dtype=data_type)
     status = scatter(send_data, recv_data, send_count, root)
 
-    assert status == MPI_SUCCESS
+    assert status == mpi.SUCCESS
     np.testing.assert_equal(
         recv_data, data[rank * send_count : (rank + 1) * send_count]
     )
@@ -71,7 +71,7 @@ def test_gather(data_type, gather, recv_count, data_size):
 
     status = gather(send_data, recv_data, recv_count, root)
 
-    assert status == MPI_SUCCESS
+    assert status == mpi.SUCCESS
     valid_range = slice(0, mpi.size() * recv_count)
     if rank == root:
         np.testing.assert_equal(data[valid_range], recv_data[valid_range])
@@ -98,6 +98,6 @@ def test_allgather(data_type, allgather, recv_count, data_size):
 
     status = allgather(send_data, recv_data, recv_count)
 
-    assert status == MPI_SUCCESS
+    assert status == mpi.SUCCESS
     valid_range = slice(0, mpi.size() * recv_count)
     np.testing.assert_equal(data[valid_range], recv_data[valid_range])

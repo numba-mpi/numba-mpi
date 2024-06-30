@@ -20,6 +20,8 @@ from .api.size import size
 from .api.wtime import wtime
 from .common import RequestType
 
+SUCCESS = 0
+
 try:
     __version__ = version(__name__)
 except PackageNotFoundError:

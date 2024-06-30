@@ -4,7 +4,7 @@ import pytest
 from numba import njit
 
 import numba_mpi as mpi
-from tests.common import MPI_SUCCESS, data_types_real
+from tests.common import data_types_real
 from tests.utils import get_random_array
 
 
@@ -29,7 +29,7 @@ def test_allreduce(allreduce, op_mpi, op_np, data_type):
     src = get_random_array((3,), data_type)
     rcv = np.empty_like(src)
     status = allreduce(src, rcv, operator=op_mpi)
-    assert status == MPI_SUCCESS
+    assert status == mpi.SUCCESS
     expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
     np.testing.assert_equal(rcv, expect)
 
@@ -37,7 +37,7 @@ def test_allreduce(allreduce, op_mpi, op_np, data_type):
     src = src[0]
     rcv = np.empty(1, dtype=src.dtype)
     status = allreduce(src, rcv, operator=op_mpi)
-    assert status == MPI_SUCCESS
+    assert status == mpi.SUCCESS
     expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
     np.testing.assert_equal(rcv, expect)
 
@@ -45,6 +45,6 @@ def test_allreduce(allreduce, op_mpi, op_np, data_type):
     src = get_random_array((), data_type)
     rcv = np.empty_like(src)
     status = allreduce(src, rcv, operator=op_mpi)
-    assert status == MPI_SUCCESS
+    assert status == mpi.SUCCESS
     expect = op_np(np.tile(src, [mpi.size(), 1]), axis=0)
     np.testing.assert_equal(rcv, expect)

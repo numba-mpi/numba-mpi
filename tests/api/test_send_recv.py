@@ -4,7 +4,7 @@ import pytest
 from mpi4py.MPI import COMM_WORLD
 
 import numba_mpi as mpi
-from tests.common import MPI_SUCCESS, data_types
+from tests.common import data_types
 from tests.utils import get_random_array
 
 
@@ -26,11 +26,11 @@ def test_send_recv(snd, rcv, fortran_order, data_type):
 
     if mpi.rank() == 0:
         status = snd(src, dest=1, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         COMM_WORLD.Send(src, dest=1, tag=22)
     elif mpi.rank() == 1:
         status = rcv(dst_tst, source=0, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         COMM_WORLD.Recv(dst_exp, source=0, tag=22)
 
         np.testing.assert_equal(dst_tst, src)
@@ -47,10 +47,10 @@ def test_send_recv_noncontiguous(snd, rcv, data_type):
 
     if mpi.rank() == 0:
         status = snd(src[::2], dest=1, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
     elif mpi.rank() == 1:
         status = rcv(dst_tst[::2], source=0, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         np.testing.assert_equal(dst_tst[1::2], 0)
         np.testing.assert_equal(dst_tst[::2], src[::2])
@@ -66,10 +66,10 @@ def test_send_0d_arrays(snd, rcv, data_type):
 
     if mpi.rank() == 0:
         status = snd(src, dest=1, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
     elif mpi.rank() == 1:
         status = rcv(dst_tst, source=0, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         np.testing.assert_equal(dst_tst, src)
 
@@ -83,10 +83,10 @@ def test_send_default_tag(snd, rcv):
 
     if mpi.rank() == 0:
         status = snd(src, dest=1)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
     elif mpi.rank() == 1:
         status = rcv(dst_tst, source=0, tag=0)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         np.testing.assert_equal(dst_tst, src)
 
@@ -100,10 +100,10 @@ def test_recv_default_tag(snd, rcv):
 
     if mpi.rank() == 0:
         status = snd(src, dest=1, tag=44)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
     elif mpi.rank() == 1:
         status = rcv(dst_tst, source=0)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         np.testing.assert_equal(dst_tst, src)
 
@@ -117,9 +117,9 @@ def test_recv_default_source(snd, rcv):
 
     if mpi.rank() == 0:
         status = snd(src, dest=1, tag=44)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
     elif mpi.rank() == 1:
         status = rcv(dst_tst, tag=44)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         np.testing.assert_equal(dst_tst, src)

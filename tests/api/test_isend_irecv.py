@@ -7,7 +7,7 @@ import pytest
 from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD
 
 import numba_mpi as mpi
-from tests.common import MPI_SUCCESS, data_types
+from tests.common import data_types
 from tests.utils import get_random_array
 
 TEST_WAIT_FULL_IN_SECONDS = 0.3
@@ -69,23 +69,23 @@ def test_isend_irecv(isnd, ircv, wait, data_type):
 
     if mpi.rank() == 0:
         status, req = isnd(src, dest=1, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         req_exp = COMM_WORLD.Isend(src, dest=1, tag=22)
 
         status = wait(req)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         req_exp.wait()
 
     elif mpi.rank() == 1:
         status, req = ircv(dst_tst, source=0, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         req_exp = COMM_WORLD.Irecv(dst_exp, source=0, tag=22)
 
         status = wait(req)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         req_exp.wait()
 
@@ -106,11 +106,11 @@ def test_send_default_tag(isnd, ircv, wait):
 
     if mpi.rank() == 0:
         status, req = isnd(src, dest=1)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         wait(req)
     elif mpi.rank() == 1:
         status, req = ircv(dst_tst, source=0, tag=0)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         wait(req)
 
         np.testing.assert_equal(dst_tst, src)
@@ -129,11 +129,11 @@ def test_recv_default_tag(isnd, ircv, wait):
 
     if mpi.rank() == 0:
         status, req = isnd(src, dest=1, tag=44)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         wait(req)
     elif mpi.rank() == 1:
         status, req = ircv(dst_tst, source=0)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         wait(req)
 
         np.testing.assert_equal(dst_tst, src)
@@ -152,11 +152,11 @@ def test_recv_default_source(isnd, ircv, wait):
 
     if mpi.rank() == 0:
         status, req = isnd(src, dest=1, tag=44)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         wait(req)
     elif mpi.rank() == 1:
         status, req = ircv(dst_tst, tag=44)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         wait(req)
 
         np.testing.assert_equal(dst_tst, src)
@@ -179,21 +179,21 @@ def test_isend_irecv_waitall(isnd, ircv, wall, data_type):
     reqs = np.zeros((2,), dtype=mpi.RequestType)
     if mpi.rank() == 0:
         status, reqs[0:1] = isnd(src1, dest=1, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, reqs[1:2] = isnd(src2, dest=1, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         status = wall(reqs)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
     elif mpi.rank() == 1:
         status, reqs[0:1] = ircv(dst1, source=0, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, reqs[1:2] = ircv(dst2, source=0, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         status = wall(reqs)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         np.testing.assert_equal(dst1, src1)
         np.testing.assert_equal(dst2, src2)
@@ -214,21 +214,21 @@ def test_isend_irecv_waitall_tuple(isnd, ircv, wall):
 
     if mpi.rank() == 0:
         status, req_1 = isnd(src1, dest=1, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, req_2 = isnd(src2, dest=1, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         status = wall((req_1, req_2))
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
     elif mpi.rank() == 1:
         status, req_1 = ircv(dst1, source=0, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, req_2 = ircv(dst2, source=0, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         status = wall((req_1, req_2))
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         np.testing.assert_equal(dst1, src1)
         np.testing.assert_equal(dst2, src2)
@@ -248,15 +248,15 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall):
     reqs = np.zeros((2,), dtype=mpi.RequestType)
     if mpi.rank() == 0:
         status, reqs[0:1] = isnd(src, dest=1, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, reqs[1:2] = ircv(dst, source=1, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
     elif mpi.rank() == 1:
         status, reqs[0:1] = isnd(src, dest=0, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, reqs[1:2] = ircv(dst, source=0, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
     wall(reqs)
 
@@ -303,19 +303,19 @@ def test_isend_irecv_waitany(isnd, ircv, wany, wall, data_type):
     reqs = np.zeros((2,), dtype=mpi.RequestType)
     if mpi.rank() == 0:
         status, reqs[0:1] = isnd(src1, dest=1, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, reqs[1:2] = isnd(src2, dest=1, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         wall(reqs)
 
     elif mpi.rank() == 1:
         status, reqs[0:1] = ircv(dst1, source=0, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, reqs[1:2] = ircv(dst2, source=0, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         status, index = wany(reqs)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         if index == 0:
             np.testing.assert_equal(dst1, src1)
@@ -341,14 +341,14 @@ def test_isend_irecv_test(isnd, ircv, tst, wait):
     if mpi.rank() == 0:
         time.sleep(TEST_WAIT_FULL_IN_SECONDS)
         status, req = isnd(src, dest=1, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         wait(req)
     elif mpi.rank() == 1:
         status, req = ircv(dst, source=0, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         status, flag = tst(req)
-        while status == MPI_SUCCESS and not flag:
+        while status == mpi.SUCCESS and not flag:
             time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
             status, flag = tst(req)
 
@@ -379,20 +379,20 @@ def test_isend_irecv_testall(isnd, ircv, tall, wall):
         time.sleep(TEST_WAIT_FULL_IN_SECONDS)
 
         status, reqs[0:1] = isnd(src1, dest=1, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, reqs[1:2] = isnd(src2, dest=1, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         wall(reqs)
 
     elif mpi.rank() == 1:
         status, reqs[0:1] = ircv(dst1, source=0, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, reqs[1:2] = ircv(dst2, source=0, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         status, flag = tall(reqs)
-        while status == MPI_SUCCESS and not flag:
+        while status == mpi.SUCCESS and not flag:
             time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
             status, flag = tall(reqs)
 
@@ -425,20 +425,20 @@ def test_isend_irecv_testany(isnd, ircv, tany, wall):
         time.sleep(TEST_WAIT_FULL_IN_SECONDS)
 
         status, reqs[0:1] = isnd(src1, dest=1, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, reqs[1:2] = isnd(src2, dest=1, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         wall(reqs)
 
     elif mpi.rank() == 1:
         status, reqs[0:1] = ircv(dst1, source=0, tag=11)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
         status, reqs[1:2] = ircv(dst2, source=0, tag=22)
-        assert status == MPI_SUCCESS
+        assert status == mpi.SUCCESS
 
         status, flag, index = tany(reqs)
-        while status == MPI_SUCCESS and not flag:
+        while status == mpi.SUCCESS and not flag:
             time.sleep(TEST_WAIT_INCREMENT_IN_SECONDS)
             status, flag, index = tany(reqs)
 
