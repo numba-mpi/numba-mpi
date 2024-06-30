@@ -17,5 +17,6 @@ def initialized():
     """wrapper for MPI_Initialized()"""
     flag = np.empty((1,), dtype=np.intc)
     status = _MPI_Initialized(flag.ctypes.data)
-    assert status == 0
+    if status != 0:
+        return False
     return bool(flag[0])

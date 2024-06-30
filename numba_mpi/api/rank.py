@@ -18,5 +18,4 @@ def rank():
     """wrapper for MPI_Comm_rank()"""
     value = np.empty(1, dtype=np.intc)
     status = _MPI_Comm_rank(_mpi_addr(_MPI_Comm_World_ptr), value.ctypes.data)
-    assert status == 0
     return value[0]
