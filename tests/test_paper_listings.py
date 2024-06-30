@@ -13,7 +13,10 @@ import numba_mpi
         ("hello.py", "mpi4py_with_error.py", "numba_mpi.py", "timing.py"),
         ("exchange.py",),
         ("test.py",),
-        ("py-pde.py",),
+        pytest.param(
+            ("py-pde.py",),
+            marks=pytest.mark.skipif(numba_mpi.size() != 2, reason="hardcoded"),
+        ),
     ),
 )
 @pytest.mark.skipif(numba_mpi.size() == 1, reason="listings assume more than 1 worker")
