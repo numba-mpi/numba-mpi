@@ -17,5 +17,5 @@ _MPI_Comm_size.argtypes = [_MpiComm, ctypes.c_void_p]
 def size():
     """wrapper for MPI_Comm_size()"""
     value = np.empty(1, dtype=np.intc)
-    status = _MPI_Comm_size(_mpi_addr(_MPI_Comm_World_ptr), value.ctypes.data)
+    _ = _MPI_Comm_size(_mpi_addr(_MPI_Comm_World_ptr), value.ctypes.data)
     return value[0]

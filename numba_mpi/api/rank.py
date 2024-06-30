@@ -17,5 +17,5 @@ _MPI_Comm_rank.argtypes = [_MpiComm, ctypes.c_void_p]
 def rank():
     """wrapper for MPI_Comm_rank()"""
     value = np.empty(1, dtype=np.intc)
-    status = _MPI_Comm_rank(_mpi_addr(_MPI_Comm_World_ptr), value.ctypes.data)
+    _ = _MPI_Comm_rank(_mpi_addr(_MPI_Comm_World_ptr), value.ctypes.data)
     return value[0]
