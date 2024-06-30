@@ -1,6 +1,6 @@
 import numba, timeit
 
-@numba.jit
+@numba.jit(nopython=True)
 def get_pi_part(n_intervals=1000000, rank=0, size=1):
     h = 1 / n_intervals
     partial_sum = 0.0

@@ -1,6 +1,6 @@
 import numba_mpi
 
-@numba.jit
+@numba.jit(nopython=True)
 def pi_numba_mpi(n_intervals):
     pi = np.array([0.])
     part = np.empty_like(pi)

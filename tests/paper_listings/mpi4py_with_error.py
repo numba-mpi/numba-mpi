@@ -14,6 +14,6 @@ def pi_mpi4py(n_intervals):
         assert abs(pi[0] - np.pi) / np.pi < RTOL
 
 try:
-    numba.njit(pi_mpi4py)(1)
+    numba.jit(pi_mpi4py, nopython=True)(1)
 except Exception as ex:
     print(ex)

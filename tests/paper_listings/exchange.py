@@ -2,7 +2,7 @@ import numpy as np
 import numba_mpi as mpi
 import numba
 
-@numba.jit
+@numba.jit(nopython=True)
 def exchange_data(src_data):
     dst_data = np.empty_like(src_data)
     reqs = np.zeros((2,), dtype=mpi.RequestType)
