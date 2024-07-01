@@ -15,7 +15,9 @@ _MPI_Comm_rank.argtypes = [_MpiComm, ctypes.c_void_p]
 
 @numba.njit()
 def rank():
-    """wrapper for MPI_Comm_rank()"""
+    """wrapper for MPI_Comm_rank(), in case of failure returns 0"""
     value = np.empty(1, dtype=np.intc)
-    _ = _MPI_Comm_rank(_mpi_addr(_MPI_Comm_World_ptr), value.ctypes.data)
+    status = _MPI_Comm_rank(_mpi_addr(_MPI_Comm_World_ptr), value.ctypes.data)
+    if status != 0:
+        value[0] = 0
     return value[0]

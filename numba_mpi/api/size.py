@@ -15,7 +15,9 @@ _MPI_Comm_size.argtypes = [_MpiComm, ctypes.c_void_p]
 
 @numba.njit()
 def size():
-    """wrapper for MPI_Comm_size()"""
+    """wrapper for MPI_Comm_size(), in case of failure returns 0"""
     value = np.empty(1, dtype=np.intc)
-    _ = _MPI_Comm_size(_mpi_addr(_MPI_Comm_World_ptr), value.ctypes.data)
+    status = _MPI_Comm_size(_mpi_addr(_MPI_Comm_World_ptr), value.ctypes.data)
+    if status != 0:
+        value[0] = 0
     return value[0]
