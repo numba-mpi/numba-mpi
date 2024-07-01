@@ -148,6 +148,7 @@ if numba_mpi.rank() == 0:
     - Intel MPI: https://intel.com/content/www/us/en/developer/tools/oneapi/mpi-library-documentation.html
 - MPI bindings:
     - Python: https://mpi4py.readthedocs.io
+    - Python/JAX: https://mpi4jax.readthedocs.io
     - Julia: https://juliaparallel.org/MPI.jl
     - Rust: https://docs.rs/mpi
     - C++: https://boost.org/doc/html/mpi.html
@@ -155,5 +156,11 @@ if numba_mpi.rank() == 0:
 
 ### Acknowledgements:
 
-Development of numba-mpi has been supported by the [Polish National Science Centre](https://ncn.gov.pl/en) (grant no. 2020/39/D/ST10/01220).
+We thank [all contributors](https://github.com/numba-mpi/numba-mpi/graphs/contributors) and users who reported feedback to the project 
+  through [GitHub issues](https://github.com/numba-mpi/numba-mpi/issues).
+
+Development of numba-mpi has been supported by the [Polish National Science Centre](https://ncn.gov.pl/en) (grant no. 2020/39/D/ST10/01220),
+  the [Max Planck Society](https://www.mpg.de/en) and the [European Union](https://erc.europa.eu/) (ERC, EmulSim, 101044662). 
+We further acknowledge Poland’s high-performance computing infrastructure [PLGrid](https://plgrid.pl) (HPC Centers: [ACK Cyfronet AGH](https://www.cyfronet.pl/en)) 
+  for providing computer facilities and support within computational grant no. PLG/2023/016369.
 
