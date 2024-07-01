@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 import numba_mpi as mpi
-from tests.common import MPI_SUCCESS, data_types
+from tests.common import data_types
 from tests.utils import get_random_array
 
 
@@ -25,7 +25,7 @@ def test_bcast_np_array(data_type, bcast):
 
     status = bcast(data, root)
 
-    assert status == MPI_SUCCESS
+    assert status == mpi.SUCCESS
 
     np.testing.assert_equal(data, datatobcast)
 
@@ -43,5 +43,5 @@ def test_bcast_string(stringtobcast):
         data = datatobcast
 
     status = mpi.bcast(data, root)
-    assert status == MPI_SUCCESS
+    assert status == mpi.SUCCESS
     assert str(data) == str(datatobcast)

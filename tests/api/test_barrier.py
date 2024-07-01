@@ -3,7 +3,6 @@ import numba
 import pytest
 
 import numba_mpi
-from tests.common import MPI_SUCCESS
 
 
 @numba.njit()
@@ -15,4 +14,4 @@ def jit_barrier():
 def test_barrier(barrier):
     status = barrier()
 
-    assert status == MPI_SUCCESS
+    assert status == numba_mpi.SUCCESS
