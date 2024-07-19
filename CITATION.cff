@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "numba-mpi"
+url: "https://github.com/numba-mpi/numba-mpi"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Derlatka"
+    given-names: "Kacper"
+  - family-names: "Manna"
+    given-names: "Maciej"
+  - family-names: "Bulenok"
+    given-names: "Oleksii"
+  - family-names: "Zwicker"
+    given-names: "David"
+  - family-names: "Arabas"
+    given-names: "Sylwester"
+  doi: "10.48550/arXiv.2407.13712"
+  journal: "arXiv"
+  title: " Enabling MPI communication within Numba/LLVM JIT-compiled Python code using numba-mpi v1.0 "
+  year: 2024
