@@ -21,7 +21,7 @@ setup(
     python_requires=">=3.8",
     setup_requires=["setuptools_scm"],
     license="GPL v3",
-    description="Numba @njittable MPI wrappers tested on Linux, macOS and Windows",
+    description="Numba @jittable MPI wrappers tested on Linux, macOS and Windows",
     install_requires=("numba", "numpy", "mpi4py", "psutil"),
     extras_require={"tests": ("pytest<8.0.0", "py-pde")},  # TODO #122
     long_description=get_long_description(),

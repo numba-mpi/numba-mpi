@@ -14,7 +14,7 @@
 [![DOI](https://zenodo.org/badge/316911228.svg)](https://zenodo.org/badge/latestdoi/316911228)
 
 ### Overview
-numba-mpi provides Python wrappers to the C MPI API callable from within [Numba JIT-compiled code](https://numba.readthedocs.io/en/stable/user/jit.html) (@njit mode).
+numba-mpi provides Python wrappers to the C MPI API callable from within [Numba JIT-compiled code](https://numba.readthedocs.io/en/stable/user/jit.html) (@jit mode). For an outline of the project, rationale, architecture, and features, refer to: [numba-mpi arXiv e-print](https://doi.org/10.48550/arXiv.2407.13712) (please cite if numba-mpi is used in your research).
 
 Support is provided for a subset of MPI routines covering: `size`/`rank`, `send`/`recv`, `allreduce`, `bcast`, `scatter`/`gather` & `allgather`, `barrier`, `wtime`
 and basic asynchronous communication with `isend`/`irecv` (only for contiguous arrays); for request handling including `wait`/`waitall`/`waitany` and `test`/`testall`/`testany`.
@@ -45,7 +45,7 @@ Features that are not implemented yet include (help welcome!):
 ```python
 import numba, numba_mpi, numpy
 
-@numba.njit()
+@numba.jit()
 def hello():
     src = numpy.array([1., 2., 3., 4., 5.])
     dst_tst = numpy.empty_like(src)

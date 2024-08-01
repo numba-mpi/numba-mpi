@@ -1,6 +1,6 @@
 {
   "title": "numba-mpi",
-  "description": "Numba @njittable wrappers for MPI C API tested on Linux, macOS and Windows",
+  "description": "Numba @jittable wrappers for MPI C API tested on Linux, macOS and Windows",
   "creators": [
     {
       "affiliation": "Jagiellonian University, Kraków, Poland",
