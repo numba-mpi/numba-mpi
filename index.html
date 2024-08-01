@@ -39,7 +39,7 @@ hljs.highlightAll();
 <a href="https://aur.archlinux.org/packages/python-numba-mpi"><img alt="AUR package" src="https://repology.org/badge/version-for-repo/aur/python:numba-mpi.svg"></a>
 <a href="https://zenodo.org/badge/latestdoi/316911228"><img alt="DOI" src="https://zenodo.org/badge/316911228.svg"></a></p>
 <h3 id="overview">Overview</h3>
-<p>numba-mpi provides Python wrappers to the C MPI API callable from within <a href="https://numba.readthedocs.io/en/stable/user/jit.html">Numba JIT-compiled code</a> (@njit mode).</p>
+<p>numba-mpi provides Python wrappers to the C MPI API callable from within <a href="https://numba.readthedocs.io/en/stable/user/jit.html">Numba JIT-compiled code</a> (@jit mode). For an outline of the project, rationale, architecture, and features, refer to: <a href="https://doi.org/10.48550/arXiv.2407.13712">numba-mpi arXiv e-print</a> (please cite if numba-mpi is used in your research).</p>
 <p>Support is provided for a subset of MPI routines covering: <code>size</code>/<code>rank</code>, <code>send</code>/<code>recv</code>, <code>allreduce</code>, <code>bcast</code>, <code>scatter</code>/<code>gather</code> &amp; <code>allgather</code>, <code>barrier</code>, <code>wtime</code>
 and basic asynchronous communication with <code>isend</code>/<code>irecv</code> (only for contiguous arrays); for request handling including <code>wait</code>/<code>waitall</code>/<code>waitany</code> and <code>test</code>/<code>testall</code>/<code>testany</code>.</p>
 <p>The API uses NumPy and supports both numeric and character datatypes (e.g., <code>broadcast</code>).
@@ -63,7 +63,7 @@ Windows (<a href="https://docs.microsoft.com/en-us/message-passing-interface/mic
 <h3 id="hello-world-sendrecv-example">Hello world send/recv example:</h3>
 <pre><code class="language-python">import numba, numba_mpi, numpy
 
-@numba.njit()
+@numba.jit()
 def hello():
     src = numpy.array([1., 2., 3., 4., 5.])
     dst_tst = numpy.empty_like(src)
