@@ -66,7 +66,7 @@ jobs:
         run: |
           pip install pdoc
           pip install -e .
-          PDOC_ALLOW_EXEC=1 python -We -m pdoc -o html numba_mpi
+          PDOC_ALLOW_EXEC=1 python -We -m pdoc -o html numba_mpi -t pdoc_templates
       - name: Deploy
         if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@4.1.1
