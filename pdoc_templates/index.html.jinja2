@@ -1,0 +1,21 @@
+{% extends "default/index.html.jinja2" %}
+
+{% block title %}numba-mpi module list{% endblock %}
+
+{% block nav %}
+    <h2>Available Modules</h2>
+    <ul>
+        {% for submodule in all_modules if "." not in submodule %}
+            <li><a href="{{ submodule.replace(".","/") }}.html">{{ submodule }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <main class="pdoc">
+    <a href="https://open-atmos.github.io/numba-mpi/">
+        <img src="https://raw.githubusercontent.com/numba-mpi/numba-mpi/main/.github/numba_mpi_logo.svg" style="height:50pt" alt="numba-mpi logo">
+    </a>
+    </main>
+    {% include "search.html.jinja2" %}
+{% endblock %}
