@@ -7,7 +7,7 @@ from numba_mpi.common import _MPI_Comm_World_ptr
 
 
 @numba.njit()
-def jit_barrier(comm_ptr):
+def jit_barrier(comm_ptr=_MPI_Comm_World_ptr):
     return numba_mpi.barrier(comm_ptr)
 
 
