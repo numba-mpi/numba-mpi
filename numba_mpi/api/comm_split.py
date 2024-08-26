@@ -2,7 +2,10 @@
 """_MPI_Comm_split() implementation"""
 import ctypes
 
-from numba_mpi.common import libmpi
+import numba
+from mpi4py import MPI
+
+from numba_mpi.common import _MPI_Comm_World_ptr, libmpi
 from numba_mpi.utils import _mpi_addr, _MpiComm
 
 _MPI_Comm_split = libmpi.MPI_Comm_split
@@ -15,8 +18,11 @@ _MPI_Comm_split.argtypes = [
 ]
 
 
-def comm_split(comm, color, key):
+def comm_split(color, key, comm=_MPI_Comm_World_ptr):
+    """
+    Not njittable
+    """
     newcomm = _MpiComm()
     status = _MPI_Comm_split(_mpi_addr(comm), color, key, ctypes.pointer(newcomm))
 
-    return newcomm, status
+    return MPI.Get_address(newcomm), status

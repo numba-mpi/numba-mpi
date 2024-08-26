@@ -1,17 +1,24 @@
 # pylint: disable=missing-module-docstring,missing-function-docstring,missing-class-docstring
 
-from mpi4py import MPI
+import numba
+import pytest
 
 import numba_mpi as mpi
 from numba_mpi.common import _MPI_Comm_World_ptr
 
 
-def test_split_barrier():
+@numba.njit()
+def jit_split(color, key, comm=_MPI_Comm_World_ptr):
+    return mpi.comm_split(color, key, comm)
+
+
+@pytest.mark.parametrize("split", (mpi.comm_split,))
+def test_split_barrier(split):
     rank = mpi.rank()
-    comm, status = mpi.comm_split(_MPI_Comm_World_ptr, rank == 0, rank)
+    comm, status = split(rank == 0, rank)
 
     assert status == 0
     if rank == 0:
-        status = mpi.barrier(MPI.Get_address(comm))
+        status = mpi.barrier(comm)
 
         assert status == 0
