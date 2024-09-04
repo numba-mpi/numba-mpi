@@ -2,7 +2,6 @@
 """_MPI_Comm_split() implementation"""
 import ctypes
 
-import numba
 from mpi4py import MPI
 
 from numba_mpi.common import _MPI_Comm_World_ptr, libmpi
@@ -18,9 +17,15 @@ _MPI_Comm_split.argtypes = [
 ]
 
 
-def comm_split(color, key, comm=_MPI_Comm_World_ptr):
+def comm_split(
+    color: int, key: int, comm: int = _MPI_Comm_World_ptr
+) -> tuple[int, int]:
     """
-    Not njittable
+    :param int color: control of subset assignment
+    :param int key: control of rank assignment
+    :param int comm: communicator handle
+    :return: Tuple of ints: (new communicator handle, status code)
+    Note: Function not njittable due to MPI.Get_address() invocation - FIXME
     """
     newcomm = _MpiComm()
     status = _MPI_Comm_split(_mpi_addr(comm), color, key, ctypes.pointer(newcomm))
