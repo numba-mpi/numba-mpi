@@ -7,6 +7,9 @@ def get_long_description():
     """returns contents of README.md file"""
     with open("README.md", "r", encoding="utf8") as file:
         long_description = file.read()
+    long_description = long_description.replace(
+        "numba_mpi_logo.svg", "numba_mpi_logo.png"
+    )
     return long_description
 
 
