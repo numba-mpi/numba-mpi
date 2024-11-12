@@ -13,6 +13,7 @@ from .api.isend import isend
 from .api.operator import Operator
 from .api.rank import rank
 from .api.recv import recv
+from .api.reduce import reduce
 from .api.requests import test, testall, testany, wait, waitall, waitany
 from .api.scatter_gather import allgather, gather, scatter
 from .api.send import send

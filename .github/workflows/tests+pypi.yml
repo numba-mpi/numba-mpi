@@ -33,7 +33,7 @@ jobs:
         pip install -r numba_mpi.egg-info/requires.txt
     - name: Analysing the code with pylint
       run: |
-        pylint --unsafe-load-any-extension=y --disable=fixme $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
+        pylint --unsafe-load-any-extension=y --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
 
   precommit:
     runs-on: ubuntu-latest
