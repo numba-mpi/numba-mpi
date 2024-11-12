@@ -7,7 +7,6 @@ import numpy as np
 from numba.core import types
 from numba.extending import overload
 
-from numba_mpi.api.operator import Operator
 from numba_mpi.common import _MPI_Comm_World_ptr, _MpiComm, _MpiDatatype, _MpiOp, libmpi
 from numba_mpi.utils import _mpi_addr, _mpi_dtype
 
@@ -24,9 +23,7 @@ _MPI_Reduce.argtypes = [
 ]
 
 
-def reduce(
-    sendobj, recvobj, operator, root
-):  # pylint: disable=unused-argument
+def reduce(sendobj, recvobj, operator, root):  # pylint: disable=unused-argument
     """wrapper for MPI_Reduce
     Note that complex datatypes and user-defined functions are not properly supported.
     Returns integer status code (0 == MPI_SUCCESS)
@@ -64,9 +61,7 @@ def reduce(
 
 
 @overload(reduce)
-def ol_reduce(
-    sendobj, recvobj, operator, root
-):  # pylint: disable=unused-argument
+def ol_reduce(sendobj, recvobj, operator, root):  # pylint: disable=unused-argument
     """wrapper for MPI_Reduce
     Note that complex datatypes and user-defined functions are not properly supported.
     Returns integer status code (0 == MPI_SUCCESS)

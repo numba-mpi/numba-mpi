@@ -5,7 +5,6 @@
 from importlib.metadata import PackageNotFoundError, version
 
 from .api.allreduce import allreduce
-from .api.reduce import reduce
 from .api.barrier import barrier
 from .api.bcast import bcast
 from .api.initialized import initialized
@@ -14,6 +13,7 @@ from .api.isend import isend
 from .api.operator import Operator
 from .api.rank import rank
 from .api.recv import recv
+from .api.reduce import reduce
 from .api.requests import test, testall, testany, wait, waitall, waitany
 from .api.scatter_gather import allgather, gather, scatter
 from .api.send import send
