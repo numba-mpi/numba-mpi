@@ -5,6 +5,7 @@
 from importlib.metadata import PackageNotFoundError, version
 
 from .api.allreduce import allreduce
+from .api.reduce import reduce
 from .api.barrier import barrier
 from .api.bcast import bcast
 from .api.initialized import initialized
