@@ -15,8 +15,8 @@ def jit_bcast(data, root):
 
 @pytest.mark.parametrize("bcast", (jit_bcast.py_func, jit_bcast))
 @pytest.mark.parametrize("data_type", data_types)
-def test_bcast_np_array(data_type, bcast):
-    root = 0
+@pytest.mark.parametrize("root", range(mpi.size()))
+def test_bcast_np_array(data_type, bcast, root):
     data = np.empty(5, data_type).astype(dtype=data_type)
     datatobcast = get_random_array(5, data_type).astype(dtype=data_type)
 
@@ -34,8 +34,8 @@ def test_bcast_np_array(data_type, bcast):
     "stringtobcast",
     ("test bcast", pytest.param("żółć", marks=pytest.mark.xfail(strict=True))),
 )
-def test_bcast_string(stringtobcast):
-    root = 0
+@pytest.mark.parametrize("root", range(mpi.size()))
+def test_bcast_string(stringtobcast, root):
     datatobcast = np.array(stringtobcast, "c")
     data = np.empty_like(datatobcast)
 
