@@ -28,7 +28,7 @@ jobs:
       - run: cat -n readme.py
       - run: mpiexec -n 4 python -We readme.py
       - run: rsvg-convert readme_plot.svg > readme_plot.png
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: readme_plot.*
           name: readme_plot
