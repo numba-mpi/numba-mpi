@@ -89,13 +89,13 @@ jobs:
     strategy:
       matrix:
         mpi-np: [2, 3]
-        platform: [ubuntu-latest, macos-12, windows-latest]
+        platform: [ubuntu-latest, macos-13, windows-latest]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         mpi: [ 'mpich', 'openmpi', 'msmpi', 'intelmpi']
         exclude:
-        - platform: macos-12
+        - platform: macos-13
           mpi: msmpi
-        - platform: macos-12
+        - platform: macos-13
           mpi: intelmpi
         - platform: ubuntu-latest
           mpi: msmpi
@@ -135,7 +135,6 @@ jobs:
 
   dist:
     runs-on: ubuntu-latest
-    needs: [build]
     permissions:
       id-token: write
     steps:
