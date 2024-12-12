@@ -97,6 +97,8 @@ jobs:
           mpi: msmpi
         - platform: macos-13
           mpi: intelmpi
+        - platform: macos-13
+          mpi: openmpi
         - platform: ubuntu-latest
           mpi: msmpi
         - platform: windows-latest
