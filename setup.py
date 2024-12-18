@@ -18,7 +18,7 @@ setup(
     url="https://github.com/numba-mpi/numba-mpi",
     author="https://github.com/numba-mpi/numba-mpi/graphs/contributors",
     use_scm_version={
-        "local_scheme": lambda _: "",
+        "local_scheme": "no-local-version",
         "version_scheme": "post-release",
     },
     python_requires=">=3.8",
