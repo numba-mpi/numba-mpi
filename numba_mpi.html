@@ -105,10 +105,10 @@ Windows (<a href="https://docs.microsoft.com/en-us/message-passing-interface/mic
 <h3 id="hello-world-sendrecv-example">Hello world send/recv example:</h3>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="kn">import</span> <span class="nn">numba</span><span class="o">,</span> <span class="nn">numba_mpi</span><span class="o">,</span> <span class="nn">numpy</span>
+<pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">numba</span><span class="o">,</span><span class="w"> </span><span class="nn">numba_mpi</span><span class="o">,</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hello</span><span class="p">():</span>
     <span class="n">src</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">])</span>
     <span class="n">dst_tst</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 
@@ -144,13 +144,13 @@ eliminated by using <code>numba-mpi</code>, and which the measured differences i
 stem from.</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="kn">import</span> <span class="nn">timeit</span><span class="o">,</span> <span class="nn">mpi4py</span><span class="o">,</span> <span class="nn">numba</span><span class="o">,</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span><span class="o">,</span> <span class="nn">numba_mpi</span>
+<pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">timeit</span><span class="o">,</span><span class="w"> </span><span class="nn">mpi4py</span><span class="o">,</span><span class="w"> </span><span class="nn">numba</span><span class="o">,</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="o">,</span><span class="w"> </span><span class="nn">numba_mpi</span>
 
 <span class="n">N_TIMES</span> <span class="o">=</span> <span class="mi">10000</span>
 <span class="n">RTOL</span> <span class="o">=</span> <span class="mf">1e-3</span>
 
 <span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span>
-<span class="k">def</span> <span class="nf">get_pi_part</span><span class="p">(</span><span class="n">n_intervals</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_pi_part</span><span class="p">(</span><span class="n">n_intervals</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="n">h</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">n_intervals</span>
     <span class="n">partial_sum</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rank</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_intervals</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
@@ -159,7 +159,7 @@ stem from.</p>
     <span class="k">return</span> <span class="n">h</span> <span class="o">*</span> <span class="n">partial_sum</span>
 
 <span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span>
-<span class="k">def</span> <span class="nf">pi_numba_mpi</span><span class="p">(</span><span class="n">n_intervals</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pi_numba_mpi</span><span class="p">(</span><span class="n">n_intervals</span><span class="p">):</span>
     <span class="n">pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">])</span>
     <span class="n">part</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_TIMES</span><span class="p">):</span>
@@ -167,7 +167,7 @@ stem from.</p>
         <span class="n">numba_mpi</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">numba_mpi</span><span class="o">.</span><span class="n">Operator</span><span class="o">.</span><span class="n">SUM</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">&lt;</span> <span class="n">RTOL</span>
 
-<span class="k">def</span> <span class="nf">pi_mpi4py</span><span class="p">(</span><span class="n">n_intervals</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pi_mpi4py</span><span class="p">(</span><span class="n">n_intervals</span><span class="p">):</span>
     <span class="n">pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">])</span>
     <span class="n">part</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_TIMES</span><span class="p">):</span>
@@ -187,7 +187,7 @@ stem from.</p>
         <span class="p">)))</span>
 
 <span class="k">if</span> <span class="n">numba_mpi</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span>
     <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">8.3</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">),</span> <span class="n">tight_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plot_x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">plot_y</span><span class="p">[</span><span class="s1">&#39;mpi4py&#39;</span><span class="p">])</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">plot_y</span><span class="p">[</span><span class="s1">&#39;numba_mpi&#39;</span><span class="p">]),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
     <span class="n">pyplot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;number of MPI calls per interval&#39;</span><span class="p">)</span>
@@ -245,24 +245,24 @@ We further acknowledge Poland’s high-performance computing infrastructure <a h
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">.. include::../README.md</span>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">from</span> <span class="nn">importlib.metadata</span> <span class="kn">import</span> <span class="n">PackageNotFoundError</span><span class="p">,</span> <span class="n">version</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">PackageNotFoundError</span><span class="p">,</span> <span class="n">version</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="kn">from</span> <span class="nn">.api.allreduce</span> <span class="kn">import</span> <span class="n">allreduce</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="kn">from</span> <span class="nn">.api.barrier</span> <span class="kn">import</span> <span class="n">barrier</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="kn">from</span> <span class="nn">.api.bcast</span> <span class="kn">import</span> <span class="n">bcast</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="kn">from</span> <span class="nn">.api.initialized</span> <span class="kn">import</span> <span class="n">initialized</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="kn">from</span> <span class="nn">.api.irecv</span> <span class="kn">import</span> <span class="n">irecv</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="kn">from</span> <span class="nn">.api.isend</span> <span class="kn">import</span> <span class="n">isend</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="kn">from</span> <span class="nn">.api.operator</span> <span class="kn">import</span> <span class="n">Operator</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="kn">from</span> <span class="nn">.api.rank</span> <span class="kn">import</span> <span class="n">rank</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="kn">from</span> <span class="nn">.api.recv</span> <span class="kn">import</span> <span class="n">recv</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="kn">from</span> <span class="nn">.api.reduce</span> <span class="kn">import</span> <span class="n">reduce</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="kn">from</span> <span class="nn">.api.requests</span> <span class="kn">import</span> <span class="n">test</span><span class="p">,</span> <span class="n">testall</span><span class="p">,</span> <span class="n">testany</span><span class="p">,</span> <span class="n">wait</span><span class="p">,</span> <span class="n">waitall</span><span class="p">,</span> <span class="n">waitany</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="kn">from</span> <span class="nn">.api.scatter_gather</span> <span class="kn">import</span> <span class="n">allgather</span><span class="p">,</span> <span class="n">gather</span><span class="p">,</span> <span class="n">scatter</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="kn">from</span> <span class="nn">.api.send</span> <span class="kn">import</span> <span class="n">send</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="kn">from</span> <span class="nn">.api.size</span> <span class="kn">import</span> <span class="n">size</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="kn">from</span> <span class="nn">.api.wtime</span> <span class="kn">import</span> <span class="n">wtime</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="kn">from</span> <span class="nn">.common</span> <span class="kn">import</span> <span class="n">RequestType</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.allreduce</span><span class="w"> </span><span class="kn">import</span> <span class="n">allreduce</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.barrier</span><span class="w"> </span><span class="kn">import</span> <span class="n">barrier</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.bcast</span><span class="w"> </span><span class="kn">import</span> <span class="n">bcast</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.initialized</span><span class="w"> </span><span class="kn">import</span> <span class="n">initialized</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.irecv</span><span class="w"> </span><span class="kn">import</span> <span class="n">irecv</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.isend</span><span class="w"> </span><span class="kn">import</span> <span class="n">isend</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.operator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Operator</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.rank</span><span class="w"> </span><span class="kn">import</span> <span class="n">rank</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.recv</span><span class="w"> </span><span class="kn">import</span> <span class="n">recv</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.reduce</span><span class="w"> </span><span class="kn">import</span> <span class="n">reduce</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">test</span><span class="p">,</span> <span class="n">testall</span><span class="p">,</span> <span class="n">testany</span><span class="p">,</span> <span class="n">wait</span><span class="p">,</span> <span class="n">waitall</span><span class="p">,</span> <span class="n">waitany</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.scatter_gather</span><span class="w"> </span><span class="kn">import</span> <span class="n">allgather</span><span class="p">,</span> <span class="n">gather</span><span class="p">,</span> <span class="n">scatter</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.send</span><span class="w"> </span><span class="kn">import</span> <span class="n">send</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.size</span><span class="w"> </span><span class="kn">import</span> <span class="n">size</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.api.wtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">wtime</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestType</span>
 </span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
 </span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="n">SUCCESS</span> <span class="o">=</span> <span class="mi">0</span>
 </span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>

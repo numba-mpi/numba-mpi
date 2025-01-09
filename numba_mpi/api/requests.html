@@ -76,14 +76,14 @@ wrappers.</p>
 </span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a><span class="sd">    wrappers.</span>
 </span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="kn">import</span> <span class="nn">ctypes</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a>
-</span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a><span class="kn">import</span> <span class="nn">numba</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="kn">from</span> <span class="nn">numba.core</span> <span class="kn">import</span> <span class="n">types</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="kn">from</span> <span class="nn">numba.core.extending</span> <span class="kn">import</span> <span class="n">overload</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">numba.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">types</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">numba.core.extending</span><span class="w"> </span><span class="kn">import</span> <span class="n">overload</span>
 </span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a>
-</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="kn">from</span> <span class="nn">numba_mpi.common</span> <span class="kn">import</span> <span class="p">(</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">numba_mpi.common</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
 </span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a>    <span class="n">RequestType</span><span class="p">,</span>
 </span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a>    <span class="n">_MpiRequestPtr</span><span class="p">,</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a>    <span class="n">_MpiStatusPtr</span><span class="p">,</span>
@@ -93,7 +93,7 @@ wrappers.</p>
 </span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>
 </span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>
 </span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="k">def</span> <span class="nf">_allocate_numpy_array_of_request_handles</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_allocate_numpy_array_of_request_handles</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 </span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function for creating numpy array storing pointers to MPI_Request handles.&quot;&quot;&quot;</span>
 </span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">RequestType</span><span class="p">)</span>
 </span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>
@@ -104,7 +104,7 @@ wrappers.</p>
 </span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a>
 </span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>
 </span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 </span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Wait. Returns integer status code (0 == MPI_SUCCESS).</span>
 </span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="sd">    Status is currently not handled. Requires &#39;request&#39; parameter to be a</span>
 </span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a><span class="sd">    c-style pointer to MPI_Request (such as returned by &#39;isend&#39;/&#39;irecv&#39;).</span>
@@ -125,7 +125,7 @@ wrappers.</p>
 </span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>
 </span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>
 </span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="k">def</span> <span class="nf">_waitall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_waitall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;MPI_Waitall implementation for contiguous numpy arrays of MPI_Requests&quot;&quot;&quot;</span>
 </span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>
 </span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
@@ -137,7 +137,7 @@ wrappers.</p>
 </span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>    <span class="k">return</span> <span class="n">status</span>
 </span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>
 </span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>
-</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="k">def</span> <span class="nf">waitall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="k">def</span><span class="w"> </span><span class="nf">waitall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).</span>
 </span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a><span class="sd">    Status is currently not handled. Requires &#39;requests&#39; parameter to be an</span>
 </span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a><span class="sd">    array or tuple of MPI_Request objects.</span>
@@ -156,17 +156,17 @@ wrappers.</p>
 </span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>
 </span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>
 </span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a><span class="nd">@overload</span><span class="p">(</span><span class="n">waitall</span><span class="p">)</span>
-</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="k">def</span> <span class="nf">_waitall_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_waitall_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of overloads for MPI_Waitall implementation&quot;&quot;&quot;</span>
 </span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>
 </span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
 </span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>
-</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>        <span class="k">def</span> <span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>            <span class="k">return</span> <span class="n">_waitall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>
 </span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">UniTuple</span><span class="p">):</span>
 </span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>
-</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>        <span class="k">def</span> <span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>            <span class="n">req_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>            <span class="k">return</span> <span class="n">_waitall_array_impl</span><span class="p">(</span><span class="n">req_buffer</span><span class="p">)</span>
 </span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>
@@ -182,7 +182,7 @@ wrappers.</p>
 </span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>
 </span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>
 </span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
-</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="k">def</span> <span class="nf">_waitany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_waitany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;MPI_Waitany implementation for contiguous numpy arrays of MPI_Requests&quot;&quot;&quot;</span>
 </span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>
 </span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">()</span>
@@ -198,7 +198,7 @@ wrappers.</p>
 </span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>    <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>
 </span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>
-</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="k">def</span> <span class="nf">waitany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="k">def</span><span class="w"> </span><span class="nf">waitany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Waitany. Returns tuple of integers, first representing</span>
 </span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a><span class="sd">    status; second - the index of request that was completed. Status is</span>
 </span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="sd">    currently not handled. Requires &#39;requests&#39; parameter to be an array</span>
@@ -219,17 +219,17 @@ wrappers.</p>
 </span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>
 </span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>
 </span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a><span class="nd">@overload</span><span class="p">(</span><span class="n">waitany</span><span class="p">)</span>
-</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a><span class="k">def</span> <span class="nf">_waitany_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_waitany_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of overloads for MPI_Waitany implementation&quot;&quot;&quot;</span>
 </span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>
 </span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
 </span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a>
-</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>        <span class="k">def</span> <span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>            <span class="k">return</span> <span class="n">_waitany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>
 </span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">UniTuple</span><span class="p">):</span>
 </span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a>
-</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>        <span class="k">def</span> <span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>            <span class="n">req_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>            <span class="k">return</span> <span class="n">_waitany_array_impl</span><span class="p">(</span><span class="n">req_buffer</span><span class="p">)</span>
 </span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>
@@ -245,7 +245,7 @@ wrappers.</p>
 </span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a>
 </span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a>
 </span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
-</span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a><span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a><span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 </span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Test. Returns tuple containing both status and boolean</span>
 </span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a><span class="sd">    flag that indicates whether given request is completed. Status is currently</span>
 </span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a><span class="sd">    not handled. Requires &#39;request&#39; parameter to be a c-style pointer to</span>
@@ -269,7 +269,7 @@ wrappers.</p>
 </span><span id="L-195"><a href="#L-195"><span class="linenos">195</span></a>
 </span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a>
 </span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
-</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a><span class="k">def</span> <span class="nf">_testall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_testall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;MPI_Testall implementation for contiguous numpy arrays of MPI_Requests&quot;&quot;&quot;</span>
 </span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a>
 </span><span id="L-201"><a href="#L-201"><span class="linenos">201</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
@@ -284,7 +284,7 @@ wrappers.</p>
 </span><span id="L-210"><a href="#L-210"><span class="linenos">210</span></a>    <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">flag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
 </span><span id="L-211"><a href="#L-211"><span class="linenos">211</span></a>
 </span><span id="L-212"><a href="#L-212"><span class="linenos">212</span></a>
-</span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a><span class="k">def</span> <span class="nf">testall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a><span class="k">def</span><span class="w"> </span><span class="nf">testall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-214"><a href="#L-214"><span class="linenos">214</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Testall. Returns tuple containing both status and boolean</span>
 </span><span id="L-215"><a href="#L-215"><span class="linenos">215</span></a><span class="sd">    flag that indicates whether given request is completed. Status is currently</span>
 </span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a><span class="sd">    not handled. Requires &#39;requests&#39; parameter to be an array or tuple of</span>
@@ -304,17 +304,17 @@ wrappers.</p>
 </span><span id="L-230"><a href="#L-230"><span class="linenos">230</span></a>
 </span><span id="L-231"><a href="#L-231"><span class="linenos">231</span></a>
 </span><span id="L-232"><a href="#L-232"><span class="linenos">232</span></a><span class="nd">@overload</span><span class="p">(</span><span class="n">testall</span><span class="p">)</span>
-</span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a><span class="k">def</span> <span class="nf">_testall_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_testall_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of overloads for MPI_Testall implementation&quot;&quot;&quot;</span>
 </span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a>
 </span><span id="L-236"><a href="#L-236"><span class="linenos">236</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
 </span><span id="L-237"><a href="#L-237"><span class="linenos">237</span></a>
-</span><span id="L-238"><a href="#L-238"><span class="linenos">238</span></a>        <span class="k">def</span> <span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-238"><a href="#L-238"><span class="linenos">238</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-239"><a href="#L-239"><span class="linenos">239</span></a>            <span class="k">return</span> <span class="n">_testall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-240"><a href="#L-240"><span class="linenos">240</span></a>
 </span><span id="L-241"><a href="#L-241"><span class="linenos">241</span></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">UniTuple</span><span class="p">):</span>
 </span><span id="L-242"><a href="#L-242"><span class="linenos">242</span></a>
-</span><span id="L-243"><a href="#L-243"><span class="linenos">243</span></a>        <span class="k">def</span> <span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-243"><a href="#L-243"><span class="linenos">243</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-244"><a href="#L-244"><span class="linenos">244</span></a>            <span class="n">req_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-245"><a href="#L-245"><span class="linenos">245</span></a>            <span class="k">return</span> <span class="n">_testall_array_impl</span><span class="p">(</span><span class="n">req_buffer</span><span class="p">)</span>
 </span><span id="L-246"><a href="#L-246"><span class="linenos">246</span></a>
@@ -336,7 +336,7 @@ wrappers.</p>
 </span><span id="L-262"><a href="#L-262"><span class="linenos">262</span></a>
 </span><span id="L-263"><a href="#L-263"><span class="linenos">263</span></a>
 </span><span id="L-264"><a href="#L-264"><span class="linenos">264</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
-</span><span id="L-265"><a href="#L-265"><span class="linenos">265</span></a><span class="k">def</span> <span class="nf">_testany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-265"><a href="#L-265"><span class="linenos">265</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_testany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-266"><a href="#L-266"><span class="linenos">266</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;MPI_Testany implementation for contiguous numpy arrays of MPI_Requests&quot;&quot;&quot;</span>
 </span><span id="L-267"><a href="#L-267"><span class="linenos">267</span></a>
 </span><span id="L-268"><a href="#L-268"><span class="linenos">268</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">()</span>
@@ -353,7 +353,7 @@ wrappers.</p>
 </span><span id="L-279"><a href="#L-279"><span class="linenos">279</span></a>    <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">flag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </span><span id="L-280"><a href="#L-280"><span class="linenos">280</span></a>
 </span><span id="L-281"><a href="#L-281"><span class="linenos">281</span></a>
-</span><span id="L-282"><a href="#L-282"><span class="linenos">282</span></a><span class="k">def</span> <span class="nf">testany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-282"><a href="#L-282"><span class="linenos">282</span></a><span class="k">def</span><span class="w"> </span><span class="nf">testany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-283"><a href="#L-283"><span class="linenos">283</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Testany. Returns tuple containing status, boolean flag</span>
 </span><span id="L-284"><a href="#L-284"><span class="linenos">284</span></a><span class="sd">    that indicates whether any of requests is completed, and index of request</span>
 </span><span id="L-285"><a href="#L-285"><span class="linenos">285</span></a><span class="sd">    that is guaranteed to be completed. Requires &#39;requests&#39; parameter to be an</span>
@@ -374,17 +374,17 @@ wrappers.</p>
 </span><span id="L-300"><a href="#L-300"><span class="linenos">300</span></a>
 </span><span id="L-301"><a href="#L-301"><span class="linenos">301</span></a>
 </span><span id="L-302"><a href="#L-302"><span class="linenos">302</span></a><span class="nd">@overload</span><span class="p">(</span><span class="n">testany</span><span class="p">)</span>
-</span><span id="L-303"><a href="#L-303"><span class="linenos">303</span></a><span class="k">def</span> <span class="nf">_testany_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-303"><a href="#L-303"><span class="linenos">303</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_testany_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-304"><a href="#L-304"><span class="linenos">304</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of overloads for MPI_Testany implementation&quot;&quot;&quot;</span>
 </span><span id="L-305"><a href="#L-305"><span class="linenos">305</span></a>
 </span><span id="L-306"><a href="#L-306"><span class="linenos">306</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
 </span><span id="L-307"><a href="#L-307"><span class="linenos">307</span></a>
-</span><span id="L-308"><a href="#L-308"><span class="linenos">308</span></a>        <span class="k">def</span> <span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-308"><a href="#L-308"><span class="linenos">308</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-309"><a href="#L-309"><span class="linenos">309</span></a>            <span class="k">return</span> <span class="n">_testany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-310"><a href="#L-310"><span class="linenos">310</span></a>
 </span><span id="L-311"><a href="#L-311"><span class="linenos">311</span></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">UniTuple</span><span class="p">):</span>
 </span><span id="L-312"><a href="#L-312"><span class="linenos">312</span></a>
-</span><span id="L-313"><a href="#L-313"><span class="linenos">313</span></a>        <span class="k">def</span> <span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+</span><span id="L-313"><a href="#L-313"><span class="linenos">313</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="L-314"><a href="#L-314"><span class="linenos">314</span></a>            <span class="n">req_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-315"><a href="#L-315"><span class="linenos">315</span></a>            <span class="k">return</span> <span class="n">_testany_array_impl</span><span class="p">(</span><span class="n">req_buffer</span><span class="p">)</span>
 </span><span id="L-316"><a href="#L-316"><span class="linenos">316</span></a>
@@ -409,7 +409,7 @@ wrappers.</p>
     </div>
     <a class="headerlink" href="#wait"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="wait-33"><a href="#wait-33"><span class="linenos">33</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
-</span><span id="wait-34"><a href="#wait-34"><span class="linenos">34</span></a><span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span><span id="wait-34"><a href="#wait-34"><span class="linenos">34</span></a><span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 </span><span id="wait-35"><a href="#wait-35"><span class="linenos">35</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Wait. Returns integer status code (0 == MPI_SUCCESS).</span>
 </span><span id="wait-36"><a href="#wait-36"><span class="linenos">36</span></a><span class="sd">    Status is currently not handled. Requires &#39;request&#39; parameter to be a</span>
 </span><span id="wait-37"><a href="#wait-37"><span class="linenos">37</span></a><span class="sd">    c-style pointer to MPI_Request (such as returned by &#39;isend&#39;/&#39;irecv&#39;).</span>
@@ -446,7 +446,7 @@ cause invalid pointer dereference and segmentation faults.</p>
 
     </div>
     <a class="headerlink" href="#waitall"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="waitall-67"><a href="#waitall-67"><span class="linenos">67</span></a><span class="k">def</span> <span class="nf">waitall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="waitall-67"><a href="#waitall-67"><span class="linenos">67</span></a><span class="k">def</span><span class="w"> </span><span class="nf">waitall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="waitall-68"><a href="#waitall-68"><span class="linenos">68</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).</span>
 </span><span id="waitall-69"><a href="#waitall-69"><span class="linenos">69</span></a><span class="sd">    Status is currently not handled. Requires &#39;requests&#39; parameter to be an</span>
 </span><span id="waitall-70"><a href="#waitall-70"><span class="linenos">70</span></a><span class="sd">    array or tuple of MPI_Request objects.</span>
@@ -486,7 +486,7 @@ cause invalid pointer dereference and segmentation faults.</p>
 
     </div>
     <a class="headerlink" href="#waitany"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="waitany-128"><a href="#waitany-128"><span class="linenos">128</span></a><span class="k">def</span> <span class="nf">waitany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="waitany-128"><a href="#waitany-128"><span class="linenos">128</span></a><span class="k">def</span><span class="w"> </span><span class="nf">waitany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="waitany-129"><a href="#waitany-129"><span class="linenos">129</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Waitany. Returns tuple of integers, first representing</span>
 </span><span id="waitany-130"><a href="#waitany-130"><span class="linenos">130</span></a><span class="sd">    status; second - the index of request that was completed. Status is</span>
 </span><span id="waitany-131"><a href="#waitany-131"><span class="linenos">131</span></a><span class="sd">    currently not handled. Requires &#39;requests&#39; parameter to be an array</span>
@@ -531,7 +531,7 @@ cause invalid pointer dereference and segmentation faults.</p>
     </div>
     <a class="headerlink" href="#test"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="test-174"><a href="#test-174"><span class="linenos">174</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
-</span><span id="test-175"><a href="#test-175"><span class="linenos">175</span></a><span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+</span><span id="test-175"><a href="#test-175"><span class="linenos">175</span></a><span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 </span><span id="test-176"><a href="#test-176"><span class="linenos">176</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Test. Returns tuple containing both status and boolean</span>
 </span><span id="test-177"><a href="#test-177"><span class="linenos">177</span></a><span class="sd">    flag that indicates whether given request is completed. Status is currently</span>
 </span><span id="test-178"><a href="#test-178"><span class="linenos">178</span></a><span class="sd">    not handled. Requires &#39;request&#39; parameter to be a c-style pointer to</span>
@@ -572,7 +572,7 @@ cause invalid pointer dereference and segmentation faults.</p>
 
     </div>
     <a class="headerlink" href="#testall"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="testall-214"><a href="#testall-214"><span class="linenos">214</span></a><span class="k">def</span> <span class="nf">testall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="testall-214"><a href="#testall-214"><span class="linenos">214</span></a><span class="k">def</span><span class="w"> </span><span class="nf">testall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="testall-215"><a href="#testall-215"><span class="linenos">215</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Testall. Returns tuple containing both status and boolean</span>
 </span><span id="testall-216"><a href="#testall-216"><span class="linenos">216</span></a><span class="sd">    flag that indicates whether given request is completed. Status is currently</span>
 </span><span id="testall-217"><a href="#testall-217"><span class="linenos">217</span></a><span class="sd">    not handled. Requires &#39;requests&#39; parameter to be an array or tuple of</span>
@@ -614,7 +614,7 @@ cause invalid pointer dereference and segmentation faults.</p>
 
     </div>
     <a class="headerlink" href="#testany"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="testany-283"><a href="#testany-283"><span class="linenos">283</span></a><span class="k">def</span> <span class="nf">testany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="testany-283"><a href="#testany-283"><span class="linenos">283</span></a><span class="k">def</span><span class="w"> </span><span class="nf">testany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
 </span><span id="testany-284"><a href="#testany-284"><span class="linenos">284</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Testany. Returns tuple containing status, boolean flag</span>
 </span><span id="testany-285"><a href="#testany-285"><span class="linenos">285</span></a><span class="sd">    that indicates whether any of requests is completed, and index of request</span>
 </span><span id="testany-286"><a href="#testany-286"><span class="linenos">286</span></a><span class="sd">    that is guaranteed to be completed. Requires &#39;requests&#39; parameter to be an</span>
