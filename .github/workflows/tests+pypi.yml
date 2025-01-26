@@ -42,7 +42,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
-          python-version: "3.10" 
+          python-version: "3.10"
       - name: Linting
         run: |
           pip install pre-commit
@@ -80,7 +80,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: notiz-dev/github-action-json-property@release
-        with: 
+        with:
           path: '.zenodo.json'
           prop_path: 'creators'
 
@@ -90,15 +90,13 @@ jobs:
       matrix:
         mpi-np: [2, 3]
         platform: [ubuntu-latest, macos-13, windows-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
         mpi: [ 'mpich', 'openmpi', 'msmpi', 'intelmpi']
         exclude:
         - platform: macos-13
           mpi: msmpi
         - platform: macos-13
           mpi: intelmpi
-        - platform: macos-13
-          mpi: openmpi
         - platform: ubuntu-latest
           mpi: msmpi
         - platform: windows-latest
@@ -107,7 +105,7 @@ jobs:
           mpi: openmpi
         - platform: windows-latest
           mpi: intelmpi
-          
+
         # https://github.com/numba-mpi/numba-mpi/issues/69
         - platform: ubuntu-latest
           python-version: 3.8
