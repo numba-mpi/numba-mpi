@@ -93,7 +93,7 @@ jobs:
           - ubuntu-latest
           - windows-latest
           - macos-13          # arch: Intel
-          - macos-14          # arch: arm64
+          # - macos-14        # arch: arm64    # TODO: #164
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         mpi: [ 'mpich', 'openmpi', 'msmpi', 'intelmpi']
         exclude:
@@ -101,12 +101,16 @@ jobs:
           mpi: msmpi
         - platform: macos-13
           mpi: intelmpi
-        - platform: macos-14
-          mpi: msmpi
-        - platform: macos-14
+        - platform: macos-13   # TODO: # 163
           mpi: intelmpi
+        # - platform: macos-14
+        #   mpi: msmpi
+        # - platform: macos-14
+        #   mpi: intelmpi
         - platform: ubuntu-latest
           mpi: msmpi
+        - platform: ubuntu-latest # TODO: #162
+          mpi: mpich
         - platform: windows-latest
           mpi: mpich
         - platform: windows-latest

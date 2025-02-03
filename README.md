@@ -33,7 +33,8 @@ The codebase includes a test suite used through the GitHub Actions workflows ([t
 for automated testing on: Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/)
 & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)),
 macOS ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)) and
-Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi)).
+Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi)). Note, that some of those
+combinations may not be fully supported yet - see [Known Issues](#known-issues) for more information.
 
 Features that are not implemented yet include (help welcome!):
 - support for non-default communicators
@@ -135,6 +136,14 @@ if numba_mpi.rank() == 0:
 
 ![plot](https://github.com/numba-mpi/numba-mpi/releases/download/tip/readme_plot.png)
 
+### Known Issues
+
+**NOTE**: Issues listed below only relate to combinations of platforms and MPI distributions that we target to support, but due to various reason are currently not working and are temporarily excluded from automated testing:
+
+- tests on Ubuntu 2024.4 that use MPICH are not run due to failures caused by newer version of MPICH (`4.2.0`); note, that previous tests ran
+using version `4.0.2` of MPICH (that is installed by default on Ubuntu 2022.4 using `apt`) were passing (see [related issue](https://github.com/numba-mpi/numba-mpi/issues/162)),
+- tests on Intel MacOS (v13) that use OpenMPI are currently not run due to failures being under investigation (see [related issue](https://github.com/numba-mpi/numba-mpi/issues/163)),
+- `numba-mpi` currently does not support ARM-based MacOS, due to required code improvement (see [related issue](https://github.com/numba-mpi/numba-mpi/issues/164)).
 
 ### MPI resources on the web:
 
