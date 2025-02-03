@@ -58,27 +58,19 @@ names = ("mpich", "mpi", "msmpi", "impi")
 ps = psutil.Process(os.getpid())
 windows = os.name == "nt"
 if hasattr(ps, "memory_maps"):
-    print("has memory_maps:", ", ".join(str(ps.memory_maps())))
     for dll in ps.memory_maps():
-        print("dll path:", str(dll.path))
         path = Path(dll.path)
         if windows or path.stem.startswith("lib"):
             for name in names:
-                print(" ----> ", name, path.stem)
                 if name + ("" if windows else ".") in path.stem:
-                    print("LIB FOUND")
                     LIB = str(path)
                     break
 else:
     for name in names:
         LIB = find_library(name)
-        print("find_library() result:", str(LIB))
         if LIB is not None:
-            print("LIB FOUND")
             break
 
-print()
-print(str(LIB))
 if LIB is None:
     raise RuntimeError("no MPI library found")
 
