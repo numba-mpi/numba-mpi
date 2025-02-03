@@ -102,7 +102,7 @@ jobs:
         - platform: macos-13
           mpi: intelmpi
         - platform: macos-13   # TODO: # 163
-          mpi: intelmpi
+          mpi: openmpi
         # - platform: macos-14
         #   mpi: msmpi
         # - platform: macos-14
