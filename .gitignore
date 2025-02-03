@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 
 .idea/
+
+# pre-commit
+.pre-commit-config.yaml

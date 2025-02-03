@@ -1,4 +1,4 @@
-""" the magick behind ``pip install ...`` """
+"""the magick behind ``pip install ...``"""
 
 from setuptools import find_packages, setup
 
