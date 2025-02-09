@@ -18,10 +18,10 @@ jobs:
   pylint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - uses: mpi4py/setup-mpi@v1
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: "3.10"
     - name: Install dependencies
@@ -38,11 +38,11 @@ jobs:
   precommit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.10" 
+          python-version: "3.10"
       - name: Linting
         run: |
           pip install pre-commit
@@ -55,10 +55,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
       - uses: mpi4py/setup-mpi@v1
@@ -78,9 +78,9 @@ jobs:
   zenodo_json:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: notiz-dev/github-action-json-property@release
-        with: 
+        with:
           path: '.zenodo.json'
           prop_path: 'creators'
 
@@ -89,37 +89,44 @@ jobs:
     strategy:
       matrix:
         mpi-np: [2, 3]
-        platform: [ubuntu-latest, macos-13, windows-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        platform:
+          - ubuntu-latest
+          - windows-latest
+          - macos-13          # arch: Intel
+          # - macos-14        # arch: arm64    # TODO: #164
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         mpi: [ 'mpich', 'openmpi', 'msmpi', 'intelmpi']
         exclude:
         - platform: macos-13
           mpi: msmpi
         - platform: macos-13
           mpi: intelmpi
-        - platform: macos-13
+        - platform: macos-13   # TODO: # 163
           mpi: openmpi
+        # - platform: macos-14
+        #   mpi: msmpi
+        # - platform: macos-14
+        #   mpi: intelmpi
         - platform: ubuntu-latest
           mpi: msmpi
+        - platform: ubuntu-latest # TODO: #162
+          mpi: mpich
         - platform: windows-latest
           mpi: mpich
         - platform: windows-latest
           mpi: openmpi
         - platform: windows-latest
           mpi: intelmpi
-          
+
         # https://github.com/numba-mpi/numba-mpi/issues/69
-        - platform: ubuntu-latest
-          python-version: 3.8
-          mpi: mpich
         - platform: ubuntu-latest
           python-version: 3.9
           mpi: mpich
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - uses: mpi4py/setup-mpi@v1
