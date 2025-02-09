@@ -72,33 +72,34 @@ numba_mpi    </h1>
 
 <h3 id="overview">Overview</h3>
 
-<p>numba-mpi provides Python wrappers to the C MPI API callable from within <a href="https://numba.readthedocs.io/en/stable/user/jit.html">Numba JIT-compiled code</a> (@jit mode). For an outline of the project, rationale, architecture, and features, refer to: <a href="https://doi.org/10.48550/arXiv.2407.13712">numba-mpi arXiv e-print</a> (please cite if numba-mpi is used in your research).</p>
+<p>numba-mpi provides Python wrappers to the C MPI API callable from within <a href="https://numba.readthedocs.io/en/stable/user/jit.html">Numba JIT-compiled code</a> (@jit mode). For an outline of the project, rationale, architecture, and features, refer to: <a href="https://www.sciencedirect.com/science/article/pii/S235271102400267X">numba-mpi paper in SoftwareX (open access)</a> (please cite if numba-mpi is used in your research).</p>
 
 <p>Support is provided for a subset of MPI routines covering: <code>size</code>/<code>rank</code>, <code>send</code>/<code>recv</code>, <code>allreduce</code>, <code>reduce</code>, <code>bcast</code>, <code>scatter</code>/<code>gather</code> &amp; <code>allgather</code>, <code>barrier</code>, <code>wtime</code>
 and basic asynchronous communication with <code>isend</code>/<code>irecv</code> (only for contiguous arrays); for request handling including <code>wait</code>/<code>waitall</code>/<code>waitany</code> and <code>test</code>/<code>testall</code>/<code>testany</code>.</p>
 
-<p>The API uses NumPy and supports both numeric and character datatypes (e.g., <code>broadcast</code>). 
+<p>The API uses NumPy and supports both numeric and character datatypes (e.g., <code>broadcast</code>).
 Auto-generated docstring-based API docs are published on the web: <a href="https://numba-mpi.github.io/numba-mpi">https://numba-mpi.github.io/numba-mpi</a></p>
 
-<p>Packages can be obtained from 
-  <a href="https://pypi.org/project/numba-mpi">PyPI</a>, 
-  <a href="https://anaconda.org/conda-forge/numba-mpi">Conda Forge</a>, 
+<p>Packages can be obtained from
+  <a href="https://pypi.org/project/numba-mpi">PyPI</a>,
+  <a href="https://anaconda.org/conda-forge/numba-mpi">Conda Forge</a>,
   <a href="https://aur.archlinux.org/packages/python-numba-mpi">Arch Linux</a>
   or by invoking <code>pip install git+https://github.com/numba-mpi/numba-mpi.git</code>.</p>
 
 <p>numba-mpi is a pure-Python package.
 The codebase includes a test suite used through the GitHub Actions workflows (<a href="https://github.com/mpi4py/setup-mpi">thanks to mpi4py's setup-mpi</a>!)
-for automated testing on: Linux (<a href="https://www.mpich.org/">MPICH</a>, <a href="https://www.open-mpi.org/doc/">OpenMPI</a> 
-&amp; <a href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html">Intel MPI</a>), 
-macOS (<a href="https://www.mpich.org/">MPICH</a> &amp; <a href="https://www.open-mpi.org/doc/">OpenMPI</a>) and 
-Windows (<a href="https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi">MS MPI</a>).</p>
+for automated testing on: Linux (<a href="https://www.mpich.org/">MPICH</a>, <a href="https://www.open-mpi.org/doc/">OpenMPI</a>
+&amp; <a href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html">Intel MPI</a>),
+macOS (<a href="https://www.mpich.org/">MPICH</a> &amp; <a href="https://www.open-mpi.org/doc/">OpenMPI</a>) and
+Windows (<a href="https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi">MS MPI</a>). Note, that some of those
+combinations may not be fully supported yet - see <a href="#known-issues">Known Issues</a> for more information.</p>
 
 <p>Features that are not implemented yet include (help welcome!):</p>
 
 <ul>
 <li>support for non-default communicators</li>
 <li>support for <code>MPI_IN_PLACE</code> in <code>[all]gather</code>/<code>scatter</code> and <code>allreduce</code></li>
-<li>support for <code>MPI_Type_create_struct</code> (Numpy structured arrays) </li>
+<li>support for <code>MPI_Type_create_struct</code> (Numpy structured arrays)</li>
 <li>...</li>
 </ul>
 
@@ -124,21 +125,21 @@ Windows (<a href="https://docs.microsoft.com/en-us/message-passing-interface/mic
 <h3 id="example-comparing-numba-mpi-vs-mpi4py-performance">Example comparing numba-mpi vs. mpi4py performance:</h3>
 
 <p>The example below compares <code>Numba</code>+<code>mpi4py</code> vs. <code>Numba</code>+<code>numba-mpi</code> performance.
-The sample code estimates $\pi$ by numerical integration of $\int_0^1 (4/(1+x^2))dx=\pi$ 
-dividing the workload into <code>n_intervals</code> handled by separate MPI processes 
+The sample code estimates $\pi$ by numerical integration of $\int_0^1 (4/(1+x^2))dx=\pi$
+dividing the workload into <code>n_intervals</code> handled by separate MPI processes
 and then obtaining a sum using <code>allreduce</code> (see, e.g., analogous <a href="https://www.mathworks.com/help/parallel-computing/numerical-estimation-of-pi-using-message-passing.html">Matlab docs example</a>).
 The computation is carried out in a JIT-compiled function <code>get_pi_part()</code> and is repeated
-<code>N_TIMES</code>. The repetitions and the MPI-handled reduction are done outside or 
+<code>N_TIMES</code>. The repetitions and the MPI-handled reduction are done outside or
 inside of the JIT-compiled block for <code>mpi4py</code> and <code>numba-mpi</code>, respectively.
 Timing is repeated <code>N_REPEAT</code> times and the minimum time is reported.
 The generated plot shown below depicts the speedup obtained by replacing <code>mpi4py</code>
-with <code><a href="">numba_mpi</a></code>, plotted as a function of <code>N_TIMES / n_intervals</code> - the number of MPI calls per 
+with <code><a href="">numba_mpi</a></code>, plotted as a function of <code>N_TIMES / n_intervals</code> - the number of MPI calls per
 interval. The speedup, which stems from avoiding roundtrips between JIT-compiled
 and Python code is significant (150%-300%) in all cases. The more often communication
-is needed (smaller <code>n_intervals</code>), the larger the measured speedup. Note that nothing 
+is needed (smaller <code>n_intervals</code>), the larger the measured speedup. Note that nothing
 in the actual number crunching (within the <code>get_pi_part()</code> function) or in the employed communication logic
 (handled by the same MPI library) differs between the <code>mpi4py</code> or <code>numba-mpi</code> solutions.
-These are the overhead of <code>mpi4py</code> higher-level abstractions and the overhead of 
+These are the overhead of <code>mpi4py</code> higher-level abstractions and the overhead of
 repeatedly entering and leaving the JIT-compiled block if using <code>mpi4py</code>, which can be
 eliminated by using <code>numba-mpi</code>, and which the measured differences in execution time
 stem from.</p>
@@ -200,6 +201,17 @@ stem from.</p>
 
 <p><img src="https://github.com/numba-mpi/numba-mpi/releases/download/tip/readme_plot.png" alt="plot" /></p>
 
+<h3 id="known-issues">Known Issues</h3>
+
+<p><strong>NOTE</strong>: Issues listed below only relate to combinations of platforms and MPI distributions that we target to support, but due to various reason are currently not working and are temporarily excluded from automated testing:</p>
+
+<ul>
+<li>tests on Ubuntu 2024.4 that use MPICH are not run due to failures caused by newer version of MPICH (<code>4.2.0</code>); note, that previous tests ran
+using version <code>4.0.2</code> of MPICH (that is installed by default on Ubuntu 2022.4 using <code>apt</code>) were passing (see <a href="https://github.com/numba-mpi/numba-mpi/issues/162">related issue</a> - TODO #162),</li>
+<li>tests on Intel MacOS (v13) that use OpenMPI are currently not run due to failures being under investigation (see <a href="https://github.com/numba-mpi/numba-mpi/issues/163">related issue</a>  - TODO #163),</li>
+<li><code>numba-mpi</code> currently does not support ARM-based MacOS, due to required code improvement (see <a href="https://github.com/numba-mpi/numba-mpi/issues/164">related issue</a> - TODO #164).</li>
+</ul>
+
 <h3 id="mpi-resources-on-the-web">MPI resources on the web:</h3>
 
 <ul>
@@ -228,12 +240,12 @@ stem from.</p>
 
 <h3 id="acknowledgements">Acknowledgements:</h3>
 
-<p>We thank <a href="https://github.com/numba-mpi/numba-mpi/graphs/contributors">all contributors</a> and users who reported feedback to the project 
+<p>We thank <a href="https://github.com/numba-mpi/numba-mpi/graphs/contributors">all contributors</a> and users who reported feedback to the project
   through <a href="https://github.com/numba-mpi/numba-mpi/issues">GitHub issues</a>.</p>
 
 <p>Development of numba-mpi has been supported by the <a href="https://ncn.gov.pl/en">Polish National Science Centre</a> (grant no. 2020/39/D/ST10/01220),
-  the <a href="https://www.mpg.de/en">Max Planck Society</a> and the <a href="https://erc.europa.eu/">European Union</a> (ERC, EmulSim, 101044662). 
-We further acknowledge Poland’s high-performance computing infrastructure <a href="https://plgrid.pl">PLGrid</a> (HPC Centers: <a href="https://www.cyfronet.pl/en">ACK Cyfronet AGH</a>) 
+  the <a href="https://www.mpg.de/en">Max Planck Society</a> and the <a href="https://erc.europa.eu/">European Union</a> (ERC, EmulSim, 101044662).
+We further acknowledge Poland’s high-performance computing infrastructure <a href="https://plgrid.pl">PLGrid</a> (HPC Centers: <a href="https://www.cyfronet.pl/en">ACK Cyfronet AGH</a>)
   for providing computer facilities and support within computational grant no. PLG/2023/016369.</p>
 </div>
 
