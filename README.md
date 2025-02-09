@@ -141,9 +141,9 @@ if numba_mpi.rank() == 0:
 **NOTE**: Issues listed below only relate to combinations of platforms and MPI distributions that we target to support, but due to various reason are currently not working and are temporarily excluded from automated testing:
 
 - tests on Ubuntu 2024.4 that use MPICH are not run due to failures caused by newer version of MPICH (`4.2.0`); note, that previous tests ran
-using version `4.0.2` of MPICH (that is installed by default on Ubuntu 2022.4 using `apt`) were passing (see [related issue](https://github.com/numba-mpi/numba-mpi/issues/162)),
-- tests on Intel MacOS (v13) that use OpenMPI are currently not run due to failures being under investigation (see [related issue](https://github.com/numba-mpi/numba-mpi/issues/163)),
-- `numba-mpi` currently does not support ARM-based MacOS, due to required code improvement (see [related issue](https://github.com/numba-mpi/numba-mpi/issues/164)).
+using version `4.0.2` of MPICH (that is installed by default on Ubuntu 2022.4 using `apt`) were passing (see [related issue](https://github.com/numba-mpi/numba-mpi/issues/162) - TODO #162),
+- tests on Intel MacOS (v13) that use OpenMPI are currently not run due to failures being under investigation (see [related issue](https://github.com/numba-mpi/numba-mpi/issues/163)  - TODO #163),
+- `numba-mpi` currently does not support ARM-based MacOS, due to required code improvement (see [related issue](https://github.com/numba-mpi/numba-mpi/issues/164) - TODO #164).
 
 ### MPI resources on the web:
 
