@@ -1,5 +1,5 @@
-""" Utilities for handling MPI_Requests with respective Wait and Test function
-    wrappers.
+"""Utilities for handling MPI_Requests with respective Wait and Test function
+wrappers.
 """
 
 import ctypes
