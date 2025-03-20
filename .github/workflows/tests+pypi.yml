@@ -143,6 +143,7 @@ jobs:
       - run: mpiexec -n ${{ matrix.mpi-np }} pytest --durations=10 -p no:unraisableexception -We
 
   dist:
+    if: github.repository == 'numba-mpi/numba-mpi'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
