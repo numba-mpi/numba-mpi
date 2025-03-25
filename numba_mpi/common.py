@@ -75,13 +75,13 @@ else:
 
 if sys.platform == "darwin" and LIB is None:
 
-    homebrew_lib_bash_str = "$(brew --cellar open-mpi)/$(brew list --versions open-mpi | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')"
+    homebrew_lib_bash_str = r"$(brew --cellar open-mpi)/$(brew list --versions open-mpi | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')"
     homebrew_lib_bash = subprocess.run(
-         f"echo {homebrew_lib_bash_str}", shell=True, stdout=subprocess.PIPE
+         rf'echo "{homebrew_lib_bash_str}"', shell=True, stdout=subprocess.PIPE
     )
     if homebrew_lib_bash.returncode == 0:
         LIB = homebrew_lib_bash.stdout.decode("ascii").strip() + "/lib/libmpi.dylib"
-    elif:
+    else:
         LIB = "/opt/local/lib/libmpi.dylib"
 
 if LIB is None:
