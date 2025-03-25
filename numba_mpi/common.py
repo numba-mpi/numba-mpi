@@ -1,9 +1,9 @@
 """variables used across API implementation"""
 
+from pathlib import Path
 import sys
 import ctypes
 import os
-import subprocess
 from ctypes.util import find_library
 from pathlib import Path
 
@@ -74,15 +74,12 @@ else:
             break
 
 if sys.platform == "darwin" and LIB is None:
-
-    homebrew_lib_bash_str = r"$(brew --cellar open-mpi)/$(brew list --versions open-mpi | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')"
-    homebrew_lib_bash = subprocess.run(
-         rf'echo "{homebrew_lib_bash_str}"', shell=True, stdout=subprocess.PIPE
-    )
-    if homebrew_lib_bash.returncode == 0:
-        LIB = homebrew_lib_bash.stdout.decode("ascii").strip() + "/lib/libmpi.dylib"
+    brew_path = Path("/opt/homebrew/lib/libmpi.dylib")
+    if brew_path.is_file():
+        LIB = brew_path
     else:
-        LIB = "/opt/local/lib/libmpi.dylib"
+        port_path = Path("/opt/local/lib/openmpi-mp/libmpi.dylib")
+        LIB = port_path
 
 if LIB is None:
     raise RuntimeError("no MPI library found")
