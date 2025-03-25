@@ -1,6 +1,5 @@
 """variables used across API implementation"""
 
-from pathlib import Path
 import sys
 import ctypes
 import os
