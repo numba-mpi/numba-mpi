@@ -74,12 +74,15 @@ else:
             break
 
 if sys.platform == "darwin" and LIB is None:
-    LIB_bash_str = "$(brew --cellar open-mpi)/$(brew list --versions open-mpi | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')"
-    LIB_bash = subprocess.run(
-        f"echo {LIB_bash_str}", shell=True, stdout=subprocess.PIPE
+
+    homebrew_lib_bash_str = "$(brew --cellar open-mpi)/$(brew list --versions open-mpi | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')"
+    homebrew_lib_bash = subprocess.run(
+         f"echo {homebrew_lib_bash_str}", shell=True, stdout=subprocess.PIPE
     )
-    if LIB_bash.returncode == 0:
-        LIB = LIB_bash.stdout.decode("ascii").strip() + "/lib/libmpi.dylib"
+    if homebrew_lib_bash.returncode == 0:
+        LIB = homebrew_lib_bash.stdout.decode("ascii").strip() + "/lib/libmpi.dylib"
+    elif:
+        LIB = "/opt/local/lib/libmpi.dylib"
 
 if LIB is None:
     raise RuntimeError("no MPI library found")
