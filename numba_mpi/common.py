@@ -65,7 +65,6 @@ if hasattr(ps, "memory_maps"):
                 if name + ("" if windows else ".") in path.stem:
                     LIB = str(path)
                     break
-
 else:
     for name in names:
         LIB = find_library(name)
@@ -79,7 +78,6 @@ if sys.platform == "darwin" and LIB is None:
     )
     if LIB_bash.returncode == 0:
         LIB = LIB_bash.stdout.decode("ascii").strip() + "/lib/libmpi.dylib"
-
 
 if LIB is None:
     raise RuntimeError("no MPI library found")
