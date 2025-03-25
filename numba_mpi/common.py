@@ -1,8 +1,8 @@
 """variables used across API implementation"""
 
-import sys
 import ctypes
 import os
+import sys
 from ctypes.util import find_library
 from pathlib import Path
 
