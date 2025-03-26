@@ -133,7 +133,7 @@ jobs:
         with:
           mpi: ${{ matrix.mpi }}
       - if: matrix.platform == "macos-15"
-        run: echo DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
+        run: echo DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:/usr/local/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
       - if: matrix.mpi == 'intelmpi'
         run: |
           # checking if multiple MPI libs are OK
