@@ -2,7 +2,6 @@
 
 import ctypes
 import os
-import subprocess
 import sys
 from ctypes.util import find_library
 from pathlib import Path
@@ -73,27 +72,12 @@ else:
         if LIB is not None:
             break
 
-if sys.platform == "darwin" and LIB is None:
-    brew_path_bash = subprocess.run(
-        r'echo "$(brew --prefix)/lib/libmpi.dylib"',
-        shell=True,
-        stdout=subprocess.PIPE,
-        check=False,
-    )
-    brew_path = Path(brew_path_bash.stdout.decode("ascii").strip())
-    if brew_path.is_file():
-        LIB = brew_path
-    else:
-        port_path_bash = subprocess.run(
-            r'echo "$(port -q contents openmpi | grep -E libmpi.dylib)"',
-            shell=True,
-            stdout=subprocess.PIPE,
-            check=False,
-        )
-        port_path = Path(port_path_bash.stdout.decode("ascii").strip())
-        if port_path.is_file():
-            LIB = port_path
 if LIB is None:
+    if sys.platform == "darwin":
+        raise RuntimeError(
+            """no MPI library found, please make sure that your
+            installation of MPI is found in the PATH variable"""
+        )
     raise RuntimeError("no MPI library found")
 
 libmpi = ctypes.CDLL(LIB)
