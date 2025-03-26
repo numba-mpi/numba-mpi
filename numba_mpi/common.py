@@ -76,7 +76,8 @@ if LIB is None:
     if sys.platform == "darwin":
         raise RuntimeError(
             """no MPI library found, please make sure that your
-            installation of MPI is found in the PATH variable"""
+            installation of MPI is found in
+            DYLD_FALLBACK_LIBRARY_PATH variable"""
         )
     raise RuntimeError("no MPI library found")
 
