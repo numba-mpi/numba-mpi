@@ -75,9 +75,9 @@ else:
 if LIB is None:
     if sys.platform == "darwin":
         raise RuntimeError(
-            """no MPI library found, please make sure that your
-            installation of MPI is found in
-            DYLD_FALLBACK_LIBRARY_PATH variable"""
+            """no MPI library found, if MPI was installed using Homebrew, the following might help:
+            export DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_FALLBACK_LIBRARY_PATH
+            """
         )
     raise RuntimeError("no MPI library found")
 
