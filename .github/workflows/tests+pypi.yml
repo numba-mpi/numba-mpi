@@ -132,7 +132,7 @@ jobs:
       - uses: mpi4py/setup-mpi@v1
         with:
           mpi: ${{ matrix.mpi }}
-      - if: matrix.platform == "macos-15"
+      - if: ${{ matrix.platform == 'macos-15' }}
         run: echo DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
       - if: matrix.mpi == 'intelmpi'
         run: |
