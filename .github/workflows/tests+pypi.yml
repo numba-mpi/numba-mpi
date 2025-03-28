@@ -93,7 +93,7 @@ jobs:
           - ubuntu-latest
           - windows-latest
           - macos-13          # arch: Intel
-          # - macos-14        # arch: arm64    # TODO: #164
+          - macos-15          # arch: arm64
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         mpi: [ 'mpich', 'openmpi', 'msmpi', 'intelmpi']
         exclude:
@@ -103,10 +103,12 @@ jobs:
           mpi: intelmpi
         - platform: macos-13   # TODO: # 163
           mpi: openmpi
-        # - platform: macos-14
-        #   mpi: msmpi
-        # - platform: macos-14
-        #   mpi: intelmpi
+        - platform: macos-15
+          mpi: msmpi
+        - platform: macos-15
+          mpi: intelmpi
+        - platform: macos-15
+          mpi: openmpi
         - platform: ubuntu-latest
           mpi: msmpi
         - platform: ubuntu-latest # TODO: #162
@@ -132,6 +134,8 @@ jobs:
       - uses: mpi4py/setup-mpi@v1
         with:
           mpi: ${{ matrix.mpi }}
+      - if: ${{ matrix.platform == 'macos-15' }}
+        run: echo DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
       - if: matrix.mpi == 'intelmpi'
         run: |
           # checking if multiple MPI libs are OK
