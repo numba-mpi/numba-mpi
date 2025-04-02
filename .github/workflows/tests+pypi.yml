@@ -107,7 +107,7 @@ jobs:
           mpi: msmpi
         - platform: macos-15
           mpi: intelmpi
-        - platform: macos-15
+        - platform: macos-15   # TODO: # 163
           mpi: openmpi
         - platform: ubuntu-latest
           mpi: msmpi
