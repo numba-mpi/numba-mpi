@@ -11,6 +11,7 @@ from .api.initialized import initialized
 from .api.irecv import irecv
 from .api.isend import isend
 from .api.operator import Operator
+from .api.query_thread import query_thread
 from .api.rank import rank
 from .api.recv import recv
 from .api.reduce import reduce

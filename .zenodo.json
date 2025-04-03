@@ -3,7 +3,7 @@
   "description": "Numba @jittable wrappers for MPI C API tested on Linux, macOS and Windows",
   "creators": [
     {
-      "affiliation": "Jagiellonian University, Kraków, Poland",
+      "affiliation": "Jagiellonian University, Kraków, Poland (-2023); AGH University of Krakow, Poland (2023-)",
       "name": "Arabas, Sylwester",
       "orcid": "0000-0003-2361-0082"
     },
@@ -20,6 +20,10 @@
       "affiliation": "Jagiellonian University, Kraków, Poland",
       "name": "Manna, Maciej",
       "orcid": "0000-0002-7482-4913"
+    },
+    {
+      "affiliation": "AGH University of Krakow, Poland",
+      "name": "Michał Wroński"
     },
     {
       "affiliation": "Max Planck Institute for Dynamics and Self-Organization, Göttingen, Germany",
