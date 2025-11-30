@@ -1,4 +1,4 @@
-""" checks if listings from the paper run OK """
+"""checks if listings from the paper run OK"""
 
 import pathlib
 

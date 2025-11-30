@@ -14,7 +14,7 @@ preferred-citation:
     given-names: "David"
   - family-names: "Arabas"
     given-names: "Sylwester"
-  doi: "10.48550/arXiv.2407.13712"
-  journal: "arXiv"
-  title: " Enabling MPI communication within Numba/LLVM JIT-compiled Python code using numba-mpi v1.0 "
+  doi: "10.1016/j.softx.2024.101897"
+  journal: "SoftwareX"
+  title: "Numba-MPI v1.0: Enabling MPI communication within Numba/LLVM JIT-compiled Python code"
   year: 2024

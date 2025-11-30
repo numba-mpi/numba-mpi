@@ -18,10 +18,10 @@ jobs:
   pylint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - uses: mpi4py/setup-mpi@v1
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: "3.10"
     - name: Install dependencies
@@ -33,16 +33,16 @@ jobs:
         pip install -r numba_mpi.egg-info/requires.txt
     - name: Analysing the code with pylint
       run: |
-        pylint --unsafe-load-any-extension=y --disable=fixme $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
+        pylint --unsafe-load-any-extension=y --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
 
   precommit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.10" 
+          python-version: "3.10"
       - name: Linting
         run: |
           pip install pre-commit
@@ -55,10 +55,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
       - uses: mpi4py/setup-mpi@v1
@@ -78,9 +78,9 @@ jobs:
   zenodo_json:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: notiz-dev/github-action-json-property@release
-        with: 
+        with:
           path: '.zenodo.json'
           prop_path: 'creators'
 
@@ -89,40 +89,53 @@ jobs:
     strategy:
       matrix:
         mpi-np: [2, 3]
-        platform: [ubuntu-latest, macos-12, windows-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        platform:
+          - ubuntu-latest
+          - windows-latest
+          - macos-13          # arch: Intel
+          - macos-15          # arch: arm64
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         mpi: [ 'mpich', 'openmpi', 'msmpi', 'intelmpi']
         exclude:
-        - platform: macos-12
+        - platform: macos-13
           mpi: msmpi
-        - platform: macos-12
+        - platform: macos-13
           mpi: intelmpi
+        - platform: macos-13   # TODO: # 163
+          mpi: openmpi
+        - platform: macos-15
+          mpi: msmpi
+        - platform: macos-15
+          mpi: intelmpi
+        - platform: macos-15   # TODO: # 163
+          mpi: openmpi
         - platform: ubuntu-latest
           mpi: msmpi
+        - platform: ubuntu-latest # TODO: #162
+          mpi: mpich
         - platform: windows-latest
           mpi: mpich
         - platform: windows-latest
           mpi: openmpi
         - platform: windows-latest
           mpi: intelmpi
-          
+
         # https://github.com/numba-mpi/numba-mpi/issues/69
-        - platform: ubuntu-latest
-          python-version: 3.8
-          mpi: mpich
         - platform: ubuntu-latest
           python-version: 3.9
           mpi: mpich
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - uses: mpi4py/setup-mpi@v1
         with:
           mpi: ${{ matrix.mpi }}
+      - if: ${{ matrix.platform == 'macos-15' }}
+        run: echo DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
       - if: matrix.mpi == 'intelmpi'
         run: |
           # checking if multiple MPI libs are OK
@@ -135,7 +148,6 @@ jobs:
 
   dist:
     runs-on: ubuntu-latest
-    needs: [build]
     permissions:
       id-token: write
     steps:
@@ -164,10 +176,22 @@ jobs:
           cd /tmp  # make sure local files are not picked up
           python -We -c "import numba_mpi"
 
-      - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: pypa/gh-action-pypi-publish@unstable/v1
+      - if: |-
+          ${{
+            github.repository == 'numba-mpi/numba-mpi' &&
+            github.event_name == 'push' &&
+            github.ref == 'refs/heads/main'
+          }}
+        uses: pypa/gh-action-pypi-publish@release/v1.12
         with:
+          attestations: false
           repository_url: https://test.pypi.org/legacy/
 
-      - if: startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@unstable/v1
+      - if: |-
+          ${{
+            github.repository == 'numba-mpi/numba-mpi' &&
+            startsWith(github.ref, 'refs/tags')
+          }}
+        uses: pypa/gh-action-pypi-publish@release/v1.12
+        with:
+          attestations: false

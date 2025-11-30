@@ -1,4 +1,4 @@
-""" the magick behind ``pip install ...`` """
+"""the magick behind ``pip install ...``"""
 
 from setuptools import find_packages, setup
 
@@ -7,6 +7,9 @@ def get_long_description():
     """returns contents of README.md file"""
     with open("README.md", "r", encoding="utf8") as file:
         long_description = file.read()
+    long_description = long_description.replace(
+        "numba_mpi_logo.svg", "numba_mpi_logo.png"
+    )
     return long_description
 
 
@@ -15,7 +18,7 @@ setup(
     url="https://github.com/numba-mpi/numba-mpi",
     author="https://github.com/numba-mpi/numba-mpi/graphs/contributors",
     use_scm_version={
-        "local_scheme": lambda _: "",
+        "local_scheme": "no-local-version",
         "version_scheme": "post-release",
     },
     python_requires=">=3.8",
