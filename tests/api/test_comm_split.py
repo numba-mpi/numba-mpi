@@ -16,7 +16,10 @@ def jit_split(color, key, comm=_MPI_Comm_World_ptr):
     "split",
     (
         mpi.comm_split,
-        pytest.param(jit_split, marks=pytest.mark.xfail(strict=True)),  # FIXME
+        pytest.param(
+            jit_split,
+            marks=pytest.mark.xfail(strict=True, raises=numba.core.errors.TypingError),
+        ),  # FIXME
     ),
 )
 def test_split_barrier_with_default_comm(split):
@@ -34,7 +37,10 @@ def test_split_barrier_with_default_comm(split):
     "split",
     (
         mpi.comm_split,
-        pytest.param(jit_split, marks=pytest.mark.xfail(strict=True)),  # FIXME
+        pytest.param(
+            jit_split,
+            marks=pytest.mark.xfail(strict=True, raises=numba.core.errors.TypingError),
+        ),  # FIXME
     ),
 )
 def test_split_splitted_comm(split):
