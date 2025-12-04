@@ -24,15 +24,10 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: "3.13"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
+    - run: |
         pip install pylint
-        python setup.py egg_info
-        ex -sc 'g/^\[tests\]$/d' -cx numba_mpi.egg-info/requires.txt
-        pip install -r numba_mpi.egg-info/requires.txt
-    - name: Analysing the code with pylint
-      run: |
+        pip install -e .
+    - run: |
         pylint --unsafe-load-any-extension=y --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
 
   precommit:
@@ -169,10 +164,7 @@ jobs:
       - run: twine check --strict dist/*
 
       - run: |
-          python setup.py egg_info
-          ex -sc 'g/^\[tests\]$/d' -cx numba_mpi.egg-info/requires.txt
-          pip install -r numba_mpi.egg-info/requires.txt
-          pip install --no-index --find-links file:./dist numba-mpi
+          pip install --find-links file:./dist numba-mpi
           cd /tmp  # make sure local files are not picked up
           python -We -c "import numba_mpi"
 
