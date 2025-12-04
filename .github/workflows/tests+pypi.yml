@@ -26,7 +26,7 @@ jobs:
     - run: |
         pip install pylint
         pip install -e .[tests]
-    - run: python -We -c "import mpi4py"
+    - run: python -We -c "from mpi4py import MPI"
     - run: |
         pylint --unsafe-load-any-extension=y --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
 
