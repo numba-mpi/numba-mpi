@@ -8,7 +8,7 @@ local_scheme = "no-local-version"
 version_scheme = "post-release"
 
 [tool.setuptools.packages.find]
-include = ["numba-mpi", "numba-mpi*"]
+include = ["numba_mpi", "numba_mpi*"]
 
 [build-system]
 requires = ['setuptools==80.9.0', 'setuptools-scm==9.0.1']
