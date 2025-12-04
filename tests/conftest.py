@@ -1,4 +1,4 @@
-""" sanity check ensuring that pytest session was run as an MPI task with more than one worker """
+"""sanity check ensuring that pytest session was run as an MPI task with more than one worker"""
 
 import numba_mpi
 
