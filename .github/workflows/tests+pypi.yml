@@ -23,10 +23,10 @@ jobs:
       with:
         python-version: "3.13"
     - uses: mpi4py/setup-mpi@v1
-    - run: python -We -c "import mpi4py"
     - run: |
         pip install pylint
         pip install -e .[tests]
+    - run: python -We -c "import mpi4py"
     - run: |
         pylint --unsafe-load-any-extension=y --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
 
