@@ -36,8 +36,8 @@ dynamic = ["version"]
 dependencies = ["numba", "numpy", "mpi4py", "psutil"]
 
 [project.optional-dependencies]
-"tests" = ["pytest", "py-pde"]
-"CI_version_pins" = [
+tests = ["pytest", "py-pde"]
+CI_version_pins = [
     "pytest==9.0.1",
     "numba==0.63rc1; python_version=='3.14'",
 ]
