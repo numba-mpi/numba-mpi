@@ -25,7 +25,7 @@ jobs:
     - uses: mpi4py/setup-mpi@v1
     - run: |
         pip install pylint
-        pip install -e .[tests]
+        pip install -e .[tests,CI_version_pins]
     - run: |
         pylint --ignored-modules=mpi4py --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
 
@@ -59,7 +59,7 @@ jobs:
       - name: Build
         run: |
           pip install pdoc
-          pip install -e .
+          pip install -e .[CI_version_pins]
           PDOC_ALLOW_EXEC=1 python -We -m pdoc -o html numba_mpi
       - name: Deploy
         if: github.ref == 'refs/heads/main'
@@ -135,7 +135,7 @@ jobs:
           # checking if multiple MPI libs are OK
           sudo apt-get install mpi-default-bin
           mpiexec python -c "import os; assert 'I_MPI_ROOT' in os.environ"
-      - run: pip install -e .[tests]
+      - run: pip install -e .[tests,CI_version_pins]
       - run: python -We -c "import mpi4py"
       - run: python -We -c "import numba_mpi"
       - run: mpiexec -n ${{ matrix.mpi-np }} pytest --durations=10 -p no:unraisableexception -We

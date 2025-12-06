@@ -1,8 +1,6 @@
 [tool.isort]
 profile = "black"
 
-[tool.setuptools]
-
 [tool.setuptools_scm]
 local_scheme = "no-local-version"
 version_scheme = "post-release"
@@ -38,7 +36,10 @@ dynamic = ["version"]
 dependencies = ["numba", "numpy", "mpi4py", "psutil"]
 
 [project.optional-dependencies]
-"tests" = ["pytest<8.0.0", "py-pde"]   # TODO #122
+"tests" = ["pytest", "py-pde"]
+"CI_version_pins" = [
+    "pytest<8.0.0", # TODO #122
+]
 
 [project.urls]
 Tracker = "https://github.com/numba-mpi/numba-mpi/issues"
