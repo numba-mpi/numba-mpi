@@ -30,9 +30,10 @@ Packages can be obtained from
 
 numba-mpi is a pure-Python package.
 The codebase includes a test suite used through the GitHub Actions workflows ([thanks to mpi4py's setup-mpi](https://github.com/mpi4py/setup-mpi)!)
-for automated testing on: Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/)
+for automated testing on: Intel Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/)
 & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)),
-macOS ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)) and
+ARM Linux ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)),
+Intel and ARM macOS ([MPICH](https://www.mpich.org/)) and
 Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi)). Note, that some of those
 combinations may not be fully supported yet - see [Known Issues](#known-issues) for more information.
 
