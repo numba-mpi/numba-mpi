@@ -131,6 +131,7 @@ jobs:
       - run: pip install -e .[tests,CI_version_pins]
       - run: python -We -c "import mpi4py"
       - run: python -We -c "import numba_mpi"
+      - run: NUMBA_DISABLE_JIT=1 mpiexec -n ${{ matrix.mpi-np }} pytest --durations=10 -p no:unraisableexception -We
       - run: mpiexec -n ${{ matrix.mpi-np }} pytest --durations=10 -p no:unraisableexception -We
 
   dist:
