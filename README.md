@@ -33,7 +33,7 @@ The codebase includes a test suite used through the GitHub Actions workflows ([t
 for automated testing on: Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/)
 & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)),
 macOS ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)) and
-Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi)). Note, that some of those
+Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi) & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)). Note, that some of those
 combinations may not be fully supported yet - see [Known Issues](#known-issues) for more information.
 
 Features that are not implemented yet include (help welcome!):
