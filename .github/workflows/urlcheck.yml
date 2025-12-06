@@ -21,3 +21,4 @@ jobs:
           timeout: 7
           retry_count: 3
           exclude_files: .github/workflows/urlcheck.yml
+          exclude_urls: https://www.gnu.org/licenses/gpl-3.0.html
