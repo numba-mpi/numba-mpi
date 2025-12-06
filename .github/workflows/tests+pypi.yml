@@ -105,8 +105,6 @@ jobs:
           mpi: openmpi
         - platform: ubuntu-latest
           mpi: msmpi
-        - platform: ubuntu-latest # TODO: #162
-          mpi: mpich
         - platform: windows-latest
           mpi: mpich
         - platform: windows-latest
