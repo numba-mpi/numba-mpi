@@ -37,9 +37,7 @@ dependencies = ["numba", "numpy", "mpi4py", "psutil"]
 
 [project.optional-dependencies]
 "tests" = ["pytest", "py-pde"]
-"CI_version_pins" = [
-    "pytest<8.0.0", # TODO #122
-]
+"CI_version_pins" = ["pytest==9.0.1"]
 
 [project.urls]
 Tracker = "https://github.com/numba-mpi/numba-mpi/issues"
