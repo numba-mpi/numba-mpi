@@ -85,6 +85,7 @@ jobs:
         mpi-np: [2, 3]
         platform:
           - ubuntu-latest
+          - ubuntu-24.04-arm
           - windows-latest
           - macos-13          # arch: Intel
           - macos-15          # arch: arm64
@@ -105,6 +106,10 @@ jobs:
           mpi: openmpi
         - platform: ubuntu-latest
           mpi: msmpi
+        - platform: ubuntu-24.04-arm
+          mpi: msmpi
+        - platform: ubuntu-24.04-arm
+          mpi: intelmpi
         - platform: windows-latest
           mpi: mpich
         - platform: windows-latest

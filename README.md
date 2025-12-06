@@ -5,7 +5,7 @@
 [![Linux OK](https://img.shields.io/static/v1?label=Linux&logo=Linux&color=yellow&message=%E2%9C%93)](https://en.wikipedia.org/wiki/Linux)
 [![macOS OK](https://img.shields.io/static/v1?label=macOS&logo=Apple&color=silver&message=%E2%9C%93)](https://en.wikipedia.org/wiki/macOS)
 [![Windows OK](https://img.shields.io/static/v1?label=Windows&logo=Windows&color=white&message=%E2%9C%93)](https://en.wikipedia.org/wiki/Windows)
-[![Github Actions Status](https://github.com/numba-mpi/numba-mpi/workflows/tests+pypi/badge.svg?branch=main)](https://github.com/numba-mpi/numba-mpi/actions/workflows/tests+pypi.yml)
+[![Github Actions Status](https://github.com/numba-mpi/numba-mpi/actions/workflows/tests+pypi.yml/badge.svg?branch=main)](https://github.com/numba-mpi/numba-mpi/actions/workflows/tests+pypi.yml)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/numba-mpi/numba-mpi/graphs/commit-activity)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![PyPI version](https://badge.fury.io/py/numba-mpi.svg)](https://pypi.org/project/numba-mpi)
@@ -157,7 +157,7 @@ if numba_mpi.rank() == 0:
     - Python/JAX: https://mpi4jax.readthedocs.io
     - Julia: https://juliaparallel.org/MPI.jl
     - Rust: https://docs.rs/mpi
-    - C++: https://boost.org/doc/html/mpi.html
+    - C++: https://www.boost.org/doc/libs/latest/doc/html/mpi.html
     - R: https://cran.r-project.org/web/packages/Rmpi
 
 ### Acknowledgements:
