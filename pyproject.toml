@@ -1,0 +1,47 @@
+[tool.isort]
+profile = "black"
+
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
+version_scheme = "post-release"
+
+[tool.setuptools.packages.find]
+include = ["numba_mpi", "numba_mpi*"]
+
+[build-system]
+requires = ['setuptools==80.9.0', 'setuptools-scm==9.0.1']
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "numba-mpi"
+description = "Numba @jittable MPI wrappers tested on Linux, macOS and Windows"
+keywords = ["MPI", "numba"]
+license = "GPL-3.0-only"
+readme = "README.md"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Software Development :: Libraries",
+]
+requires-python = ">= 3.8"
+authors = [
+    {name = "https://github.com/numba-mpi/numba-mpi/graphs/contributors", email = "sylwester.arabas@agh.edu.pl"}
+]     
+dynamic = ["version"]
+dependencies = ["numba", "numpy", "mpi4py", "psutil"]
+
+[project.optional-dependencies]
+"tests" = ["pytest", "py-pde"]
+"CI_version_pins" = [
+    "pytest<8.0.0", # TODO #122
+]
+
+[project.urls]
+Tracker = "https://github.com/numba-mpi/numba-mpi/issues"
+Documentation = "https://numba-mpi.github.io/numba-mpi"
+Source = "https://github.com/numba-mpi/numba-mpi"

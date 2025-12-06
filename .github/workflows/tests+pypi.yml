@@ -19,21 +19,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: mpi4py/setup-mpi@v1
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - uses: actions/setup-python@v5
       with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pylint==2.14.5
-        python setup.py egg_info
-        ex -sc 'g/^\[tests\]$/d' -cx numba_mpi.egg-info/requires.txt
-        pip install -r numba_mpi.egg-info/requires.txt
-    - name: Analysing the code with pylint
-      run: |
-        pylint --unsafe-load-any-extension=y --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
+        python-version: "3.13"
+    - uses: mpi4py/setup-mpi@v1
+    - run: |
+        pip install pylint
+        pip install -e .[tests,CI_version_pins]
+    - run: |
+        pylint --ignored-modules=mpi4py --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
 
   precommit:
     runs-on: ubuntu-latest
@@ -65,7 +59,7 @@ jobs:
       - name: Build
         run: |
           pip install pdoc
-          pip install -e .
+          pip install -e .[CI_version_pins]
           PDOC_ALLOW_EXEC=1 python -We -m pdoc -o html numba_mpi
       - name: Deploy
         if: github.ref == 'refs/heads/main'
@@ -94,7 +88,7 @@ jobs:
           - windows-latest
           - macos-13          # arch: Intel
           - macos-15          # arch: arm64
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         mpi: [ 'mpich', 'openmpi', 'msmpi', 'intelmpi']
         exclude:
         - platform: macos-13
@@ -119,11 +113,6 @@ jobs:
           mpi: openmpi
         - platform: windows-latest
           mpi: intelmpi
-
-        # https://github.com/numba-mpi/numba-mpi/issues/69
-        - platform: ubuntu-latest
-          python-version: 3.9
-          mpi: mpich
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
@@ -141,7 +130,7 @@ jobs:
           # checking if multiple MPI libs are OK
           sudo apt-get install mpi-default-bin
           mpiexec python -c "import os; assert 'I_MPI_ROOT' in os.environ"
-      - run: pip install -e .[tests]
+      - run: pip install -e .[tests,CI_version_pins]
       - run: python -We -c "import mpi4py"
       - run: python -We -c "import numba_mpi"
       - run: mpiexec -n ${{ matrix.mpi-np }} pytest --durations=10 -p no:unraisableexception -We
@@ -169,10 +158,7 @@ jobs:
       - run: twine check --strict dist/*
 
       - run: |
-          python setup.py egg_info
-          ex -sc 'g/^\[tests\]$/d' -cx numba_mpi.egg-info/requires.txt
-          pip install -r numba_mpi.egg-info/requires.txt
-          pip install --no-index --find-links file:./dist numba-mpi
+          pip install --find-links file:./dist numba-mpi
           cd /tmp  # make sure local files are not picked up
           python -We -c "import numba_mpi"
 
