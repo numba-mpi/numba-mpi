@@ -109,8 +109,6 @@ jobs:
           mpi: mpich
         - platform: windows-latest
           mpi: openmpi
-        - platform: windows-latest
-          mpi: intelmpi
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
