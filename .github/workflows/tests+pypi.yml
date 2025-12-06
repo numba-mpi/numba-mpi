@@ -27,8 +27,9 @@ jobs:
         pip install pylint
         pip install -e .[tests]
     - run: python -We -c "from mpi4py import MPI"
+    - run: python -c "import subprocess; subprocess.run(['python','-c','import mpi4py.MPI'])"
     - run: |
-        pylint --unsafe-load-any-extension=y --extension-pkg-allow-list=mpi4py --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
+        pylint --unsafe-load-any-extension=y --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
 
   precommit:
     runs-on: ubuntu-latest
