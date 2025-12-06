@@ -109,6 +109,8 @@ jobs:
           mpi: mpich
         - platform: windows-latest
           mpi: openmpi
+        - platform: windows-latest
+          mpi: intelmpi
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
@@ -121,7 +123,7 @@ jobs:
           mpi: ${{ matrix.mpi }}
       - if: ${{ matrix.platform == 'macos-15' }}
         run: echo DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
-      - if: ${{ matrix.mpi == 'intelmpi' and startsWith(matrix.platform, 'ubuntu-') }}
+      - if: matrix.mpi == 'intelmpi'
         run: |
           # checking if multiple MPI libs are OK
           sudo apt-get install mpi-default-bin
