@@ -157,7 +157,7 @@ if numba_mpi.rank() == 0:
     - Python/JAX: https://mpi4jax.readthedocs.io
     - Julia: https://juliaparallel.org/MPI.jl
     - Rust: https://docs.rs/mpi
-    - C++: https://boost.org/doc/html/mpi.html
+    - C++: https://www.boost.org/doc/libs/latest/doc/html/mpi.html
     - R: https://cran.r-project.org/web/packages/Rmpi
 
 ### Acknowledgements:
