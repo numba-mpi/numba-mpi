@@ -5,7 +5,7 @@
 [![Linux OK](https://img.shields.io/static/v1?label=Linux&logo=Linux&color=yellow&message=%E2%9C%93)](https://en.wikipedia.org/wiki/Linux)
 [![macOS OK](https://img.shields.io/static/v1?label=macOS&logo=Apple&color=silver&message=%E2%9C%93)](https://en.wikipedia.org/wiki/macOS)
 [![Windows OK](https://img.shields.io/static/v1?label=Windows&logo=Windows&color=white&message=%E2%9C%93)](https://en.wikipedia.org/wiki/Windows)
-[![Github Actions Status](https://github.com/numba-mpi/numba-mpi/workflows/tests+pypi/badge.svg?branch=main)](https://github.com/numba-mpi/numba-mpi/actions/workflows/tests+pypi.yml)
+[![Github Actions Status](https://github.com/numba-mpi/numba-mpi/actions/workflows/tests+pypi.yml/badge.svg?branch=main)](https://github.com/numba-mpi/numba-mpi/actions/workflows/tests+pypi.yml)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/numba-mpi/numba-mpi/graphs/commit-activity)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![PyPI version](https://badge.fury.io/py/numba-mpi.svg)](https://pypi.org/project/numba-mpi)
@@ -30,9 +30,10 @@ Packages can be obtained from
 
 numba-mpi is a pure-Python package.
 The codebase includes a test suite used through the GitHub Actions workflows ([thanks to mpi4py's setup-mpi](https://github.com/mpi4py/setup-mpi)!)
-for automated testing on: Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/)
+for automated testing on: Intel Linux ([MPICH](https://www.mpich.org/), [OpenMPI](https://www.open-mpi.org/doc/)
 & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)),
-macOS ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)) and
+ARM Linux ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)),
+Intel and ARM macOS ([MPICH](https://www.mpich.org/)) and
 Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi)). Note, that some of those
 combinations may not be fully supported yet - see [Known Issues](#known-issues) for more information.
 
@@ -140,8 +141,6 @@ if numba_mpi.rank() == 0:
 
 **NOTE**: Issues listed below only relate to combinations of platforms and MPI distributions that we target to support, but due to various reason are currently not working and are temporarily excluded from automated testing:
 
-- tests on Ubuntu 2024.4 that use MPICH are not run due to failures caused by newer version of MPICH (`4.2.0`); note, that previous tests ran
-using version `4.0.2` of MPICH (that is installed by default on Ubuntu 2022.4 using `apt`) were passing (see [related issue](https://github.com/numba-mpi/numba-mpi/issues/162) - TODO #162),
 - tests on MacOS (both Intel- and ARM-based) that use OpenMPI are currently not run due to failures being under investigation (see [related issue](https://github.com/numba-mpi/numba-mpi/issues/163)  - TODO #163).
 
 ### MPI resources on the web:
@@ -159,7 +158,7 @@ using version `4.0.2` of MPICH (that is installed by default on Ubuntu 2022.4 us
     - Python/JAX: https://mpi4jax.readthedocs.io
     - Julia: https://juliaparallel.org/MPI.jl
     - Rust: https://docs.rs/mpi
-    - C++: https://boost.org/doc/html/mpi.html
+    - C++: https://www.boost.org/doc/libs/latest/doc/html/mpi.html
     - R: https://cran.r-project.org/web/packages/Rmpi
 
 ### Acknowledgements:

@@ -1,0 +1,24 @@
+name: urlcheck
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 13 * * 4'
+
+jobs:
+  url-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - uses: urlstechie/urlchecker-action@master
+        with:
+          file_types: .md,.py,.json,.yaml,.yml,.toml,.txt,.cff
+          print_all: false
+          verbose: true
+          timeout: 7
+          retry_count: 3
+          exclude_files: .github/workflows/urlcheck.yml
+          exclude_urls: https://www.gnu.org/licenses/gpl-3.0.html
