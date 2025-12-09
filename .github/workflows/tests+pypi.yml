@@ -104,6 +104,8 @@ jobs:
           mpi: intelmpi
         - platform: macos-15   # TODO: # 163
           mpi: openmpi
+        - python-version: "3.14"
+          platform: macos-15-intel
         - platform: ubuntu-latest
           mpi: msmpi
         - platform: ubuntu-24.04-arm
