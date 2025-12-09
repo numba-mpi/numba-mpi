@@ -135,7 +135,8 @@ jobs:
           # checking if multiple MPI libs are OK
           sudo apt-get install mpi-default-bin
           mpiexec python -c "import os; assert 'I_MPI_ROOT' in os.environ"
-      - run: pip install --only-binary=:all: -e .[tests,CI_version_pins]
+      - run: |
+          pip install --only-binary=:all: -e .[tests,CI_version_pins]
       - run: python -We -c "import mpi4py"
       - run: python -We -c "import numba_mpi"
       - run: mpiexec -n ${{ matrix.mpi-np }} pytest --durations=10 -p no:unraisableexception -We
