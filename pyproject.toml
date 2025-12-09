@@ -35,7 +35,6 @@ authors = [
 dynamic = ["version"]
 dependencies = [
     "numba",
-    "numba>=0.63rc1; python_version=='3.14'",
     "numpy",
     "mpi4py",
     "psutil"
