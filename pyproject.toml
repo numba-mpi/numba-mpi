@@ -33,11 +33,16 @@ authors = [
     {name = "https://github.com/numba-mpi/numba-mpi/graphs/contributors", email = "sylwester.arabas@agh.edu.pl"}
 ]     
 dynamic = ["version"]
-dependencies = ["numba", "numpy", "mpi4py", "psutil"]
+dependencies = [
+    "numba",
+    "numpy",
+    "mpi4py",
+    "psutil"
+]
 
 [project.optional-dependencies]
-"tests" = ["pytest", "py-pde"]
-"CI_version_pins" = ["pytest==9.0.1"]
+tests = ["pytest", "py-pde"]
+CI_version_pins = ["pytest==9.0.1"]
 
 [project.urls]
 Tracker = "https://github.com/numba-mpi/numba-mpi/issues"
