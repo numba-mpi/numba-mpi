@@ -1,6 +1,7 @@
 # pylint: disable=duplicate-code
 
 """MPI_Isend() implementation"""
+
 import ctypes
 
 import numba
