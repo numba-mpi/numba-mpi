@@ -41,7 +41,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-tests = ["pytest", "py-pde", "typing_extensions"]
+tests = ["pytest", "py-pde"]
 CI_version_pins = ["pytest==9.0.1"]
 
 [project.urls]
