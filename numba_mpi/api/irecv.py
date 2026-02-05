@@ -1,6 +1,7 @@
 # pylint: disable=duplicate-code
 
 """MPI_Irecv() implementation"""
+
 import ctypes
 
 import numba
