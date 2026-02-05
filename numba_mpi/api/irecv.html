@@ -59,41 +59,42 @@
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="c1"># pylint: disable=duplicate-code</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">&quot;&quot;&quot;MPI_Irecv() implementation&quot;&quot;&quot;</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py.MPI</span><span class="w"> </span><span class="kn">import</span> <span class="n">ANY_SOURCE</span><span class="p">,</span> <span class="n">ANY_TAG</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">numba_mpi.api.requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">_allocate_numpy_array_of_request_handles</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">numba_mpi.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">_MPI_Comm_World_ptr</span><span class="p">,</span> <span class="n">libmpi</span><span class="p">,</span> <span class="n">send_recv_async_args</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">numba_mpi.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_mpi_addr</span><span class="p">,</span> <span class="n">_mpi_dtype</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="n">_MPI_Irecv</span> <span class="o">=</span> <span class="n">libmpi</span><span class="o">.</span><span class="n">MPI_Irecv</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="n">_MPI_Irecv</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="n">_MPI_Irecv</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="n">send_recv_async_args</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py.MPI</span><span class="w"> </span><span class="kn">import</span> <span class="n">ANY_SOURCE</span><span class="p">,</span> <span class="n">ANY_TAG</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">numba_mpi.api.requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">_allocate_numpy_array_of_request_handles</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">numba_mpi.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">_MPI_Comm_World_ptr</span><span class="p">,</span> <span class="n">libmpi</span><span class="p">,</span> <span class="n">send_recv_async_args</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">numba_mpi.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_mpi_addr</span><span class="p">,</span> <span class="n">_mpi_dtype</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="n">_MPI_Irecv</span> <span class="o">=</span> <span class="n">libmpi</span><span class="o">.</span><span class="n">MPI_Irecv</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="n">_MPI_Irecv</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="n">_MPI_Irecv</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="n">send_recv_async_args</span>
 </span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">()</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="k">def</span><span class="w"> </span><span class="nf">irecv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">ANY_SOURCE</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">ANY_TAG</span><span class="p">):</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Irecv (only handles contiguous arrays, at least for now).</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="sd">    If successful (i.e. result is MPI_SUCCESS), returns c-style pointer to valid</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">    MPI_Request handle that may be used with appropriate wait and test functions.&quot;&quot;&quot;</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>  <span class="c1"># TODO #60</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">_allocate_numpy_array_of_request_handles</span><span class="p">()</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="n">status</span> <span class="o">=</span> <span class="n">_MPI_Irecv</span><span class="p">(</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>        <span class="n">data</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>        <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>        <span class="n">_mpi_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>        <span class="n">source</span><span class="p">,</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>        <span class="n">tag</span><span class="p">,</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>        <span class="n">_mpi_addr</span><span class="p">(</span><span class="n">_MPI_Comm_World_ptr</span><span class="p">),</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="n">request_buffer</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>    <span class="p">)</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>
-</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>    <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">request_buffer</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">()</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="k">def</span><span class="w"> </span><span class="nf">irecv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">ANY_SOURCE</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">ANY_TAG</span><span class="p">):</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Irecv (only handles contiguous arrays, at least for now).</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">    If successful (i.e. result is MPI_SUCCESS), returns c-style pointer to valid</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="sd">    MPI_Request handle that may be used with appropriate wait and test functions.&quot;&quot;&quot;</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>  <span class="c1"># TODO #60</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>    <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">_allocate_numpy_array_of_request_handles</span><span class="p">()</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="n">status</span> <span class="o">=</span> <span class="n">_MPI_Irecv</span><span class="p">(</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>        <span class="n">data</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>        <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>        <span class="n">_mpi_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>        <span class="n">source</span><span class="p">,</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>        <span class="n">tag</span><span class="p">,</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="n">_mpi_addr</span><span class="p">(</span><span class="n">_MPI_Comm_World_ptr</span><span class="p">),</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>        <span class="n">request_buffer</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>    <span class="p">)</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">request_buffer</span>
 </span></pre></div>
 
 
@@ -110,27 +111,27 @@
 
     </div>
     <a class="headerlink" href="#irecv"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="irecv-19"><a href="#irecv-19"><span class="linenos">19</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">()</span>
-</span><span id="irecv-20"><a href="#irecv-20"><span class="linenos">20</span></a><span class="k">def</span><span class="w"> </span><span class="nf">irecv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">ANY_SOURCE</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">ANY_TAG</span><span class="p">):</span>
-</span><span id="irecv-21"><a href="#irecv-21"><span class="linenos">21</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Irecv (only handles contiguous arrays, at least for now).</span>
-</span><span id="irecv-22"><a href="#irecv-22"><span class="linenos">22</span></a><span class="sd">    If successful (i.e. result is MPI_SUCCESS), returns c-style pointer to valid</span>
-</span><span id="irecv-23"><a href="#irecv-23"><span class="linenos">23</span></a><span class="sd">    MPI_Request handle that may be used with appropriate wait and test functions.&quot;&quot;&quot;</span>
-</span><span id="irecv-24"><a href="#irecv-24"><span class="linenos">24</span></a>
-</span><span id="irecv-25"><a href="#irecv-25"><span class="linenos">25</span></a>    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>  <span class="c1"># TODO #60</span>
-</span><span id="irecv-26"><a href="#irecv-26"><span class="linenos">26</span></a>
-</span><span id="irecv-27"><a href="#irecv-27"><span class="linenos">27</span></a>    <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">_allocate_numpy_array_of_request_handles</span><span class="p">()</span>
-</span><span id="irecv-28"><a href="#irecv-28"><span class="linenos">28</span></a>
-</span><span id="irecv-29"><a href="#irecv-29"><span class="linenos">29</span></a>    <span class="n">status</span> <span class="o">=</span> <span class="n">_MPI_Irecv</span><span class="p">(</span>
-</span><span id="irecv-30"><a href="#irecv-30"><span class="linenos">30</span></a>        <span class="n">data</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-</span><span id="irecv-31"><a href="#irecv-31"><span class="linenos">31</span></a>        <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
-</span><span id="irecv-32"><a href="#irecv-32"><span class="linenos">32</span></a>        <span class="n">_mpi_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
-</span><span id="irecv-33"><a href="#irecv-33"><span class="linenos">33</span></a>        <span class="n">source</span><span class="p">,</span>
-</span><span id="irecv-34"><a href="#irecv-34"><span class="linenos">34</span></a>        <span class="n">tag</span><span class="p">,</span>
-</span><span id="irecv-35"><a href="#irecv-35"><span class="linenos">35</span></a>        <span class="n">_mpi_addr</span><span class="p">(</span><span class="n">_MPI_Comm_World_ptr</span><span class="p">),</span>
-</span><span id="irecv-36"><a href="#irecv-36"><span class="linenos">36</span></a>        <span class="n">request_buffer</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-</span><span id="irecv-37"><a href="#irecv-37"><span class="linenos">37</span></a>    <span class="p">)</span>
-</span><span id="irecv-38"><a href="#irecv-38"><span class="linenos">38</span></a>
-</span><span id="irecv-39"><a href="#irecv-39"><span class="linenos">39</span></a>    <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">request_buffer</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="irecv-20"><a href="#irecv-20"><span class="linenos">20</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">()</span>
+</span><span id="irecv-21"><a href="#irecv-21"><span class="linenos">21</span></a><span class="k">def</span><span class="w"> </span><span class="nf">irecv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">ANY_SOURCE</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">ANY_TAG</span><span class="p">):</span>
+</span><span id="irecv-22"><a href="#irecv-22"><span class="linenos">22</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Irecv (only handles contiguous arrays, at least for now).</span>
+</span><span id="irecv-23"><a href="#irecv-23"><span class="linenos">23</span></a><span class="sd">    If successful (i.e. result is MPI_SUCCESS), returns c-style pointer to valid</span>
+</span><span id="irecv-24"><a href="#irecv-24"><span class="linenos">24</span></a><span class="sd">    MPI_Request handle that may be used with appropriate wait and test functions.&quot;&quot;&quot;</span>
+</span><span id="irecv-25"><a href="#irecv-25"><span class="linenos">25</span></a>
+</span><span id="irecv-26"><a href="#irecv-26"><span class="linenos">26</span></a>    <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>  <span class="c1"># TODO #60</span>
+</span><span id="irecv-27"><a href="#irecv-27"><span class="linenos">27</span></a>
+</span><span id="irecv-28"><a href="#irecv-28"><span class="linenos">28</span></a>    <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">_allocate_numpy_array_of_request_handles</span><span class="p">()</span>
+</span><span id="irecv-29"><a href="#irecv-29"><span class="linenos">29</span></a>
+</span><span id="irecv-30"><a href="#irecv-30"><span class="linenos">30</span></a>    <span class="n">status</span> <span class="o">=</span> <span class="n">_MPI_Irecv</span><span class="p">(</span>
+</span><span id="irecv-31"><a href="#irecv-31"><span class="linenos">31</span></a>        <span class="n">data</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+</span><span id="irecv-32"><a href="#irecv-32"><span class="linenos">32</span></a>        <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+</span><span id="irecv-33"><a href="#irecv-33"><span class="linenos">33</span></a>        <span class="n">_mpi_dtype</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+</span><span id="irecv-34"><a href="#irecv-34"><span class="linenos">34</span></a>        <span class="n">source</span><span class="p">,</span>
+</span><span id="irecv-35"><a href="#irecv-35"><span class="linenos">35</span></a>        <span class="n">tag</span><span class="p">,</span>
+</span><span id="irecv-36"><a href="#irecv-36"><span class="linenos">36</span></a>        <span class="n">_mpi_addr</span><span class="p">(</span><span class="n">_MPI_Comm_World_ptr</span><span class="p">),</span>
+</span><span id="irecv-37"><a href="#irecv-37"><span class="linenos">37</span></a>        <span class="n">request_buffer</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+</span><span id="irecv-38"><a href="#irecv-38"><span class="linenos">38</span></a>    <span class="p">)</span>
+</span><span id="irecv-39"><a href="#irecv-39"><span class="linenos">39</span></a>
+</span><span id="irecv-40"><a href="#irecv-40"><span class="linenos">40</span></a>    <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="n">request_buffer</span>
 </span></pre></div>
 
 
