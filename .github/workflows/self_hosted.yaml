@@ -22,10 +22,8 @@ jobs:
         mkdir -p "$TEMP_DIR"
         echo "TEMP_DIR=$TEMP_DIR" >> $GITHUB_ENV
 
-    - name: Checkout into temp dir
+    - name: Checkout
       uses: actions/checkout@v4
-      with:
-        path: ${{ env.TEMP_DIR }}
 
     - name: Verify
       run: |
@@ -35,6 +33,13 @@ jobs:
     - name: Create Venv
       run: |
         python -m venv "$TEMP_DIR/venv"
+
+    - name: Install numba-mpi from checkout
+      run: |
+        set -v
+        . $TEMP_DIR/venv/bin/activate
+        pip install .
+        python -c "import numba_mpi"
     
     - name: Cleanup
       if: always()
