@@ -18,7 +18,7 @@ jobs:
     steps:
     - name: Create temp dir on network drive
       run: |
-        TEMP_DIR="/mnt/network_drive/tmp_${{ github.run_id }}_${{ github.run_attempt }}"
+        TEMP_DIR="/mnt/cluster-workspace/sfonxu/CI/tmp_${{ github.run_id }}_${{ github.run_attempt }}"
         mkdir -p "$TEMP_DIR"
         echo "TEMP_DIR=$TEMP_DIR" >> $GITHUB_ENV
 
