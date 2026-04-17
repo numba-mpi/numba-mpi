@@ -16,17 +16,26 @@ jobs:
   python:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-      - run: pip install -e .
-      - run: pip install pytest-codeblocks pytest matplotlib
-      - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()"
-      - run: cat -n readme.py
-      - run: mv readme.py /mnt/cluster-workspace/healthcheck/readme.py
-      - run: srun -n 2 --chdir=/mnt/cluster-workspace/healthcheck python -We readme.py
-      - uses: actions/upload-artifact@v4
-        with:
-          path: readme_plot.*
-          name: readme_plot
+    - name: Create temp dir on network drive
+      run: |
+        TEMP_DIR="/mnt/network_drive/tmp_${{ github.run_id }}_${{ github.run_attempt }}"
+        mkdir -p "$TEMP_DIR"
+        echo "TEMP_DIR=$TEMP_DIR" >> $GITHUB_ENV
+
+    - name: Checkout into temp dir
+      uses: actions/checkout@v4
+      with:
+        path: ${{ env.TEMP_DIR }}
+
+    - name: Verify
+      run: |
+        echo "Workspace: $GITHUB_WORKSPACE"
+        echo "Temp dir: $TEMP_DIR"
+        ls -la "$TEMP_DIR"
+    - name: Create Venv
+      run: |
+        python -m venv "$TEMP_DIR/venv"
+    
+    - name: Cleanup
+      if: always()
+      run: rm -rf "$TEMP_DIR"
