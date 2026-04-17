@@ -4,6 +4,9 @@ defaults:
   run:
     shell: bash
 
+env:
+  PYENV_ROOT: /mnt/cluster-workspace/sfonxu/CI/.pyenv
+
 on:
   push:
     branches: [ main ]
@@ -30,13 +33,14 @@ jobs:
         echo "Workspace: $GITHUB_WORKSPACE"
         echo "Temp dir: $TEMP_DIR"
         ls -la "$TEMP_DIR"
+        
     - name: Create Venv
       run: |
-        python -m venv "$TEMP_DIR/venv"
-
-    - name: Install numba-mpi from checkout
-      run: |
         set -v
+        export PATH=$PYENV_ROOT/bin:$PATH
+        pyenv local 3.13.13
+        eval "$(pyenv init - bash)"
+        python3 -m venv "$TEMP_DIR/venv"
         . $TEMP_DIR/venv/bin/activate
         pip install .
         python -c "import numba_mpi"
