@@ -20,7 +20,7 @@ Support is provided for a subset of MPI routines covering: `size`/`rank`, `send`
 and basic asynchronous communication with `isend`/`irecv` (only for contiguous arrays); for request handling including `wait`/`waitall`/`waitany` and `test`/`testall`/`testany`.
 
 The API uses NumPy and supports both numeric and character datatypes (e.g., `broadcast`).
-Auto-generated docstring-based API docs are published on the web: https://Numba-MPI.github.io/Numba-MPI
+Auto-generated docstring-based API docs are published on the web: https://numba-mpi.github.io/numba-mpi
 
 Packages can be obtained from
   [PyPI](https://pypi.org/project/Numba-MPI),
