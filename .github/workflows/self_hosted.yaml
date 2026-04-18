@@ -26,32 +26,43 @@ jobs:
         echo "TEMP_DIR=$TEMP_DIR" >> $GITHUB_ENV
 
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Verify
       run: |
         echo "Workspace: $GITHUB_WORKSPACE"
         echo "Temp dir: $TEMP_DIR"
         ls -la "$TEMP_DIR"
-        
-    - name: Create Venv and Install numba_mpi
+
+    - name: Extract README code into readme.py
       run: |
+        # TODO - get it from README
+        echo "import socket; print('Hello from ' + socket.gethostname())" > $TEMP_DIR/readme.py
+    
+    - name: Create Venv and Install numba_mpi from the checked out branch
+      run: |
+        set -ex
         export PATH=$PYENV_ROOT/bin:$PATH
         pyenv local 3.13.13
         eval "$(pyenv init - bash)"
-        set -ex
         python3 -m venv "$TEMP_DIR/venv" --system-site-packages
         . $TEMP_DIR/venv/bin/activate
-        # pip install .
-        python -c "print('Hello world!')"
+        # pip install .  # TODO!
         python --version
+        python $TEMP_DIR/readme.py
 
     - name: Run calculations on compute nodes
       run: |
-        set -ex
-        export SCRIPT='export PATH=$PYENV_ROOT/bin:$PATH; pyenv local 3.13.13; eval "$(pyenv init - bash)"; python3 --version'
-        srun --chdir=$TEMP_DIR -N1 -w ground-control /bin/bash -c "$SCRIPT"      
-        srun --chdir=$TEMP_DIR -N1 -w major-tom /bin/bash -c "$SCRIPT"
+        export SCRIPT='
+            set -ex
+            export PATH=$PYENV_ROOT/bin:$PATH
+            pyenv local 3.13.13
+            eval "$(pyenv init - bash)"
+            . $TEMP_DIR/venv/bin/activate
+            python3 --version
+            python $TEMP_DIR/readme.py
+        '
+        srun --chdir=$TEMP_DIR -N2 -w ground-control,major-tom --ntasks=2 --ntasks-per-node=1 /bin/bash -c "$SCRIPT"      
 
     - name: Cleanup
       if: always()
