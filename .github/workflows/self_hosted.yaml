@@ -39,7 +39,7 @@ jobs:
         export PATH=$PYENV_ROOT/bin:$PATH
         pyenv local 3.13.13
         eval "$(pyenv init - bash)"
-        set -v
+        set -ex
         python3 -m venv "$TEMP_DIR/venv" --system-site-packages
         . $TEMP_DIR/venv/bin/activate
         # pip install .
@@ -48,10 +48,10 @@ jobs:
 
     - name: Run calculations on compute nodes
       run: |
-        set -v
+        set -ex
         export SCRIPT='export PATH=$PYENV_ROOT/bin:$PATH; pyenv local 3.13.13; eval "$(pyenv init - bash)"; python3 --version'
-        srun --chdir=$TEMP_DIR -N1 -w ground-control /bin/bash -c '$SCRIPT'        
-        srun --chdir=$TEMP_DIR -N1 -w major-tom /bin/bash -c '$SCRIPT'
+        srun --chdir=$TEMP_DIR -N1 -w ground-control /bin/bash -c "$SCRIPT"      
+        srun --chdir=$TEMP_DIR -N1 -w major-tom /bin/bash -c "$SCRIPT"
 
     - name: Cleanup
       if: always()
