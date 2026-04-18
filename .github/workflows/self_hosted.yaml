@@ -37,7 +37,7 @@ jobs:
     - name: Extract README code into readme.py
       run: |
         # TODO - get it from README
-        echo "import socket, os; rankvar='OMPI_COMM_WORLD_RANK'; print(f'Hello from {socket.gethostname()} {os.environ[rankvar]=}')" > $TEMP_DIR/readme.py
+        echo "import socket, os; rankvar='SLURM_PROCID'; sizevar='SLURM_NTASKS'; print(f'Hello from {socket.gethostname()} {os.environ[rankvar]=}/{os.environ[sizevar]=}')" > $TEMP_DIR/readme.py
     
     - name: Create Venv and Install numba_mpi from the checked out branch
       run: |
