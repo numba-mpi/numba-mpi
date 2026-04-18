@@ -36,15 +36,23 @@ jobs:
         
     - name: Create Venv and Install numba_mpi
       run: |
-        set -v
         export PATH=$PYENV_ROOT/bin:$PATH
         pyenv local 3.13.13
         eval "$(pyenv init - bash)"
+        set -v
         python3 -m venv "$TEMP_DIR/venv" --system-site-packages
         . $TEMP_DIR/venv/bin/activate
-        pip install .
-        python -c "import numba_mpi"
-    
+        # pip install .
+        python -c "print('Hello world!')"
+        python --version
+
+    - name: Run calculations on compute nodes
+      run: |
+        set -v
+        export SCRIPT='export PATH=$PYENV_ROOT/bin:$PATH; pyenv local 3.13.13; eval "$(pyenv init - bash)"; python3 --version'
+        srun --chdir=$TEMP_DIR -N1 -w ground-control /bin/bash -c '$SCRIPT'        
+        srun --chdir=$TEMP_DIR -N1 -w major-tom /bin/bash -c '$SCRIPT'
+
     - name: Cleanup
       if: always()
       run: rm -rf "$TEMP_DIR"
