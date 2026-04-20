@@ -1,0 +1,68 @@
+name: readme_self_hosted
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PYENV_ROOT: /mnt/cluster-workspace/sfonxu/CI/.pyenv
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 13 * * 4'
+
+jobs:
+  python:
+    runs-on: self-hosted
+    steps:
+    - name: Create temp dir on network drive
+      run: |
+        TEMP_DIR="/mnt/cluster-workspace/sfonxu/CI/tmp_${{ github.run_id }}_${{ github.run_attempt }}"
+        mkdir -p "$TEMP_DIR"
+        echo "TEMP_DIR=$TEMP_DIR" >> $GITHUB_ENV
+
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Verify
+      run: |
+        echo "Workspace: $GITHUB_WORKSPACE"
+        echo "Temp dir: $TEMP_DIR"
+        ls -la "$TEMP_DIR"
+
+    - name: Extract README code into readme.py
+      run: |
+        # TODO - get it from README
+        echo "import socket, os; rankvar='SLURM_PROCID'; sizevar='SLURM_NTASKS'; print(f'Hello from {socket.gethostname()} {os.environ[rankvar]=}/{os.environ[sizevar]=}')" > $TEMP_DIR/readme.py
+    
+    - name: Create Venv and Install numba_mpi from the checked out branch
+      run: |
+        export PATH=$PYENV_ROOT/bin:$PATH
+        pyenv local 3.13.13
+        eval "$(pyenv init - bash)"
+        python3 -m venv "$TEMP_DIR/venv" --system-site-packages
+        . $TEMP_DIR/venv/bin/activate
+        # pip install .  # TODO!
+        set -ex
+        python --version
+
+    - name: Run calculations on compute nodes
+      run: |
+        export SCRIPT='
+            export PATH=$PYENV_ROOT/bin:$PATH
+            pyenv local 3.13.13
+            eval "$(pyenv init - bash)"
+            . $TEMP_DIR/venv/bin/activate
+            set -ex
+            python3 --version
+            python $TEMP_DIR/readme.py
+        '
+        srun --chdir=$TEMP_DIR -N2 -w ground-control,major-tom --ntasks=2 --ntasks-per-node=1 /bin/bash -c "$SCRIPT"      
+
+    - name: Cleanup
+      if: always()
+      run: rm -rf "$TEMP_DIR"
