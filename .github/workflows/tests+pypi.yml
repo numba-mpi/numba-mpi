@@ -174,7 +174,7 @@ jobs:
             github.event_name == 'push' &&
             github.ref == 'refs/heads/main'
           }}
-        uses: pypa/gh-action-pypi-publish@release/v1.12
+        uses: pypa/gh-action-pypi-publish@release/v1.14
         with:
           attestations: false
           repository_url: https://test.pypi.org/legacy/
@@ -184,6 +184,6 @@ jobs:
             github.repository == 'numba-mpi/numba-mpi' &&
             startsWith(github.ref, 'refs/tags')
           }}
-        uses: pypa/gh-action-pypi-publish@release/v1.12
+        uses: pypa/gh-action-pypi-publish@release/v1.14
         with:
           attestations: false
