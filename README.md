@@ -16,7 +16,7 @@
 ### Overview
 Numba-MPI provides Python wrappers to the C MPI API callable from within [Numba JIT-compiled code](https://numba.readthedocs.io/en/stable/user/jit.html) (@jit mode). For an outline of the project, rationale, architecture, and features, refer to: [Numba-MPI paper in SoftwareX (open access)](https://www.sciencedirect.com/science/article/pii/S235271102400267X) (please cite if Numba-MPI is used in your research).
 
-Support is provided for a subset of MPI routines covering: `size`/`rank`, `send`/`recv`, `allreduce`, `reduce`, `bcast`, `scatter`/`gather` & `allgather`, `barrier`, `wtime`
+Support is provided for a subset of MPI routines covering: `size`/`rank`, `send`/`recv`, `sendrecv`, `allreduce`, `reduce`, `bcast`, `scatter`/`gather` & `allgather`, `barrier`, `wtime`
 and basic asynchronous communication with `isend`/`irecv` (only for contiguous arrays); for request handling including `wait`/`waitall`/`waitany` and `test`/`testall`/`testany`.
 
 The API uses NumPy and supports both numeric and character datatypes (e.g., `broadcast`).

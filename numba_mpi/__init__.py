@@ -21,6 +21,7 @@ from .api.send import send
 from .api.size import size
 from .api.wtime import wtime
 from .common import RequestType
+from .api.sendrecv import sendrecv
 
 SUCCESS = 0
 
