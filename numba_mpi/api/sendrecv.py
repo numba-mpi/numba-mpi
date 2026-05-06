@@ -1,6 +1,11 @@
+"""MPI_Sendrecv() implementation"""
+
 import numba
 
 
 @numba.njit
-def sendrecv(data, dest, tag=0):
+def sendrecv():
+    """
+    Placeholder for sendrecv implementation
+    """
     pass

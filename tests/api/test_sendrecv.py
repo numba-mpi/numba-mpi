@@ -1,4 +1,4 @@
-import numba_mpi as mpi
+# pylint: disable=missing-function-docstring
 
 
 def test_sendrecv():
