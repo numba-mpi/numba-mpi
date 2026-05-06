@@ -8,4 +8,3 @@ def sendrecv():
     """
     Placeholder for sendrecv implementation
     """
-    pass
