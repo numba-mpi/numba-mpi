@@ -55,7 +55,7 @@ jobs:
         cat -n readme.py
         . $TEMP_DIR/venv/bin/activate; export PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/bin:$PATH; export LD_LIBRARY_PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/lib:/usr/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH; mpirun python readme.py" >> readme.sh
         set +e
-        sbatch -W -w major-tom,ground-control readme.sh --output=$(TEMP_DIR)/job_result.txt
+        sbatch -W -w major-tom,ground-control --output=$TEMP_DIR/job_result.txt readme.sh
         cat $TEMP_DIR/job_result.txt
 
     - name: Cleanup
