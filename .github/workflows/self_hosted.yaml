@@ -46,7 +46,7 @@ jobs:
         eval "$(pyenv init - bash)"
         pyenv local 3.13.13
         python3 -m venv "$TEMP_DIR/venv" --system-site-packages
-        echo "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()" >> $TEMP_DIR/get_readme.py
+        echo "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('$TEMP_DIR/README.md'); f=open('$TEMP_DIR/readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()" >> $TEMP_DIR/get_readme.py
 
     - name: Extract README code into readme.py and run it
       run: |
