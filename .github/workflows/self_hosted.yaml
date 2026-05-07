@@ -41,6 +41,7 @@ jobs:
         eval "$(pyenv init - bash)"
         pyenv local 3.13.13
         python3 -m venv "$TEMP_DIR/venv" --system-site-packages
+        echo "python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()" >> get_readme.py
 
     - name: Extract README code into readme.py and run it
       run: |
@@ -50,7 +51,7 @@ jobs:
         pip install pytest-codeblocks pytest matplotlib
         pip install .
         python --version
-        python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file(\'README.md\'); f=open(\'readme.py\', \'w\'); f.writelines(block.code for block in code if block.syntax==\'python\'); f.close()"
+        python get_readme.py
         cat -n readme.py
         . $TEMP_DIR/venv/bin/activate; export PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/bin:$PATH; export LD_LIBRARY_PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/lib:/usr/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH; mpirun python readme.py" >> readme.sh
         sbatch -W -w major-tom,ground-control readme.sh
