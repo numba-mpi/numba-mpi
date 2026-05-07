@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
       - uses: mpi4py/setup-mpi@v1
@@ -28,7 +28,7 @@ jobs:
       - run: cat -n readme.py
       - run: mpiexec -n 4 python -We readme.py
       - run: rsvg-convert readme_plot.svg > readme_plot.png
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           path: readme_plot.*
           name: readme_plot

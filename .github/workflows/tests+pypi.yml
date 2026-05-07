@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: "3.13"
     - uses: mpi4py/setup-mpi@v1
@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - name: Linting
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - uses: mpi4py/setup-mpi@v1
@@ -122,7 +122,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - uses: mpi4py/setup-mpi@v1
@@ -150,7 +150,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
 
@@ -174,7 +174,7 @@ jobs:
             github.event_name == 'push' &&
             github.ref == 'refs/heads/main'
           }}
-        uses: pypa/gh-action-pypi-publish@release/v1.12
+        uses: pypa/gh-action-pypi-publish@release/v1.14
         with:
           attestations: false
           repository_url: https://test.pypi.org/legacy/
@@ -184,6 +184,6 @@ jobs:
             github.repository == 'numba-mpi/numba-mpi' &&
             startsWith(github.ref, 'refs/tags')
           }}
-        uses: pypa/gh-action-pypi-publish@release/v1.12
+        uses: pypa/gh-action-pypi-publish@release/v1.14
         with:
           attestations: false
