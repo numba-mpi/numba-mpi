@@ -35,7 +35,11 @@ jobs:
         echo "Workspace: $GITHUB_WORKSPACE"
         echo "Temp dir: $TEMP_DIR"
         ls -la "$TEMP_DIR"
-
+        
+    - name: Clone repo to temp directory
+      run: |
+        cp -r . $TEMP_DIR
+        
     - name: Create Venv
       run: |
         set -ex
@@ -51,7 +55,7 @@ jobs:
         set -ex
         . $TEMP_DIR/venv/bin/activate
         pip install pytest-codeblocks pytest matplotlib
-        pip install $TEMP_DIR/numba-mpi
+        pip install .
         python --version
         python get_readme.py
         cat -n readme.py
