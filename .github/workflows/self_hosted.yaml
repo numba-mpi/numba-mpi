@@ -37,6 +37,7 @@ jobs:
     - name: Clone repo to temp directory
       run: |
         cp -r . $TEMP_DIR
+        ls
         
     - name: Create Venv
       run: |
