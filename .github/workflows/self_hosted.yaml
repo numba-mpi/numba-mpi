@@ -55,9 +55,9 @@ jobs:
     - name: Run calculations on compute nodes
       run: |
         echo "#!/bin/bash
-        
+        set -ex
         . $TEMP_DIR/venv/bin/activate; export PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/bin:$PATH; export LD_LIBRARY_PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/lib:/usr/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH; mpirun python readme.py" >> readme.sh
-        sbatch -w major-tom,ground-control readme.sh
+        sbatch -W -w major-tom,ground-control readme.sh
         
     - name: Cleanup
       if: always()
