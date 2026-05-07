@@ -58,7 +58,7 @@ jobs:
         python --version
         python $TEMP_DIR/get_readme.py
         cat -n $TEMP_DIR/readme.py
-        . $TEMP_DIR/venv/bin/activate; export PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/bin:$PATH; export LD_LIBRARY_PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/lib:/usr/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH; mpirun python $TEMP_DIR/readme.py" >> $TEMP_DIR/readme.sh
+        . $TEMP_DIR/venv/bin/activate; export PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/bin:$PATH; export LD_LIBRARY_PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/lib:/usr/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH; mpirun $TEMP_DIR/venv/bin/python $TEMP_DIR/readme.py" >> $TEMP_DIR/readme.sh
         sbatch -W -w major-tom,ground-control --output=$TEMP_DIR/job_result.txt $TEMP_DIR/readme.sh
         cat $TEMP_DIR/job_result.txt
 
