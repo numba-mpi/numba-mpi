@@ -49,11 +49,13 @@ jobs:
     - name: Extract README code into readme.py
       run: |
         # TODO - get it from README
+        . $TEMP_DIR/venv/bin/activate
         python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()"
         cat -n readme.py
     
     - name: Run calculations on compute nodes
       run: |
+        . $TEMP_DIR/venv/bin/activate
         export PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/bin:$PATH
         export LD_LIBRARY_PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/lib:/usr/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH
         mpirun python -We readme.py
