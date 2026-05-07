@@ -56,7 +56,7 @@ jobs:
         pip install pytest-codeblocks pytest matplotlib
         pip install $TEMP_DIR
         python --version
-        python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('$TEMP_DIR/readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()"
+        python $TEMP_DIR/get_readme.py
         cat -n $TEMP_DIR/readme.py
         . $TEMP_DIR/venv/bin/activate; export PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/bin:$PATH; export LD_LIBRARY_PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/lib:/usr/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH; mpirun python $TEMP_DIR/readme.py" >> $TEMP_DIR/readme.sh
         set +e
