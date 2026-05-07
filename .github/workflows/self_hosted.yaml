@@ -54,7 +54,7 @@ jobs:
         set -ex
         . $TEMP_DIR/venv/bin/activate
         pip install pytest-codeblocks pytest matplotlib
-        pip install .
+        pip install $TEMP_DIR
         python --version
         python get_readme.py
         cat -n readme.py
