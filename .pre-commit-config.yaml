@@ -10,7 +10,7 @@ repos:
         exclude: ^tests/paper_listings/
 
   - repo: https://github.com/timothycrosley/isort
-    rev: 5.13.2
+    rev: 8.0.1
     hooks:
       - id: isort
         args: ["--profile", "black"]
