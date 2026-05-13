@@ -1,0 +1,20 @@
+name: readme_self_hosted
+
+defaults:
+  run:
+    shell: bash
+
+on:
+  #TODO 
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-tests:
+    runs-on: bowie-arm64
+    steps:
+      # todo setup
+      - shell: bash
+        run: |
+          echo "Running tests on bowie-arm64"
+          echo $PWD
