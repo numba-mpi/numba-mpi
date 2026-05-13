@@ -35,17 +35,19 @@ _MPI_Sendrecv.argtypes = [
 ]
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
+
+
 @numba.njit
 def sendrecv(senddata, dest, recvdata, source=ANY_SOURCE, sendtag=0, recvtag=ANY_TAG):
     """
     Wrapper for MPI_Sendrecv.
-    
+
     Performs a simultaneous send and receive operation: sends `senddata`
     to `dest` and receives data into `recvdata` from `source`.
-    
+
     Mimicking MPI semantics, default value for `sendtag` is set to zero,
     while `source` defaults to ANY_SOURCE and `recvtag` defaults to ANY_TAG.
-    
+
     Returns MPI error code (0 == MPI_SUCCESS).
     """
 
@@ -76,5 +78,4 @@ def sendrecv(senddata, dest, recvdata, source=ANY_SOURCE, sendtag=0, recvtag=ANY
 
     if not recvdata.flags.c_contiguous:
         recvdata[...] = buffer
-
     return status
