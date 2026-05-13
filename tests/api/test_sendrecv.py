@@ -55,7 +55,7 @@ class TestSendrecv:
     @staticmethod
     def test_selfsend(sr):
         # arrange
-        data = np.empt(10)
+        data = np.empty(10)
 
         # act
         status = sr(data, mpi.rank(), recvdata=data)
