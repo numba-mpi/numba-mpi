@@ -2,6 +2,7 @@
 
 import numpy as np
 import pytest
+from mpi4py.MPI import get_vendor
 
 import numba_mpi as mpi
 
@@ -51,6 +52,11 @@ class TestSendrecv:
         assert status == mpi.SUCCESS
         np.testing.assert_array_equal(recv_data, send_data[mpi.rank() - 1])
 
+    @pytest.mark.xfail(
+        get_vendor()[0] == "Microsoft MPI",
+        reason="Known self-send issue with Microsoft MPI",
+        strict=True,
+    )
     @pytest.mark.parametrize("sr", (mpi.sendrecv, mpi.sendrecv.py_func))
     @staticmethod
     def test_selfsend(sr):
