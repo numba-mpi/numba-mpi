@@ -278,7 +278,6 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall):
     ),
 )
 def test_wall_segfault(fun):
-    print(platform.machine(), get_vendor())
     if (
         platform.machine() == "aarch64"
         and "Open MPI" == get_vendor()[0]
