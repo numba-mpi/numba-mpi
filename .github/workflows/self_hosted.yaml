@@ -1,0 +1,71 @@
+name: readme_self_hosted
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PYENV_ROOT: /mnt/cluster-workspace/sfonxu/CI/.pyenv
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 13 * * 4'
+
+jobs:
+  readme-snippets:
+    runs-on: self-hosted
+    steps:
+    - name: Create temp dir on network drive
+      run: |
+        TEMP_DIR="/mnt/cluster-workspace/sfonxu/CI/tmp_${{ github.run_id }}_${{ github.run_attempt }}"
+        mkdir -p "$TEMP_DIR"
+        echo "TEMP_DIR=$TEMP_DIR" >> $GITHUB_ENV
+
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Verify
+      run: |
+        echo "Workspace: $GITHUB_WORKSPACE"
+        echo "Temp dir: $TEMP_DIR"
+        ls -la "$TEMP_DIR"
+        
+    - name: Clone repo to temp directory
+      run: |
+        cp -r . $TEMP_DIR
+        ls $TEMP_DIR
+        
+    - name: Create Venv
+      run: |
+        set -ex
+        export PATH=$PYENV_ROOT/bin:$PATH
+        eval "$(pyenv init - bash)"
+        pyenv local 3.13.13
+        python3 -m venv "$TEMP_DIR/venv" --system-site-packages
+        echo "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('$TEMP_DIR/README.md'); f=open('$TEMP_DIR/readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()" >> $TEMP_DIR/get_readme.py
+
+    - name: Extract README code into readme.py and run it
+      run: |
+        echo "#!/bin/bash
+        set -ex
+        . $TEMP_DIR/venv/bin/activate
+        pip install pytest-codeblocks pytest matplotlib
+        pip install $TEMP_DIR
+        python --version
+        python $TEMP_DIR/get_readme.py
+        cat -n $TEMP_DIR/readme.py
+        . $TEMP_DIR/venv/bin/activate; export PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/bin:$PATH; export LD_LIBRARY_PATH=/mnt/cluster-workspace/bin/openmpi-5.0.10/lib:/usr/lib/aarch64-linux-gnu:$LD_LIBRARY_PATH; mpirun --mca btl_tcp_if_include eth0 $TEMP_DIR/venv/bin/python $TEMP_DIR/readme.py" >> $TEMP_DIR/readme.sh
+        sbatch -W -w major-tom,ground-control --output=$TEMP_DIR/job_result.txt $TEMP_DIR/readme.sh
+        cat $TEMP_DIR/job_result.txt
+
+    - name: Print error log
+      if: failure()
+      run: cat $TEMP_DIR/job_result.txt
+
+    - name: Cleanup
+      if: always()
+      run: rm -rf "$TEMP_DIR"
