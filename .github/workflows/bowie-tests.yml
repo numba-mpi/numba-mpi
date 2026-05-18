@@ -1,0 +1,95 @@
+name: Bowie Tests
+# What is 'Bowie'? See: https://open-atmos-krk.github.io/projects/hpc-diy.html
+
+on:
+  schedule:
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-tests:
+    runs-on: bowie-arm64
+    strategy:
+      matrix:
+        python-version: [3.13.13] # DO NOT CHANGE
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          path: run-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Submit tests on bowie
+        working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
+        shell: bash
+        run: |
+          JOB_ID=$(sbatch --parsable -w major-tom,ground-control ./.github/scripts/run-tests.sh ${{ matrix.python-version }})
+          echo "SLURM_JOB_ID=$JOB_ID" >> "$GITHUB_ENV"
+          echo "Submitted Slurm job $JOB_ID"
+
+      - name: Wait for tests to complete
+        working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          STDOUT_LOG=/mnt/cluster-workspace/gha-runner/logs/stdout.txt
+          STDERR_LOG=/mnt/cluster-workspace/gha-runner/logs/joberr.txt
+          timeout_seconds=600
+
+          if [[ -z "${SLURM_JOB_ID:-}" ]]; then
+            echo "SLURM_JOB_ID is not set"
+            exit 1
+          fi
+
+          echo "Waiting for Slurm job $SLURM_JOB_ID"
+          squeue -j "$SLURM_JOB_ID"
+          
+          poll_interval=10
+          tail -n +1 -F "$STDOUT_LOG" &
+          TAIL_PID=$!
+
+          cleanup() {
+            if kill -0 "$TAIL_PID" 2>/dev/null; then
+              kill "$TAIL_PID" 2>/dev/null || true
+              wait "$TAIL_PID" 2>/dev/null || true
+            fi
+          }
+          trap cleanup EXIT
+
+          SECONDS=0
+          while squeue -h -j "$SLURM_JOB_ID" | grep -q .; do
+            if (( SECONDS >= timeout_seconds )); then
+              echo "Timed out waiting for Slurm job $SLURM_JOB_ID after ${timeout_seconds}s"
+              scancel -f "$SLURM_JOB_ID" || true
+              break
+            fi
+            sleep "$poll_interval"
+          done
+
+          cleanup
+          
+          echo "SLURM STDERR:"
+          cat "$STDERR_LOG"
+
+      - name: Check test exit code
+        working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          EXIT_CODE_FILE=/mnt/cluster-workspace/gha-runner/test_exit_code.txt
+
+          if [[ ! -f "$EXIT_CODE_FILE" ]]; then
+            echo "Exit code file not found: $EXIT_CODE_FILE"
+            exit 1
+          fi
+
+          exit_code=$(tr -d '[:space:]' < "$EXIT_CODE_FILE")
+          echo "Recorded test exit code: ${exit_code:-<empty>}"
+
+          if [[ "$exit_code" != "0" ]]; then
+            echo "Tests failed"
+            exit 1
+          fi

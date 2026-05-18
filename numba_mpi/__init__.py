@@ -18,6 +18,7 @@ from .api.reduce import reduce
 from .api.requests import test, testall, testany, wait, waitall, waitany
 from .api.scatter_gather import allgather, gather, scatter
 from .api.send import send
+from .api.sendrecv import sendrecv
 from .api.size import size
 from .api.wtime import wtime
 from .common import RequestType
