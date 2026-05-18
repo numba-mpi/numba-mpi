@@ -3,15 +3,23 @@ import numba
 import pytest
 
 import numba_mpi
+from numba_mpi.common import _MPI_Comm_World_ptr
 
 
 @numba.njit()
-def jit_barrier():
-    return numba_mpi.barrier()
+def jit_barrier(comm_ptr=_MPI_Comm_World_ptr):
+    return numba_mpi.barrier(comm_ptr)
 
 
 @pytest.mark.parametrize("barrier", (jit_barrier.py_func, jit_barrier))
 def test_barrier(barrier):
+    status = barrier(_MPI_Comm_World_ptr)
+
+    assert status == numba_mpi.SUCCESS
+
+
+@pytest.mark.parametrize("barrier", (jit_barrier.py_func, jit_barrier))
+def test_barrier_default_arg(barrier):
     status = barrier()
 
     assert status == numba_mpi.SUCCESS
