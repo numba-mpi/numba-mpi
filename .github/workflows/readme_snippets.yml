@@ -24,7 +24,7 @@ jobs:
       - run: pip install -e .
       - run: pip install pytest-codeblocks pytest matplotlib
       - run: sudo apt-get install librsvg2-bin
-      - run: python scripts/extract_readme_code.py readme.py
+      - run: python .github/scripts/extract_readme_code.py readme.py
       - run: cat -n readme.py
       - run: mpiexec -n 4 python -We readme.py
       - run: rsvg-convert readme_plot.svg > readme_plot.png
