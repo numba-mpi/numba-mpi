@@ -96,5 +96,9 @@ jobs:
 
       - name: Extract Python snippets from README.md
         run: |
+          python3 -m venv venv-readme
+          . venv-readme/bin/activate
+          pip install pytest_codeblocks
           python ./.github/scripts/extract_readme_code.py readme.py
           cat -n readme.py
+          rm -rf venv-readme
