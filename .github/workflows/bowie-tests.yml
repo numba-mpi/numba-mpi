@@ -24,7 +24,7 @@ jobs:
         working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
         shell: bash
         run: |
-          JOB_ID=$(sbatch --parsable -w major-tom,ground-control ./.github/scripts/run-tests.sh ${{ matrix.python-version }})
+          JOB_ID=$(sbatch --parsable -w major-tom,ground-control ./.github/scripts/run-tests.sh ${{ matrix.python-version }} "python -m pytest -s -v --durations=10 -p no:unraisableexception -We tests/api")
           echo "SLURM_JOB_ID=$JOB_ID" >> "$GITHUB_ENV"
           echo "Submitted Slurm job $JOB_ID"
 
