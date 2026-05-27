@@ -93,3 +93,8 @@ jobs:
             echo "Tests failed"
             exit 1
           fi
+
+      - name: Extract Python snippets from README.md
+        run: |
+          python ./.github/scripts/extract_readme_code.py readme.py
+          cat -n readme.py
