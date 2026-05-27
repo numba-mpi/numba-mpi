@@ -24,7 +24,7 @@ jobs:
         python-version: "3.13"
     - uses: mpi4py/setup-mpi@v1
     - run: |
-        pip install pylint
+        pip install pylint pytest_codeblocks
         pip install --only-binary=:all: -e .[tests,CI_version_pins]
     - run: |
         pylint --ignored-modules=mpi4py --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
