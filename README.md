@@ -23,9 +23,9 @@ The API uses NumPy and supports both numeric and character datatypes (e.g., `bro
 Auto-generated docstring-based API docs are published on the web: https://numba-mpi.github.io/numba-mpi
 
 Packages can be obtained from
-  [PyPI](https://pypi.org/project/Numba-MPI),
-  [Conda Forge](https://anaconda.org/conda-forge/Numba-MPI),
-  [Arch Linux](https://aur.archlinux.org/packages/python-Numba-MPI)
+  [PyPI](https://pypi.org/project/Numba-MPI) (`pip install numba-mpi`),
+  [Conda Forge](https://anaconda.org/conda-forge/Numba-MPI) (`conda install conda-forge::numba-mpi`),
+  [Arch Linux](https://aur.archlinux.org/packages/python-Numba-MPI) (`yay -S python-numba-mpi`)
   or by invoking `pip install git+https://github.com/Numba-MPI/Numba-MPI.git`.
 
 Numba-MPI is a pure-Python package.
