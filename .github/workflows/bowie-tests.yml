@@ -15,6 +15,11 @@ jobs:
       matrix:
         python-version: [3.13.13] # DO NOT CHANGE
     steps:
+      - name: Checkout Actions Framework
+        uses: actions/checkout@v6
+        with:
+          path: actions-framework
+    
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -30,16 +35,22 @@ jobs:
           rm -rf venv-readme
       
       - name: Run API Tests
-        uses: ./.github/actions/run-slurm-job
+        uses: ./actions-framework/.github/actions/run-slurm-job
         with:
           python-version: ${{ matrix.python-version }}
           command: "python -m pytest -s -v --durations=10 -p no:unraisableexception -We tests/api"
           working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Run README Benchmark
-        uses: ./.github/actions/run-slurm-job
+        uses: ./actions-framework/.github/actions/run-slurm-job
         with:
           python-version: ${{ matrix.python-version }}
           command: "python readme.py"
           working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
-          
+
+      - name: Upload README Benchmark Plot
+        uses: actions/upload-artifact@v4
+        with:
+          name: mpi-wall-time-comparison
+          path: run-${{ github.run_id }}-${{ github.run_attempt }}/readme_plot.svg
+          if-no-files-found: error
