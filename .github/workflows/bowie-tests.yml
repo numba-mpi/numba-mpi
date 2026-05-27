@@ -27,7 +27,7 @@ jobs:
           . venv-readme/bin/activate
           pip install pytest_codeblocks
           python .github/scripts/extract_readme_code.py tests/api/readme.py
-          cat -n readme.py
+          cat -n tests/api/readme.py
           rm -rf venv-readme
 
       - name: Submit tests on bowie
