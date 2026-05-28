@@ -15,81 +15,42 @@ jobs:
       matrix:
         python-version: [3.13.13] # DO NOT CHANGE
     steps:
+      - name: Checkout Actions Framework
+        uses: actions/checkout@v6
+        with:
+          path: actions-framework
+    
       - name: Checkout
         uses: actions/checkout@v6
         with:
           path: run-${{ github.run_id }}-${{ github.run_attempt }}
-
-      - name: Submit tests on bowie
-        working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
-        shell: bash
-        run: |
-          JOB_ID=$(sbatch --parsable -w major-tom,ground-control ./.github/scripts/run-tests.sh ${{ matrix.python-version }})
-          echo "SLURM_JOB_ID=$JOB_ID" >> "$GITHUB_ENV"
-          echo "Submitted Slurm job $JOB_ID"
-
-      - name: Wait for tests to complete
-        working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          STDOUT_LOG=/mnt/cluster-workspace/gha-runner/logs/stdout.txt
-          STDERR_LOG=/mnt/cluster-workspace/gha-runner/logs/joberr.txt
-          timeout_seconds=600
-
-          if [[ -z "${SLURM_JOB_ID:-}" ]]; then
-            echo "SLURM_JOB_ID is not set"
-            exit 1
-          fi
-
-          echo "Waiting for Slurm job $SLURM_JOB_ID"
-          squeue -j "$SLURM_JOB_ID"
           
-          poll_interval=10
-          tail -n +1 -F "$STDOUT_LOG" &
-          TAIL_PID=$!
-
-          cleanup() {
-            if kill -0 "$TAIL_PID" 2>/dev/null; then
-              kill "$TAIL_PID" 2>/dev/null || true
-              wait "$TAIL_PID" 2>/dev/null || true
-            fi
-          }
-          trap cleanup EXIT
-
-          SECONDS=0
-          while squeue -h -j "$SLURM_JOB_ID" | grep -q .; do
-            if (( SECONDS >= timeout_seconds )); then
-              echo "Timed out waiting for Slurm job $SLURM_JOB_ID after ${timeout_seconds}s"
-              scancel -f "$SLURM_JOB_ID" || true
-              break
-            fi
-            sleep "$poll_interval"
-          done
-
-          cleanup
-          
-          echo "SLURM STDERR:"
-          cat "$STDERR_LOG"
-
-      - name: Check test exit code
+      - name: Extract Python snippets from README.md
         working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
-        shell: bash
         run: |
-          set -euo pipefail
+          python3 -m venv venv-readme
+          . venv-readme/bin/activate
+          pip install pytest_codeblocks
+          python .github/scripts/extract_readme_code.py readme.py
+          rm -rf venv-readme
+      
+      - name: Run API Tests
+        uses: ./actions-framework/.github/actions/run-slurm-job
+        with:
+          python-version: ${{ matrix.python-version }}
+          command: "python -m pytest -s -v --durations=10 -p no:unraisableexception -We tests/api"
+          working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
 
-          EXIT_CODE_FILE=/mnt/cluster-workspace/gha-runner/test_exit_code.txt
+      - name: Run README Benchmark
+        uses: ./actions-framework/.github/actions/run-slurm-job
+        with:
+          python-version: ${{ matrix.python-version }}
+          command: "python readme.py"
+          working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
 
-          if [[ ! -f "$EXIT_CODE_FILE" ]]; then
-            echo "Exit code file not found: $EXIT_CODE_FILE"
-            exit 1
-          fi
-
-          exit_code=$(tr -d '[:space:]' < "$EXIT_CODE_FILE")
-          echo "Recorded test exit code: ${exit_code:-<empty>}"
-
-          if [[ "$exit_code" != "0" ]]; then
-            echo "Tests failed"
-            exit 1
-          fi
+      - name: Upload README Benchmark Plot
+        uses: actions/upload-artifact@v4
+        with:
+          name: mpi-wall-time-comparison
+          path: run-${{ github.run_id }}-${{ github.run_attempt }}/readme_plot.svg
+          if-no-files-found: error
