@@ -49,7 +49,7 @@ jobs:
           working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload README Benchmark Plot
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mpi-wall-time-comparison
           path: run-${{ github.run_id }}-${{ github.run_attempt }}/readme_plot.svg
