@@ -19,28 +19,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: mpi4py/setup-mpi@v1
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pylint==2.14.5
-        python setup.py egg_info
-        ex -sc 'g/^\[tests\]$/d' -cx numba_mpi.egg-info/requires.txt
-        pip install -r numba_mpi.egg-info/requires.txt
-    - name: Analysing the code with pylint
-      run: |
-        pylint --unsafe-load-any-extension=y --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
+        python-version: "3.13"
+    - uses: mpi4py/setup-mpi@v1
+    - run: |
+        pip install pylint pytest_codeblocks
+        pip install --only-binary=:all: -e .[tests,CI_version_pins]
+    - run: |
+        pylint --ignored-modules=mpi4py --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
 
   precommit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - name: Linting
@@ -58,18 +52,18 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - uses: mpi4py/setup-mpi@v1
       - name: Build
         run: |
           pip install pdoc
-          pip install -e .
+          pip install --only-binary=:all: -e .[CI_version_pins]
           PDOC_ALLOW_EXEC=1 python -We -m pdoc -o html numba_mpi
       - name: Deploy
         if: github.ref == 'refs/heads/main'
-        uses: JamesIves/github-pages-deploy-action@4.1.1
+        uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           BRANCH: pdoc
           FOLDER: html
@@ -91,57 +85,58 @@ jobs:
         mpi-np: [2, 3]
         platform:
           - ubuntu-latest
+          - ubuntu-24.04-arm
           - windows-latest
-          - macos-13          # arch: Intel
+          - macos-15-intel    # arch: Intel
           - macos-15          # arch: arm64
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
         mpi: [ 'mpich', 'openmpi', 'msmpi', 'intelmpi']
         exclude:
-        - platform: macos-13
+        - platform: macos-15-intel
           mpi: msmpi
-        - platform: macos-13
+        - platform: macos-15-intel
           mpi: intelmpi
-        - platform: macos-13   # TODO: # 163
+        - platform: macos-15
+          mpi: msmpi
+        - platform: macos-15
+          mpi: intelmpi
+        - platform: macos-15-intel   # TODO: # 163
           mpi: openmpi
-        - platform: macos-15
-          mpi: msmpi
-        - platform: macos-15
-          mpi: intelmpi
         - platform: macos-15   # TODO: # 163
           mpi: openmpi
+        - python-version: "3.14"
+          platform: macos-15-intel
         - platform: ubuntu-latest
           mpi: msmpi
-        - platform: ubuntu-latest # TODO: #162
-          mpi: mpich
+        - platform: ubuntu-24.04-arm
+          mpi: msmpi
+        - platform: ubuntu-24.04-arm
+          mpi: intelmpi
         - platform: windows-latest
           mpi: mpich
         - platform: windows-latest
           mpi: openmpi
         - platform: windows-latest
           mpi: intelmpi
-
-        # https://github.com/numba-mpi/numba-mpi/issues/69
-        - platform: ubuntu-latest
-          python-version: 3.9
-          mpi: mpich
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - uses: mpi4py/setup-mpi@v1
         with:
           mpi: ${{ matrix.mpi }}
-      - if: ${{ matrix.platform == 'macos-15' }}
-        run: echo DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
+      - if: startsWith(matrix.platform, 'macos-')
+        run: echo DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:/usr/local/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH" >> $GITHUB_ENV
       - if: matrix.mpi == 'intelmpi'
         run: |
           # checking if multiple MPI libs are OK
           sudo apt-get install mpi-default-bin
           mpiexec python -c "import os; assert 'I_MPI_ROOT' in os.environ"
-      - run: pip install -e .[tests]
+      - run: |
+          pip install --only-binary=:all: -e .[tests,CI_version_pins]
       - run: python -We -c "import mpi4py"
       - run: python -We -c "import numba_mpi"
       - run: mpiexec -n ${{ matrix.mpi-np }} pytest --durations=10 -p no:unraisableexception -We
@@ -155,7 +150,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
 
@@ -169,10 +164,7 @@ jobs:
       - run: twine check --strict dist/*
 
       - run: |
-          python setup.py egg_info
-          ex -sc 'g/^\[tests\]$/d' -cx numba_mpi.egg-info/requires.txt
-          pip install -r numba_mpi.egg-info/requires.txt
-          pip install --no-index --find-links file:./dist numba-mpi
+          pip install --only-binary=:all: --find-links file:./dist numba-mpi
           cd /tmp  # make sure local files are not picked up
           python -We -c "import numba_mpi"
 
@@ -182,7 +174,7 @@ jobs:
             github.event_name == 'push' &&
             github.ref == 'refs/heads/main'
           }}
-        uses: pypa/gh-action-pypi-publish@release/v1.12
+        uses: pypa/gh-action-pypi-publish@release/v1.14
         with:
           attestations: false
           repository_url: https://test.pypi.org/legacy/
@@ -192,6 +184,6 @@ jobs:
             github.repository == 'numba-mpi/numba-mpi' &&
             startsWith(github.ref, 'refs/tags')
           }}
-        uses: pypa/gh-action-pypi-publish@release/v1.12
+        uses: pypa/gh-action-pypi-publish@release/v1.14
         with:
           attestations: false

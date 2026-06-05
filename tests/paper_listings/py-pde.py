@@ -10,4 +10,5 @@ final_state = eq.solve(
     adaptive=True,
     solver="explicit_mpi",
     decomposition=[2, -1],
+    backend='numba_mpi'  # note: not in the paper, py-pde API changed
 )

@@ -1,0 +1,56 @@
+name: Bowie Tests
+# What is 'Bowie'? See: https://open-atmos-krk.github.io/projects/hpc-diy.html
+
+on:
+  schedule:
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-tests:
+    runs-on: bowie-arm64
+    strategy:
+      matrix:
+        python-version: [3.13.13] # DO NOT CHANGE
+    steps:
+      - name: Checkout Actions Framework
+        uses: actions/checkout@v6
+        with:
+          path: actions-framework
+    
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          path: run-${{ github.run_id }}-${{ github.run_attempt }}
+          
+      - name: Extract Python snippets from README.md
+        working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          python3 -m venv venv-readme
+          . venv-readme/bin/activate
+          pip install pytest_codeblocks
+          python .github/scripts/extract_readme_code.py readme.py
+          rm -rf venv-readme
+      
+      - name: Run API Tests
+        uses: ./actions-framework/.github/actions/run-slurm-job
+        with:
+          python-version: ${{ matrix.python-version }}
+          command: "python -m pytest -s -v --durations=10 -p no:unraisableexception -We tests/api"
+          working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Run README Benchmark
+        uses: ./actions-framework/.github/actions/run-slurm-job
+        with:
+          python-version: ${{ matrix.python-version }}
+          command: "python readme.py"
+          working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Upload README Benchmark Plot
+        uses: actions/upload-artifact@v7
+        with:
+          name: mpi-wall-time-comparison
+          path: run-${{ github.run_id }}-${{ github.run_attempt }}/readme_plot.svg
+          if-no-files-found: error

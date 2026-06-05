@@ -1,10 +1,11 @@
 # pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring,too-many-arguments
+import platform
 import time
 
 import numba
 import numpy as np
 import pytest
-from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD
+from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD, get_vendor
 
 import numba_mpi as mpi
 from tests.common import data_types
@@ -277,6 +278,13 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall):
     ),
 )
 def test_wall_segfault(fun):
+    if (
+        platform.machine() == "aarch64"
+        and "Open MPI" == get_vendor()[0]
+        and 5 == get_vendor()[1][0]
+    ):
+        pytest.skip("OpenMPI v5 segfault on ARM64 #163")
+
     reqs = np.zeros((2,), dtype=mpi.RequestType)
     fun(reqs)
 

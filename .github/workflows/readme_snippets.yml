@@ -17,18 +17,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
-          python-version: "3.10"
+          python-version: "3.13"
       - uses: mpi4py/setup-mpi@v1
       - run: pip install -e .
       - run: pip install pytest-codeblocks pytest matplotlib
       - run: sudo apt-get install librsvg2-bin
-      - run: python -c "import pytest_codeblocks; code=pytest_codeblocks.extract_from_file('README.md'); f=open('readme.py', 'w'); f.writelines(block.code for block in code if block.syntax=='python'); f.close()"
+      - run: python .github/scripts/extract_readme_code.py readme.py
       - run: cat -n readme.py
       - run: mpiexec -n 4 python -We readme.py
       - run: rsvg-convert readme_plot.svg > readme_plot.png
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           path: readme_plot.*
           name: readme_plot

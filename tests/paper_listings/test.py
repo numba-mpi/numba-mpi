@@ -29,3 +29,6 @@ def test_send_recv(snd, rcv, fortran_order, data_type):
         COMM_WORLD.Recv(dst_exp, source=0, tag=22)
         np.testing.assert_equal(dst_tst, src)
         np.testing.assert_equal(dst_exp, src)
+
+# note: `from mpi4py.MPI import COMM_WORLD` is missing in the paper :(
+#       but the function never gets executed on CI - it is just parsed
