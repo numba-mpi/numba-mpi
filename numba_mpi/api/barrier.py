@@ -13,6 +13,6 @@ _MPI_Barrier.argtypes = [_MpiComm]
 
 
 @numba.njit()
-def barrier():
+def barrier(comm_ptr=_MPI_Comm_World_ptr):
     """wrapper for MPI_Barrier(). Returns integer status code (0 == MPI_SUCCESS)"""
-    return _MPI_Barrier(_mpi_addr(_MPI_Comm_World_ptr))
+    return _MPI_Barrier(_mpi_addr(comm_ptr))
