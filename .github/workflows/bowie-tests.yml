@@ -16,12 +16,12 @@ jobs:
         python-version: [3.13.13] # DO NOT CHANGE
     steps:
       - name: Checkout Actions Framework
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: actions-framework
     
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: run-${{ github.run_id }}-${{ github.run_attempt }}
           
