@@ -7,6 +7,7 @@ from importlib.metadata import PackageNotFoundError, version
 from .api.allreduce import allreduce
 from .api.barrier import barrier
 from .api.bcast import bcast
+from .api.error_class import error_class
 from .api.initialized import initialized
 from .api.irecv import irecv
 from .api.isend import isend
