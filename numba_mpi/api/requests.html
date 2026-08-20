@@ -72,9 +72,9 @@ wrappers.</p>
 
                         <label class="view-source-button" for="mod-requests-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="sd">&quot;&quot;&quot;Utilities for handling MPI_Requests with respective Wait and Test function</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="sd">"""Utilities for handling MPI_Requests with respective Wait and Test function</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a><span class="sd">wrappers.</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="sd">"""</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a>
 </span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a>
@@ -94,7 +94,7 @@ wrappers.</p>
 </span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>
 </span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_allocate_numpy_array_of_request_handles</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function for creating numpy array storing pointers to MPI_Request handles.&quot;&quot;&quot;</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="w">    </span><span class="sd">"""Helper function for creating numpy array storing pointers to MPI_Request handles."""</span>
 </span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">RequestType</span><span class="p">)</span>
 </span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>
 </span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>
@@ -105,13 +105,13 @@ wrappers.</p>
 </span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>
 </span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Wait. Returns integer status code (0 == MPI_SUCCESS).</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="sd">    Status is currently not handled. Requires &#39;request&#39; parameter to be a</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a><span class="sd">    c-style pointer to MPI_Request (such as returned by &#39;isend&#39;/&#39;irecv&#39;).</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Wait. Returns integer status code (0 == MPI_SUCCESS).</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="sd">    Status is currently not handled. Requires 'request' parameter to be a</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a><span class="sd">    c-style pointer to MPI_Request (such as returned by 'isend'/'irecv').</span>
 </span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>
-</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a><span class="sd">    Uninitialized contents of &#39;request&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a><span class="sd">    Uninitialized contents of 'request' (e.g., from numpy.empty()) may</span>
 </span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a><span class="sd">    """</span>
 </span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a>
 </span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">()</span>
 </span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>    <span class="n">status</span> <span class="o">=</span> <span class="n">_MPI_Wait</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">status_buffer</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
@@ -126,7 +126,7 @@ wrappers.</p>
 </span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>
 </span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_waitall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;MPI_Waitall implementation for contiguous numpy arrays of MPI_Requests&quot;&quot;&quot;</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a><span class="w">    </span><span class="sd">"""MPI_Waitall implementation for contiguous numpy arrays of MPI_Requests"""</span>
 </span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>
 </span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
 </span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>
@@ -138,13 +138,13 @@ wrappers.</p>
 </span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>
 </span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>
 </span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="k">def</span><span class="w"> </span><span class="nf">waitall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).</span>
-</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a><span class="sd">    Status is currently not handled. Requires &#39;requests&#39; parameter to be an</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a><span class="sd">    Status is currently not handled. Requires 'requests' parameter to be an</span>
 </span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a><span class="sd">    array or tuple of MPI_Request objects.</span>
 </span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>
-</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a><span class="sd">    Uninitialized contents of &#39;requests&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a><span class="sd">    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may</span>
 </span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a><span class="sd">    """</span>
 </span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 </span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>        <span class="k">return</span> <span class="n">_waitall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>
@@ -152,12 +152,12 @@ wrappers.</p>
 </span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>        <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>        <span class="k">return</span> <span class="n">_waitall_array_impl</span><span class="p">(</span><span class="n">request_buffer</span><span class="p">)</span>
 </span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>
-</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>
 </span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>
 </span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a><span class="nd">@overload</span><span class="p">(</span><span class="n">waitall</span><span class="p">)</span>
 </span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_waitall_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of overloads for MPI_Waitall implementation&quot;&quot;&quot;</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a><span class="w">    </span><span class="sd">"""List of overloads for MPI_Waitall implementation"""</span>
 </span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>
 </span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
 </span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>
@@ -171,7 +171,7 @@ wrappers.</p>
 </span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>            <span class="k">return</span> <span class="n">_waitall_array_impl</span><span class="p">(</span><span class="n">req_buffer</span><span class="p">)</span>
 </span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>
 </span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>
 </span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>    <span class="k">return</span> <span class="n">impl</span>
 </span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>
@@ -183,7 +183,7 @@ wrappers.</p>
 </span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>
 </span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_waitany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;MPI_Waitany implementation for contiguous numpy arrays of MPI_Requests&quot;&quot;&quot;</span>
+</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a><span class="w">    </span><span class="sd">"""MPI_Waitany implementation for contiguous numpy arrays of MPI_Requests"""</span>
 </span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>
 </span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">()</span>
 </span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intc</span><span class="p">)</span>
@@ -199,14 +199,14 @@ wrappers.</p>
 </span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>
 </span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>
 </span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="k">def</span><span class="w"> </span><span class="nf">waitany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Waitany. Returns tuple of integers, first representing</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Waitany. Returns tuple of integers, first representing</span>
 </span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a><span class="sd">    status; second - the index of request that was completed. Status is</span>
-</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="sd">    currently not handled. Requires &#39;requests&#39; parameter to be an array</span>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a><span class="sd">    currently not handled. Requires 'requests' parameter to be an array</span>
 </span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a><span class="sd">    or tuple of MPI_Request objects.</span>
 </span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>
-</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a><span class="sd">    Uninitialized contents of &#39;requests&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a><span class="sd">    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may</span>
 </span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a><span class="sd">    """</span>
 </span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>
 </span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 </span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>        <span class="k">return</span> <span class="n">_waitany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
@@ -215,12 +215,12 @@ wrappers.</p>
 </span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>        <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>        <span class="k">return</span> <span class="n">_waitany_array_impl</span><span class="p">(</span><span class="n">request_buffer</span><span class="p">)</span>
 </span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>
-</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>
 </span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>
 </span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a><span class="nd">@overload</span><span class="p">(</span><span class="n">waitany</span><span class="p">)</span>
 </span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_waitany_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of overloads for MPI_Waitany implementation&quot;&quot;&quot;</span>
+</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a><span class="w">    </span><span class="sd">"""List of overloads for MPI_Waitany implementation"""</span>
 </span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>
 </span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
 </span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a>
@@ -234,7 +234,7 @@ wrappers.</p>
 </span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>            <span class="k">return</span> <span class="n">_waitany_array_impl</span><span class="p">(</span><span class="n">req_buffer</span><span class="p">)</span>
 </span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>
 </span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a>
 </span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a>    <span class="k">return</span> <span class="n">impl</span>
 </span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a>
@@ -246,14 +246,14 @@ wrappers.</p>
 </span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a>
 </span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a><span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-</span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Test. Returns tuple containing both status and boolean</span>
+</span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Test. Returns tuple containing both status and boolean</span>
 </span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a><span class="sd">    flag that indicates whether given request is completed. Status is currently</span>
-</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a><span class="sd">    not handled. Requires &#39;request&#39; parameter to be a c-style pointer to</span>
-</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a><span class="sd">    MPI_Request (such as returned by &#39;isend&#39;/&#39;irecv&#39;).</span>
+</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a><span class="sd">    not handled. Requires 'request' parameter to be a c-style pointer to</span>
+</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a><span class="sd">    MPI_Request (such as returned by 'isend'/'irecv').</span>
 </span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a>
-</span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a><span class="sd">    Uninitialized contents of &#39;request&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a><span class="sd">    Uninitialized contents of 'request' (e.g., from numpy.empty()) may</span>
 </span><span id="L-181"><a href="#L-181"><span class="linenos">181</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a><span class="sd">    """</span>
 </span><span id="L-183"><a href="#L-183"><span class="linenos">183</span></a>
 </span><span id="L-184"><a href="#L-184"><span class="linenos">184</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">()</span>
 </span><span id="L-185"><a href="#L-185"><span class="linenos">185</span></a>    <span class="n">flag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intc</span><span class="p">)</span>
@@ -270,7 +270,7 @@ wrappers.</p>
 </span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a>
 </span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_testall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;MPI_Testall implementation for contiguous numpy arrays of MPI_Requests&quot;&quot;&quot;</span>
+</span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a><span class="w">    </span><span class="sd">"""MPI_Testall implementation for contiguous numpy arrays of MPI_Requests"""</span>
 </span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a>
 </span><span id="L-201"><a href="#L-201"><span class="linenos">201</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
 </span><span id="L-202"><a href="#L-202"><span class="linenos">202</span></a>    <span class="n">flag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intc</span><span class="p">)</span>
@@ -285,14 +285,14 @@ wrappers.</p>
 </span><span id="L-211"><a href="#L-211"><span class="linenos">211</span></a>
 </span><span id="L-212"><a href="#L-212"><span class="linenos">212</span></a>
 </span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a><span class="k">def</span><span class="w"> </span><span class="nf">testall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-214"><a href="#L-214"><span class="linenos">214</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Testall. Returns tuple containing both status and boolean</span>
+</span><span id="L-214"><a href="#L-214"><span class="linenos">214</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Testall. Returns tuple containing both status and boolean</span>
 </span><span id="L-215"><a href="#L-215"><span class="linenos">215</span></a><span class="sd">    flag that indicates whether given request is completed. Status is currently</span>
-</span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a><span class="sd">    not handled. Requires &#39;requests&#39; parameter to be an array or tuple of</span>
+</span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a><span class="sd">    not handled. Requires 'requests' parameter to be an array or tuple of</span>
 </span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a><span class="sd">    MPI_Request objects.</span>
 </span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a>
-</span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a><span class="sd">    Uninitialized contents of &#39;requests&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a><span class="sd">    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may</span>
 </span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a><span class="sd">    """</span>
 </span><span id="L-222"><a href="#L-222"><span class="linenos">222</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 </span><span id="L-223"><a href="#L-223"><span class="linenos">223</span></a>        <span class="k">return</span> <span class="n">_testall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-224"><a href="#L-224"><span class="linenos">224</span></a>
@@ -300,12 +300,12 @@ wrappers.</p>
 </span><span id="L-226"><a href="#L-226"><span class="linenos">226</span></a>        <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-227"><a href="#L-227"><span class="linenos">227</span></a>        <span class="k">return</span> <span class="n">_testall_array_impl</span><span class="p">(</span><span class="n">request_buffer</span><span class="p">)</span>
 </span><span id="L-228"><a href="#L-228"><span class="linenos">228</span></a>
-</span><span id="L-229"><a href="#L-229"><span class="linenos">229</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="L-229"><a href="#L-229"><span class="linenos">229</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span><span id="L-230"><a href="#L-230"><span class="linenos">230</span></a>
 </span><span id="L-231"><a href="#L-231"><span class="linenos">231</span></a>
 </span><span id="L-232"><a href="#L-232"><span class="linenos">232</span></a><span class="nd">@overload</span><span class="p">(</span><span class="n">testall</span><span class="p">)</span>
 </span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_testall_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of overloads for MPI_Testall implementation&quot;&quot;&quot;</span>
+</span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a><span class="w">    </span><span class="sd">"""List of overloads for MPI_Testall implementation"""</span>
 </span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a>
 </span><span id="L-236"><a href="#L-236"><span class="linenos">236</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
 </span><span id="L-237"><a href="#L-237"><span class="linenos">237</span></a>
@@ -319,7 +319,7 @@ wrappers.</p>
 </span><span id="L-245"><a href="#L-245"><span class="linenos">245</span></a>            <span class="k">return</span> <span class="n">_testall_array_impl</span><span class="p">(</span><span class="n">req_buffer</span><span class="p">)</span>
 </span><span id="L-246"><a href="#L-246"><span class="linenos">246</span></a>
 </span><span id="L-247"><a href="#L-247"><span class="linenos">247</span></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="L-248"><a href="#L-248"><span class="linenos">248</span></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="L-248"><a href="#L-248"><span class="linenos">248</span></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span><span id="L-249"><a href="#L-249"><span class="linenos">249</span></a>
 </span><span id="L-250"><a href="#L-250"><span class="linenos">250</span></a>    <span class="k">return</span> <span class="n">impl</span>
 </span><span id="L-251"><a href="#L-251"><span class="linenos">251</span></a>
@@ -337,7 +337,7 @@ wrappers.</p>
 </span><span id="L-263"><a href="#L-263"><span class="linenos">263</span></a>
 </span><span id="L-264"><a href="#L-264"><span class="linenos">264</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="L-265"><a href="#L-265"><span class="linenos">265</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_testany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-266"><a href="#L-266"><span class="linenos">266</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;MPI_Testany implementation for contiguous numpy arrays of MPI_Requests&quot;&quot;&quot;</span>
+</span><span id="L-266"><a href="#L-266"><span class="linenos">266</span></a><span class="w">    </span><span class="sd">"""MPI_Testany implementation for contiguous numpy arrays of MPI_Requests"""</span>
 </span><span id="L-267"><a href="#L-267"><span class="linenos">267</span></a>
 </span><span id="L-268"><a href="#L-268"><span class="linenos">268</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">()</span>
 </span><span id="L-269"><a href="#L-269"><span class="linenos">269</span></a>    <span class="n">flag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intc</span><span class="p">)</span>
@@ -354,14 +354,14 @@ wrappers.</p>
 </span><span id="L-280"><a href="#L-280"><span class="linenos">280</span></a>
 </span><span id="L-281"><a href="#L-281"><span class="linenos">281</span></a>
 </span><span id="L-282"><a href="#L-282"><span class="linenos">282</span></a><span class="k">def</span><span class="w"> </span><span class="nf">testany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-283"><a href="#L-283"><span class="linenos">283</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Testany. Returns tuple containing status, boolean flag</span>
+</span><span id="L-283"><a href="#L-283"><span class="linenos">283</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Testany. Returns tuple containing status, boolean flag</span>
 </span><span id="L-284"><a href="#L-284"><span class="linenos">284</span></a><span class="sd">    that indicates whether any of requests is completed, and index of request</span>
-</span><span id="L-285"><a href="#L-285"><span class="linenos">285</span></a><span class="sd">    that is guaranteed to be completed. Requires &#39;requests&#39; parameter to be an</span>
+</span><span id="L-285"><a href="#L-285"><span class="linenos">285</span></a><span class="sd">    that is guaranteed to be completed. Requires 'requests' parameter to be an</span>
 </span><span id="L-286"><a href="#L-286"><span class="linenos">286</span></a><span class="sd">    array or tuple of MPI_Request objects.</span>
 </span><span id="L-287"><a href="#L-287"><span class="linenos">287</span></a>
-</span><span id="L-288"><a href="#L-288"><span class="linenos">288</span></a><span class="sd">    Uninitialized contents of &#39;requests&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="L-288"><a href="#L-288"><span class="linenos">288</span></a><span class="sd">    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may</span>
 </span><span id="L-289"><a href="#L-289"><span class="linenos">289</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="L-290"><a href="#L-290"><span class="linenos">290</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-290"><a href="#L-290"><span class="linenos">290</span></a><span class="sd">    """</span>
 </span><span id="L-291"><a href="#L-291"><span class="linenos">291</span></a>
 </span><span id="L-292"><a href="#L-292"><span class="linenos">292</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 </span><span id="L-293"><a href="#L-293"><span class="linenos">293</span></a>        <span class="k">return</span> <span class="n">_testany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
@@ -370,12 +370,12 @@ wrappers.</p>
 </span><span id="L-296"><a href="#L-296"><span class="linenos">296</span></a>        <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="L-297"><a href="#L-297"><span class="linenos">297</span></a>        <span class="k">return</span> <span class="n">_testany_array_impl</span><span class="p">(</span><span class="n">request_buffer</span><span class="p">)</span>
 </span><span id="L-298"><a href="#L-298"><span class="linenos">298</span></a>
-</span><span id="L-299"><a href="#L-299"><span class="linenos">299</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="L-299"><a href="#L-299"><span class="linenos">299</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span><span id="L-300"><a href="#L-300"><span class="linenos">300</span></a>
 </span><span id="L-301"><a href="#L-301"><span class="linenos">301</span></a>
 </span><span id="L-302"><a href="#L-302"><span class="linenos">302</span></a><span class="nd">@overload</span><span class="p">(</span><span class="n">testany</span><span class="p">)</span>
 </span><span id="L-303"><a href="#L-303"><span class="linenos">303</span></a><span class="k">def</span><span class="w"> </span><span class="nf">_testany_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="L-304"><a href="#L-304"><span class="linenos">304</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;List of overloads for MPI_Testany implementation&quot;&quot;&quot;</span>
+</span><span id="L-304"><a href="#L-304"><span class="linenos">304</span></a><span class="w">    </span><span class="sd">"""List of overloads for MPI_Testany implementation"""</span>
 </span><span id="L-305"><a href="#L-305"><span class="linenos">305</span></a>
 </span><span id="L-306"><a href="#L-306"><span class="linenos">306</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
 </span><span id="L-307"><a href="#L-307"><span class="linenos">307</span></a>
@@ -389,7 +389,7 @@ wrappers.</p>
 </span><span id="L-315"><a href="#L-315"><span class="linenos">315</span></a>            <span class="k">return</span> <span class="n">_testany_array_impl</span><span class="p">(</span><span class="n">req_buffer</span><span class="p">)</span>
 </span><span id="L-316"><a href="#L-316"><span class="linenos">316</span></a>
 </span><span id="L-317"><a href="#L-317"><span class="linenos">317</span></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="L-318"><a href="#L-318"><span class="linenos">318</span></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="L-318"><a href="#L-318"><span class="linenos">318</span></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span><span id="L-319"><a href="#L-319"><span class="linenos">319</span></a>
 </span><span id="L-320"><a href="#L-320"><span class="linenos">320</span></a>    <span class="k">return</span> <span class="n">impl</span>
 </span></pre></div>
@@ -410,13 +410,13 @@ wrappers.</p>
     <a class="headerlink" href="#wait"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="wait-33"><a href="#wait-33"><span class="linenos">33</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="wait-34"><a href="#wait-34"><span class="linenos">34</span></a><span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-</span><span id="wait-35"><a href="#wait-35"><span class="linenos">35</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Wait. Returns integer status code (0 == MPI_SUCCESS).</span>
-</span><span id="wait-36"><a href="#wait-36"><span class="linenos">36</span></a><span class="sd">    Status is currently not handled. Requires &#39;request&#39; parameter to be a</span>
-</span><span id="wait-37"><a href="#wait-37"><span class="linenos">37</span></a><span class="sd">    c-style pointer to MPI_Request (such as returned by &#39;isend&#39;/&#39;irecv&#39;).</span>
+</span><span id="wait-35"><a href="#wait-35"><span class="linenos">35</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Wait. Returns integer status code (0 == MPI_SUCCESS).</span>
+</span><span id="wait-36"><a href="#wait-36"><span class="linenos">36</span></a><span class="sd">    Status is currently not handled. Requires 'request' parameter to be a</span>
+</span><span id="wait-37"><a href="#wait-37"><span class="linenos">37</span></a><span class="sd">    c-style pointer to MPI_Request (such as returned by 'isend'/'irecv').</span>
 </span><span id="wait-38"><a href="#wait-38"><span class="linenos">38</span></a>
-</span><span id="wait-39"><a href="#wait-39"><span class="linenos">39</span></a><span class="sd">    Uninitialized contents of &#39;request&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="wait-39"><a href="#wait-39"><span class="linenos">39</span></a><span class="sd">    Uninitialized contents of 'request' (e.g., from numpy.empty()) may</span>
 </span><span id="wait-40"><a href="#wait-40"><span class="linenos">40</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="wait-41"><a href="#wait-41"><span class="linenos">41</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="wait-41"><a href="#wait-41"><span class="linenos">41</span></a><span class="sd">    """</span>
 </span><span id="wait-42"><a href="#wait-42"><span class="linenos">42</span></a>
 </span><span id="wait-43"><a href="#wait-43"><span class="linenos">43</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">()</span>
 </span><span id="wait-44"><a href="#wait-44"><span class="linenos">44</span></a>    <span class="n">status</span> <span class="o">=</span> <span class="n">_MPI_Wait</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">status_buffer</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
@@ -447,13 +447,13 @@ cause invalid pointer dereference and segmentation faults.</p>
     </div>
     <a class="headerlink" href="#waitall"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="waitall-67"><a href="#waitall-67"><span class="linenos">67</span></a><span class="k">def</span><span class="w"> </span><span class="nf">waitall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="waitall-68"><a href="#waitall-68"><span class="linenos">68</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).</span>
-</span><span id="waitall-69"><a href="#waitall-69"><span class="linenos">69</span></a><span class="sd">    Status is currently not handled. Requires &#39;requests&#39; parameter to be an</span>
+</span><span id="waitall-68"><a href="#waitall-68"><span class="linenos">68</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Waitall. Returns integer status code (0 == MPI_SUCCESS).</span>
+</span><span id="waitall-69"><a href="#waitall-69"><span class="linenos">69</span></a><span class="sd">    Status is currently not handled. Requires 'requests' parameter to be an</span>
 </span><span id="waitall-70"><a href="#waitall-70"><span class="linenos">70</span></a><span class="sd">    array or tuple of MPI_Request objects.</span>
 </span><span id="waitall-71"><a href="#waitall-71"><span class="linenos">71</span></a>
-</span><span id="waitall-72"><a href="#waitall-72"><span class="linenos">72</span></a><span class="sd">    Uninitialized contents of &#39;requests&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="waitall-72"><a href="#waitall-72"><span class="linenos">72</span></a><span class="sd">    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may</span>
 </span><span id="waitall-73"><a href="#waitall-73"><span class="linenos">73</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="waitall-74"><a href="#waitall-74"><span class="linenos">74</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="waitall-74"><a href="#waitall-74"><span class="linenos">74</span></a><span class="sd">    """</span>
 </span><span id="waitall-75"><a href="#waitall-75"><span class="linenos">75</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 </span><span id="waitall-76"><a href="#waitall-76"><span class="linenos">76</span></a>        <span class="k">return</span> <span class="n">_waitall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="waitall-77"><a href="#waitall-77"><span class="linenos">77</span></a>
@@ -461,7 +461,7 @@ cause invalid pointer dereference and segmentation faults.</p>
 </span><span id="waitall-79"><a href="#waitall-79"><span class="linenos">79</span></a>        <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="waitall-80"><a href="#waitall-80"><span class="linenos">80</span></a>        <span class="k">return</span> <span class="n">_waitall_array_impl</span><span class="p">(</span><span class="n">request_buffer</span><span class="p">)</span>
 </span><span id="waitall-81"><a href="#waitall-81"><span class="linenos">81</span></a>
-</span><span id="waitall-82"><a href="#waitall-82"><span class="linenos">82</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="waitall-82"><a href="#waitall-82"><span class="linenos">82</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -487,14 +487,14 @@ cause invalid pointer dereference and segmentation faults.</p>
     </div>
     <a class="headerlink" href="#waitany"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="waitany-128"><a href="#waitany-128"><span class="linenos">128</span></a><span class="k">def</span><span class="w"> </span><span class="nf">waitany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="waitany-129"><a href="#waitany-129"><span class="linenos">129</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Waitany. Returns tuple of integers, first representing</span>
+</span><span id="waitany-129"><a href="#waitany-129"><span class="linenos">129</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Waitany. Returns tuple of integers, first representing</span>
 </span><span id="waitany-130"><a href="#waitany-130"><span class="linenos">130</span></a><span class="sd">    status; second - the index of request that was completed. Status is</span>
-</span><span id="waitany-131"><a href="#waitany-131"><span class="linenos">131</span></a><span class="sd">    currently not handled. Requires &#39;requests&#39; parameter to be an array</span>
+</span><span id="waitany-131"><a href="#waitany-131"><span class="linenos">131</span></a><span class="sd">    currently not handled. Requires 'requests' parameter to be an array</span>
 </span><span id="waitany-132"><a href="#waitany-132"><span class="linenos">132</span></a><span class="sd">    or tuple of MPI_Request objects.</span>
 </span><span id="waitany-133"><a href="#waitany-133"><span class="linenos">133</span></a>
-</span><span id="waitany-134"><a href="#waitany-134"><span class="linenos">134</span></a><span class="sd">    Uninitialized contents of &#39;requests&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="waitany-134"><a href="#waitany-134"><span class="linenos">134</span></a><span class="sd">    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may</span>
 </span><span id="waitany-135"><a href="#waitany-135"><span class="linenos">135</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="waitany-136"><a href="#waitany-136"><span class="linenos">136</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="waitany-136"><a href="#waitany-136"><span class="linenos">136</span></a><span class="sd">    """</span>
 </span><span id="waitany-137"><a href="#waitany-137"><span class="linenos">137</span></a>
 </span><span id="waitany-138"><a href="#waitany-138"><span class="linenos">138</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 </span><span id="waitany-139"><a href="#waitany-139"><span class="linenos">139</span></a>        <span class="k">return</span> <span class="n">_waitany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
@@ -503,7 +503,7 @@ cause invalid pointer dereference and segmentation faults.</p>
 </span><span id="waitany-142"><a href="#waitany-142"><span class="linenos">142</span></a>        <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="waitany-143"><a href="#waitany-143"><span class="linenos">143</span></a>        <span class="k">return</span> <span class="n">_waitany_array_impl</span><span class="p">(</span><span class="n">request_buffer</span><span class="p">)</span>
 </span><span id="waitany-144"><a href="#waitany-144"><span class="linenos">144</span></a>
-</span><span id="waitany-145"><a href="#waitany-145"><span class="linenos">145</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="waitany-145"><a href="#waitany-145"><span class="linenos">145</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -532,14 +532,14 @@ cause invalid pointer dereference and segmentation faults.</p>
     <a class="headerlink" href="#test"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="test-174"><a href="#test-174"><span class="linenos">174</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="test-175"><a href="#test-175"><span class="linenos">175</span></a><span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-</span><span id="test-176"><a href="#test-176"><span class="linenos">176</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Test. Returns tuple containing both status and boolean</span>
+</span><span id="test-176"><a href="#test-176"><span class="linenos">176</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Test. Returns tuple containing both status and boolean</span>
 </span><span id="test-177"><a href="#test-177"><span class="linenos">177</span></a><span class="sd">    flag that indicates whether given request is completed. Status is currently</span>
-</span><span id="test-178"><a href="#test-178"><span class="linenos">178</span></a><span class="sd">    not handled. Requires &#39;request&#39; parameter to be a c-style pointer to</span>
-</span><span id="test-179"><a href="#test-179"><span class="linenos">179</span></a><span class="sd">    MPI_Request (such as returned by &#39;isend&#39;/&#39;irecv&#39;).</span>
+</span><span id="test-178"><a href="#test-178"><span class="linenos">178</span></a><span class="sd">    not handled. Requires 'request' parameter to be a c-style pointer to</span>
+</span><span id="test-179"><a href="#test-179"><span class="linenos">179</span></a><span class="sd">    MPI_Request (such as returned by 'isend'/'irecv').</span>
 </span><span id="test-180"><a href="#test-180"><span class="linenos">180</span></a>
-</span><span id="test-181"><a href="#test-181"><span class="linenos">181</span></a><span class="sd">    Uninitialized contents of &#39;request&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="test-181"><a href="#test-181"><span class="linenos">181</span></a><span class="sd">    Uninitialized contents of 'request' (e.g., from numpy.empty()) may</span>
 </span><span id="test-182"><a href="#test-182"><span class="linenos">182</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="test-183"><a href="#test-183"><span class="linenos">183</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="test-183"><a href="#test-183"><span class="linenos">183</span></a><span class="sd">    """</span>
 </span><span id="test-184"><a href="#test-184"><span class="linenos">184</span></a>
 </span><span id="test-185"><a href="#test-185"><span class="linenos">185</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">()</span>
 </span><span id="test-186"><a href="#test-186"><span class="linenos">186</span></a>    <span class="n">flag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intc</span><span class="p">)</span>
@@ -573,14 +573,14 @@ cause invalid pointer dereference and segmentation faults.</p>
     </div>
     <a class="headerlink" href="#testall"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="testall-214"><a href="#testall-214"><span class="linenos">214</span></a><span class="k">def</span><span class="w"> </span><span class="nf">testall</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="testall-215"><a href="#testall-215"><span class="linenos">215</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Testall. Returns tuple containing both status and boolean</span>
+</span><span id="testall-215"><a href="#testall-215"><span class="linenos">215</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Testall. Returns tuple containing both status and boolean</span>
 </span><span id="testall-216"><a href="#testall-216"><span class="linenos">216</span></a><span class="sd">    flag that indicates whether given request is completed. Status is currently</span>
-</span><span id="testall-217"><a href="#testall-217"><span class="linenos">217</span></a><span class="sd">    not handled. Requires &#39;requests&#39; parameter to be an array or tuple of</span>
+</span><span id="testall-217"><a href="#testall-217"><span class="linenos">217</span></a><span class="sd">    not handled. Requires 'requests' parameter to be an array or tuple of</span>
 </span><span id="testall-218"><a href="#testall-218"><span class="linenos">218</span></a><span class="sd">    MPI_Request objects.</span>
 </span><span id="testall-219"><a href="#testall-219"><span class="linenos">219</span></a>
-</span><span id="testall-220"><a href="#testall-220"><span class="linenos">220</span></a><span class="sd">    Uninitialized contents of &#39;requests&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="testall-220"><a href="#testall-220"><span class="linenos">220</span></a><span class="sd">    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may</span>
 </span><span id="testall-221"><a href="#testall-221"><span class="linenos">221</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="testall-222"><a href="#testall-222"><span class="linenos">222</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="testall-222"><a href="#testall-222"><span class="linenos">222</span></a><span class="sd">    """</span>
 </span><span id="testall-223"><a href="#testall-223"><span class="linenos">223</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 </span><span id="testall-224"><a href="#testall-224"><span class="linenos">224</span></a>        <span class="k">return</span> <span class="n">_testall_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="testall-225"><a href="#testall-225"><span class="linenos">225</span></a>
@@ -588,7 +588,7 @@ cause invalid pointer dereference and segmentation faults.</p>
 </span><span id="testall-227"><a href="#testall-227"><span class="linenos">227</span></a>        <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="testall-228"><a href="#testall-228"><span class="linenos">228</span></a>        <span class="k">return</span> <span class="n">_testall_array_impl</span><span class="p">(</span><span class="n">request_buffer</span><span class="p">)</span>
 </span><span id="testall-229"><a href="#testall-229"><span class="linenos">229</span></a>
-</span><span id="testall-230"><a href="#testall-230"><span class="linenos">230</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="testall-230"><a href="#testall-230"><span class="linenos">230</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -615,14 +615,14 @@ cause invalid pointer dereference and segmentation faults.</p>
     </div>
     <a class="headerlink" href="#testany"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="testany-283"><a href="#testany-283"><span class="linenos">283</span></a><span class="k">def</span><span class="w"> </span><span class="nf">testany</span><span class="p">(</span><span class="n">requests</span><span class="p">):</span>
-</span><span id="testany-284"><a href="#testany-284"><span class="linenos">284</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Testany. Returns tuple containing status, boolean flag</span>
+</span><span id="testany-284"><a href="#testany-284"><span class="linenos">284</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Testany. Returns tuple containing status, boolean flag</span>
 </span><span id="testany-285"><a href="#testany-285"><span class="linenos">285</span></a><span class="sd">    that indicates whether any of requests is completed, and index of request</span>
-</span><span id="testany-286"><a href="#testany-286"><span class="linenos">286</span></a><span class="sd">    that is guaranteed to be completed. Requires &#39;requests&#39; parameter to be an</span>
+</span><span id="testany-286"><a href="#testany-286"><span class="linenos">286</span></a><span class="sd">    that is guaranteed to be completed. Requires 'requests' parameter to be an</span>
 </span><span id="testany-287"><a href="#testany-287"><span class="linenos">287</span></a><span class="sd">    array or tuple of MPI_Request objects.</span>
 </span><span id="testany-288"><a href="#testany-288"><span class="linenos">288</span></a>
-</span><span id="testany-289"><a href="#testany-289"><span class="linenos">289</span></a><span class="sd">    Uninitialized contents of &#39;requests&#39; (e.g., from numpy.empty()) may</span>
+</span><span id="testany-289"><a href="#testany-289"><span class="linenos">289</span></a><span class="sd">    Uninitialized contents of 'requests' (e.g., from numpy.empty()) may</span>
 </span><span id="testany-290"><a href="#testany-290"><span class="linenos">290</span></a><span class="sd">    cause invalid pointer dereference and segmentation faults.</span>
-</span><span id="testany-291"><a href="#testany-291"><span class="linenos">291</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="testany-291"><a href="#testany-291"><span class="linenos">291</span></a><span class="sd">    """</span>
 </span><span id="testany-292"><a href="#testany-292"><span class="linenos">292</span></a>
 </span><span id="testany-293"><a href="#testany-293"><span class="linenos">293</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 </span><span id="testany-294"><a href="#testany-294"><span class="linenos">294</span></a>        <span class="k">return</span> <span class="n">_testany_array_impl</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
@@ -631,7 +631,7 @@ cause invalid pointer dereference and segmentation faults.</p>
 </span><span id="testany-297"><a href="#testany-297"><span class="linenos">297</span></a>        <span class="n">request_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 </span><span id="testany-298"><a href="#testany-298"><span class="linenos">298</span></a>        <span class="k">return</span> <span class="n">_testany_array_impl</span><span class="p">(</span><span class="n">request_buffer</span><span class="p">)</span>
 </span><span id="testany-299"><a href="#testany-299"><span class="linenos">299</span></a>
-</span><span id="testany-300"><a href="#testany-300"><span class="linenos">300</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid type for array of MPI_Request objects&quot;</span><span class="p">)</span>
+</span><span id="testany-300"><a href="#testany-300"><span class="linenos">300</span></a>    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Invalid type for array of MPI_Request objects"</span><span class="p">)</span>
 </span></pre></div>
 
 

@@ -56,7 +56,7 @@
 
                         <label class="view-source-button" for="mod-query_thread-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;file contains MPI_Query_thread() implementation&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">"""file contains MPI_Query_thread() implementation"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
@@ -72,7 +72,7 @@
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>
 </span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">()</span>
 </span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="k">def</span><span class="w"> </span><span class="nf">query_thread</span><span class="p">():</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;wrapper for MPI_Query_thread()&quot;&quot;&quot;</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="w">    </span><span class="sd">"""wrapper for MPI_Query_thread()"""</span>
 </span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>    <span class="n">provided</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intc</span><span class="p">)</span>
 </span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>    <span class="n">_</span> <span class="o">=</span> <span class="n">_MPI_Query_thread</span><span class="p">(</span><span class="n">provided</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 </span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>    <span class="k">return</span> <span class="n">provided</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -94,7 +94,7 @@
     <a class="headerlink" href="#query_thread"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="query_thread-16"><a href="#query_thread-16"><span class="linenos">16</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">()</span>
 </span><span id="query_thread-17"><a href="#query_thread-17"><span class="linenos">17</span></a><span class="k">def</span><span class="w"> </span><span class="nf">query_thread</span><span class="p">():</span>
-</span><span id="query_thread-18"><a href="#query_thread-18"><span class="linenos">18</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;wrapper for MPI_Query_thread()&quot;&quot;&quot;</span>
+</span><span id="query_thread-18"><a href="#query_thread-18"><span class="linenos">18</span></a><span class="w">    </span><span class="sd">"""wrapper for MPI_Query_thread()"""</span>
 </span><span id="query_thread-19"><a href="#query_thread-19"><span class="linenos">19</span></a>    <span class="n">provided</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intc</span><span class="p">)</span>
 </span><span id="query_thread-20"><a href="#query_thread-20"><span class="linenos">20</span></a>    <span class="n">_</span> <span class="o">=</span> <span class="n">_MPI_Query_thread</span><span class="p">(</span><span class="n">provided</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 </span><span id="query_thread-21"><a href="#query_thread-21"><span class="linenos">21</span></a>    <span class="k">return</span> <span class="n">provided</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>

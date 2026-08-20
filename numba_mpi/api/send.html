@@ -56,7 +56,7 @@
 
                         <label class="view-source-button" for="mod-send-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;MPI_Send() implementation&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">"""MPI_Send() implementation"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
@@ -73,9 +73,9 @@
 </span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
 </span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS).</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS).</span>
 </span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">    Mimicking `mpi4py`, default value for `tag` is set to zero.</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">    """</span>
 </span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="n">status</span> <span class="o">=</span> <span class="n">_MPI_Send</span><span class="p">(</span>
 </span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>        <span class="n">data</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
@@ -109,9 +109,9 @@
     <a class="headerlink" href="#send"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="send-17"><a href="#send-17"><span class="linenos">17</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="send-18"><a href="#send-18"><span class="linenos">18</span></a><span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-</span><span id="send-19"><a href="#send-19"><span class="linenos">19</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS).</span>
+</span><span id="send-19"><a href="#send-19"><span class="linenos">19</span></a><span class="w">    </span><span class="sd">"""Wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS).</span>
 </span><span id="send-20"><a href="#send-20"><span class="linenos">20</span></a><span class="sd">    Mimicking `mpi4py`, default value for `tag` is set to zero.</span>
-</span><span id="send-21"><a href="#send-21"><span class="linenos">21</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="send-21"><a href="#send-21"><span class="linenos">21</span></a><span class="sd">    """</span>
 </span><span id="send-22"><a href="#send-22"><span class="linenos">22</span></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </span><span id="send-23"><a href="#send-23"><span class="linenos">23</span></a>    <span class="n">status</span> <span class="o">=</span> <span class="n">_MPI_Send</span><span class="p">(</span>
 </span><span id="send-24"><a href="#send-24"><span class="linenos">24</span></a>        <span class="n">data</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>

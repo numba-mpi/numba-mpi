@@ -56,7 +56,7 @@
 
                         <label class="view-source-button" for="mod-recv-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;MPI_Recv() implementation&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">"""MPI_Recv() implementation"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
@@ -82,9 +82,9 @@
 </span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>
 </span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">()</span>
 </span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="k">def</span><span class="w"> </span><span class="nf">recv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">ANY_SOURCE</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">ANY_TAG</span><span class="p">):</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;file containing wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="w">    </span><span class="sd">"""file containing wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise</span>
 </span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="sd">    allocates a buffer and later copies the data into non-contiguous `data` array).</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="sd">    Returns integer status code (0 == MPI_SUCCESS)&quot;&quot;&quot;</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="sd">    Returns integer status code (0 == MPI_SUCCESS)"""</span>
 </span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">()</span>
 </span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>
 </span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="n">buffer</span> <span class="o">=</span> <span class="p">(</span>
@@ -92,7 +92,7 @@
 </span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
 </span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
 </span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>            <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>        <span class="p">)</span>  <span class="c1"># np.empty_like(data, order=&#39;C&#39;) fails with Numba</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>        <span class="p">)</span>  <span class="c1"># np.empty_like(data, order='C') fails with Numba</span>
 </span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>    <span class="p">)</span>
 </span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>
 </span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>    <span class="n">status</span> <span class="o">=</span> <span class="n">_MPI_Recv</span><span class="p">(</span>
@@ -127,9 +127,9 @@
     <a class="headerlink" href="#recv"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="recv-26"><a href="#recv-26"><span class="linenos">26</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">()</span>
 </span><span id="recv-27"><a href="#recv-27"><span class="linenos">27</span></a><span class="k">def</span><span class="w"> </span><span class="nf">recv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">ANY_SOURCE</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">ANY_TAG</span><span class="p">):</span>
-</span><span id="recv-28"><a href="#recv-28"><span class="linenos">28</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;file containing wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise</span>
+</span><span id="recv-28"><a href="#recv-28"><span class="linenos">28</span></a><span class="w">    </span><span class="sd">"""file containing wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise</span>
 </span><span id="recv-29"><a href="#recv-29"><span class="linenos">29</span></a><span class="sd">    allocates a buffer and later copies the data into non-contiguous `data` array).</span>
-</span><span id="recv-30"><a href="#recv-30"><span class="linenos">30</span></a><span class="sd">    Returns integer status code (0 == MPI_SUCCESS)&quot;&quot;&quot;</span>
+</span><span id="recv-30"><a href="#recv-30"><span class="linenos">30</span></a><span class="sd">    Returns integer status code (0 == MPI_SUCCESS)"""</span>
 </span><span id="recv-31"><a href="#recv-31"><span class="linenos">31</span></a>    <span class="n">status_buffer</span> <span class="o">=</span> <span class="n">create_status_buffer</span><span class="p">()</span>
 </span><span id="recv-32"><a href="#recv-32"><span class="linenos">32</span></a>
 </span><span id="recv-33"><a href="#recv-33"><span class="linenos">33</span></a>    <span class="n">buffer</span> <span class="o">=</span> <span class="p">(</span>
@@ -137,7 +137,7 @@
 </span><span id="recv-35"><a href="#recv-35"><span class="linenos">35</span></a>        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
 </span><span id="recv-36"><a href="#recv-36"><span class="linenos">36</span></a>        <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
 </span><span id="recv-37"><a href="#recv-37"><span class="linenos">37</span></a>            <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span>
-</span><span id="recv-38"><a href="#recv-38"><span class="linenos">38</span></a>        <span class="p">)</span>  <span class="c1"># np.empty_like(data, order=&#39;C&#39;) fails with Numba</span>
+</span><span id="recv-38"><a href="#recv-38"><span class="linenos">38</span></a>        <span class="p">)</span>  <span class="c1"># np.empty_like(data, order='C') fails with Numba</span>
 </span><span id="recv-39"><a href="#recv-39"><span class="linenos">39</span></a>    <span class="p">)</span>
 </span><span id="recv-40"><a href="#recv-40"><span class="linenos">40</span></a>
 </span><span id="recv-41"><a href="#recv-41"><span class="linenos">41</span></a>    <span class="n">status</span> <span class="o">=</span> <span class="n">_MPI_Recv</span><span class="p">(</span>

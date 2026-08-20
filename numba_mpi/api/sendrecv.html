@@ -56,7 +56,7 @@
 
                         <label class="view-source-button" for="mod-sendrecv-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;MPI_Sendrecv() implementation&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">"""MPI_Sendrecv() implementation"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
@@ -97,7 +97,7 @@
 </span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>
 </span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="k">def</span><span class="w"> </span><span class="nf">sendrecv</span><span class="p">(</span><span class="n">senddata</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">recvdata</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">ANY_SOURCE</span><span class="p">,</span> <span class="n">sendtag</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">recvtag</span><span class="o">=</span><span class="n">ANY_TAG</span><span class="p">):</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a><span class="sd">    Wrapper for MPI_Sendrecv.</span>
 </span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>
 </span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a><span class="sd">    Performs a simultaneous send and receive operation: sends `senddata`</span>
@@ -107,7 +107,7 @@
 </span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a><span class="sd">    while `source` defaults to ANY_SOURCE and `recvtag` defaults to ANY_TAG.</span>
 </span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>
 </span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a><span class="sd">    Returns MPI error code (0 == MPI_SUCCESS).</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a><span class="sd">    """</span>
 </span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>
 </span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>    <span class="n">senddata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">senddata</span><span class="p">)</span>
 </span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>
@@ -155,7 +155,7 @@
     <a class="headerlink" href="#sendrecv"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="sendrecv-41"><a href="#sendrecv-41"><span class="linenos">41</span></a><span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span>
 </span><span id="sendrecv-42"><a href="#sendrecv-42"><span class="linenos">42</span></a><span class="k">def</span><span class="w"> </span><span class="nf">sendrecv</span><span class="p">(</span><span class="n">senddata</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">recvdata</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">ANY_SOURCE</span><span class="p">,</span> <span class="n">sendtag</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">recvtag</span><span class="o">=</span><span class="n">ANY_TAG</span><span class="p">):</span>
-</span><span id="sendrecv-43"><a href="#sendrecv-43"><span class="linenos">43</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="sendrecv-43"><a href="#sendrecv-43"><span class="linenos">43</span></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="sendrecv-44"><a href="#sendrecv-44"><span class="linenos">44</span></a><span class="sd">    Wrapper for MPI_Sendrecv.</span>
 </span><span id="sendrecv-45"><a href="#sendrecv-45"><span class="linenos">45</span></a>
 </span><span id="sendrecv-46"><a href="#sendrecv-46"><span class="linenos">46</span></a><span class="sd">    Performs a simultaneous send and receive operation: sends `senddata`</span>
@@ -165,7 +165,7 @@
 </span><span id="sendrecv-50"><a href="#sendrecv-50"><span class="linenos">50</span></a><span class="sd">    while `source` defaults to ANY_SOURCE and `recvtag` defaults to ANY_TAG.</span>
 </span><span id="sendrecv-51"><a href="#sendrecv-51"><span class="linenos">51</span></a>
 </span><span id="sendrecv-52"><a href="#sendrecv-52"><span class="linenos">52</span></a><span class="sd">    Returns MPI error code (0 == MPI_SUCCESS).</span>
-</span><span id="sendrecv-53"><a href="#sendrecv-53"><span class="linenos">53</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="sendrecv-53"><a href="#sendrecv-53"><span class="linenos">53</span></a><span class="sd">    """</span>
 </span><span id="sendrecv-54"><a href="#sendrecv-54"><span class="linenos">54</span></a>
 </span><span id="sendrecv-55"><a href="#sendrecv-55"><span class="linenos">55</span></a>    <span class="n">senddata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">senddata</span><span class="p">)</span>
 </span><span id="sendrecv-56"><a href="#sendrecv-56"><span class="linenos">56</span></a>
