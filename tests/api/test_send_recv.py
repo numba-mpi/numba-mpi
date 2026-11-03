@@ -1,16 +1,25 @@
 # pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring
+import numba
 import numpy as np
 import pytest
-from mpi4py.MPI import COMM_WORLD
+from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD
 
 import numba_mpi as mpi
 from tests.common import data_types
 from tests.utils import get_random_array
 
 
-@pytest.mark.parametrize(
-    "snd, rcv", ((mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func))
-)
+@numba.njit()
+def jit_send(data, dest, tag=0):
+    return mpi.send(data, dest, tag)
+
+
+@numba.njit()
+def jit_recv(data, source=ANY_SOURCE, tag=ANY_TAG):
+    return mpi.recv(data, source, tag)
+
+
+@pytest.mark.parametrize("snd, rcv", ((mpi.send, mpi.recv), (jit_send, jit_recv)))
 @pytest.mark.parametrize("fortran_order", [True, False])
 @pytest.mark.parametrize("data_type", data_types)
 def test_send_recv(snd, rcv, fortran_order, data_type):
@@ -37,9 +46,7 @@ def test_send_recv(snd, rcv, fortran_order, data_type):
         np.testing.assert_equal(dst_exp, src)
 
 
-@pytest.mark.parametrize(
-    "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
-)
+@pytest.mark.parametrize("snd, rcv", ((mpi.send, mpi.recv), (jit_send, jit_recv)))
 @pytest.mark.parametrize("data_type", data_types)
 def test_send_recv_noncontiguous(snd, rcv, data_type):
     src = get_random_array((5,), data_type)
@@ -56,9 +63,7 @@ def test_send_recv_noncontiguous(snd, rcv, data_type):
         np.testing.assert_equal(dst_tst[::2], src[::2])
 
 
-@pytest.mark.parametrize(
-    "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
-)
+@pytest.mark.parametrize("snd, rcv", ((mpi.send, mpi.recv), (jit_send, jit_recv)))
 @pytest.mark.parametrize("data_type", data_types)
 def test_send_0d_arrays(snd, rcv, data_type):
     src = get_random_array((), data_type)
@@ -74,9 +79,7 @@ def test_send_0d_arrays(snd, rcv, data_type):
         np.testing.assert_equal(dst_tst, src)
 
 
-@pytest.mark.parametrize(
-    "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
-)
+@pytest.mark.parametrize("snd, rcv", ((mpi.send, mpi.recv), (jit_send, jit_recv)))
 def test_send_default_tag(snd, rcv):
     src = get_random_array(())
     dst_tst = np.empty_like(src)
@@ -91,9 +94,7 @@ def test_send_default_tag(snd, rcv):
         np.testing.assert_equal(dst_tst, src)
 
 
-@pytest.mark.parametrize(
-    "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
-)
+@pytest.mark.parametrize("snd, rcv", ((mpi.send, mpi.recv), (jit_send, jit_recv)))
 def test_recv_default_tag(snd, rcv):
     src = get_random_array(())
     dst_tst = np.empty_like(src)
@@ -108,9 +109,7 @@ def test_recv_default_tag(snd, rcv):
         np.testing.assert_equal(dst_tst, src)
 
 
-@pytest.mark.parametrize(
-    "snd, rcv", [(mpi.send, mpi.recv), (mpi.send.py_func, mpi.recv.py_func)]
-)
+@pytest.mark.parametrize("snd, rcv", ((mpi.send, mpi.recv), (jit_send, jit_recv)))
 def test_recv_default_source(snd, rcv):
     src = get_random_array(())
     dst_tst = np.empty_like(src)

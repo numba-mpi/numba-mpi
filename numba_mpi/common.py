@@ -14,15 +14,19 @@ from mpi4py import MPI
 # pylint: disable=protected-access
 _MPI_Comm_World_ptr = MPI._addressof(MPI.COMM_WORLD)
 
-_MPI_DTYPES = {
-    np.dtype("uint8"): MPI._addressof(MPI.CHAR),
-    np.dtype("int32"): MPI._addressof(MPI.INT32_T),
-    np.dtype("int64"): MPI._addressof(MPI.INT64_T),
-    np.dtype("float"): MPI._addressof(MPI.FLOAT),
-    np.dtype("double"): MPI._addressof(MPI.DOUBLE),
-    np.dtype("complex64"): MPI._addressof(MPI.C_FLOAT_COMPLEX),
-    np.dtype("complex128"): MPI._addressof(MPI.C_DOUBLE_COMPLEX),
+_MPI4PY_DTYPES = {
+    np.dtype("uint8"): MPI.CHAR,
+    np.dtype("int32"): MPI.INT32_T,
+    np.dtype("int64"): MPI.INT64_T,
+    np.dtype("float"): MPI.FLOAT,
+    np.dtype("double"): MPI.DOUBLE,
+    np.dtype("complex64"): MPI.C_FLOAT_COMPLEX,
+    np.dtype("complex128"): MPI.C_DOUBLE_COMPLEX,
 }
+
+_MPI_DTYPES = {k: MPI._addressof(v) for k, v in _MPI4PY_DTYPES.items()}
+
+ZERO_SIZE_BYTE_ARRAY = np.empty(shape=0, dtype=np.byte)
 
 if MPI._sizeof(MPI.Comm) == ctypes.sizeof(ctypes.c_int):
     _MpiComm = ctypes.c_int

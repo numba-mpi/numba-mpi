@@ -4,10 +4,15 @@ import ctypes
 
 import numba
 import numpy as np
-from mpi4py.MPI import ANY_SOURCE, ANY_TAG
+from mpi4py import MPI
+from mpi4py.MPI import ANY_SOURCE, ANY_TAG, BYTE, COMM_WORLD, DATATYPE_NULL, _addressof
 
+from numba_mpi import custom_dtypes
 from numba_mpi.common import (
+    _MPI_DTYPES,
+    ZERO_SIZE_BYTE_ARRAY,
     _MPI_Comm_World_ptr,
+    _MpiDatatype,
     _MpiStatusPtr,
     create_status_buffer,
     libmpi,
@@ -22,8 +27,7 @@ _MPI_Recv.argtypes = send_recv_args + [
 ]
 
 
-@numba.njit()
-def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
+def __recv(data, source=ANY_SOURCE, tag=ANY_TAG):
     """file containing wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise
     allocates a buffer and later copies the data into non-contiguous `data` array).
     Returns integer status code (0 == MPI_SUCCESS)"""
@@ -37,10 +41,15 @@ def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
         )  # np.empty_like(data, order='C') fails with Numba
     )
 
+    datasize = buffer.size
+    dtype = _mpi_dtype(buffer)
+    if dtype == _mpi_dtype(ZERO_SIZE_BYTE_ARRAY):
+        datasize = buffer.nbytes
+
     status = _MPI_Recv(
         buffer.ctypes.data,
-        buffer.size,
-        _mpi_dtype(data),
+        datasize,
+        dtype,
         source,
         tag,
         _mpi_addr(_MPI_Comm_World_ptr),
@@ -51,3 +60,27 @@ def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
         data[...] = buffer
 
     return status
+
+
+def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
+    if data.dtype.isbuiltin:
+        return __recv(data, source, tag)
+    else:
+        try:
+            COMM_WORLD.Recv(
+                [
+                    data,
+                    data.size,
+                    custom_dtypes._dtype_to_mpitype(data.dtype),
+                ],
+                source,
+                tag,
+            )
+            return MPI.SUCCESS
+        except MPI.Exception as exception:
+            return exception.error_code
+
+
+@numba.extending.overload(recv)
+def recv_numba(data, source=ANY_SOURCE, tag=ANY_TAG):
+    return __recv
