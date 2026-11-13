@@ -2,6 +2,7 @@
 
 import numba
 import numpy as np
+from mpi4py.MPI import BYTE, _addressof
 from numba.core import cgutils, types
 
 from .common import _MPI_DTYPES, _MpiComm, _MpiDatatype
@@ -32,14 +33,14 @@ def _get_dtype_numba_to_mpi_ptr(arr):
     for np_dtype, mpi_ptr in _MPI_DTYPES.items():
         if arr.dtype == numba.from_dtype(np_dtype):
             return mpi_ptr
-    raise NotImplementedError(f"Type: {arr.dtype}")
+    return _addressof(BYTE)
 
 
 def _get_dtype_numpy_to_mpi_ptr(arr):
     for np_dtype, mpi_ptr in _MPI_DTYPES.items():
         if np.can_cast(arr.dtype, np_dtype, casting="equiv"):
             return mpi_ptr
-    raise NotImplementedError(f"Type: {arr.dtype}")
+    return _addressof(BYTE)
 
 
 def _mpi_addr(ptr):

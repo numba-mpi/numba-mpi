@@ -4,9 +4,16 @@
 
 from importlib.metadata import PackageNotFoundError, version
 
+from .api import custom_dtypes
 from .api.allreduce import allreduce
 from .api.barrier import barrier
 from .api.bcast import bcast
+from .api.custom_dtypes import (  # _dtype_to_mpitype,
+    type_commit,
+    type_create_resized,
+    type_create_struct,
+    type_free,
+)
 from .api.initialized import initialized
 from .api.irecv import irecv
 from .api.isend import isend
