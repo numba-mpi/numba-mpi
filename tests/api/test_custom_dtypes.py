@@ -1,3 +1,4 @@
+# pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring
 import numba
 import numpy as np
 import pytest
@@ -11,20 +12,34 @@ def jit_send(data, dest, tag):
     return numba_mpi.send(data, dest, tag)
 
 
+# pylint --ignored-modules=mpi4py
+# --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
+# TODO: add pylint to pre-commit config and remove
+# the pylint GH Actions job (or add an issue describing it)
+# see `ccnact` repo
+
+
 @numba.njit()
 def jit_recv(data, source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG):
     return numba_mpi.recv(data, source, tag)
 
 
 @pytest.mark.parametrize(
-    "snd, rcv, kind",
+    "snd, rcv",
     (
-        (numba_mpi.send, numba_mpi.recv, "numba disabled"),
-        (jit_send, jit_recv, "numba enabled"),
+        pytest.param(numba_mpi.send, numba_mpi.recv, id="numba disabled"),
+        pytest.param(jit_send, jit_recv, id="numba enabled"),
     ),
 )
-@pytest.mark.parametrize("align", (True, False))
-def test_custom_dtypes(snd, rcv, align, kind):
+@pytest.mark.parametrize(
+    "align",
+    (
+        True,
+        False,
+    ),
+)
+@pytest.mark.parametrize("resize", (True, False))
+def test_custom_dtypes(snd, rcv, align, resize):
     particle_dtype = np.dtype(
         [
             ("id", np.intc),
@@ -42,9 +57,14 @@ def test_custom_dtypes(snd, rcv, align, kind):
 
     particle_type = numba_mpi.type_create_struct(particle_dtype)
 
+    if not resize and not align:
+        with pytest.raises(ValueError):
+            numba_mpi.type_commit(particle_type)
+        return
+
     particle_type = numba_mpi.type_create_resized(
         oldtype=particle_type, lb=0, extent=particle_dtype.itemsize
-    )  # prevent code from failing for align=False
+    )
 
     numba_mpi.type_commit(particle_type)
 
@@ -63,14 +83,14 @@ def test_custom_dtypes(snd, rcv, align, kind):
 
 
 @pytest.mark.parametrize(
-    "snd, rcv, kind",
+    "snd, rcv",
     (
-        (numba_mpi.send, numba_mpi.recv, "numba disabled"),
-        (jit_send, jit_recv, "numba enabled"),
+        pytest.param(numba_mpi.send, numba_mpi.recv, id="numba disabled"),
+        pytest.param(jit_send, jit_recv, id="numba enabled"),
     ),
 )
 @pytest.mark.parametrize("align", (True, False))
-def test_every_type_in_dtypes(snd, rcv, align, kind):
+def test_every_type_in_dtypes(snd, rcv, align):
     every_dtype = np.dtype(
         [
             ("uint8", np.uint8),
@@ -112,45 +132,45 @@ def test_every_type_in_dtypes(snd, rcv, align, kind):
 
 
 @pytest.mark.parametrize(
-    "snd, rcv, kind",
+    "snd, rcv",
     (
-        (numba_mpi.send, numba_mpi.recv, "numba disabled"),
-        (jit_send, jit_recv, "numba enabled"),
+        pytest.param(numba_mpi.send, numba_mpi.recv, id="numba disabled"),
+        pytest.param(jit_send, jit_recv, id="numba enabled"),
     ),
 )
 @pytest.mark.parametrize("align", (True, False))
-def test_multiple_custom_dtypes(snd, rcv, align, kind):
-    a_dtype = np.dtype(
-        [("a1", np.intc), ("a2", np.float64), ("a3", np.complex64)], align=align
-    )
+def test_multiple_custom_dtypes(snd, rcv, align):
 
-    b_dtype = np.dtype(
-        [
-            ("b1", np.float64),
-            ("b2", np.double),
-            ("b3", np.int64),
-        ],
-        align=align,
-    )
+    dtypes = {
+        "a": np.dtype(
+            [("a1", np.intc), ("a2", np.float64), ("a3", np.complex64)], align=align
+        ),
+        "b": np.dtype(
+            [
+                ("b1", np.float64),
+                ("b2", np.double),
+                ("b3", np.int64),
+            ],
+            align=align,
+        ),
+        "c": np.dtype([("c1", np.intc), ("c2", np.intc), ("c3", np.intc)], align=align),
+    }
+    # comm = MPI.COMM_WORLD
+    world_size = MPI.COMM_WORLD.Get_size()
+    world_rank = MPI.COMM_WORLD.Get_rank()
 
-    c_dtype = np.dtype([("c1", np.intc), ("c2", np.intc), ("c3", np.intc)], align=align)
-
-    comm = MPI.COMM_WORLD
-    world_size = comm.Get_size()
-    world_rank = comm.Get_rank()
-
-    a_type = numba_mpi.type_create_struct(a_dtype)
-    b_type = numba_mpi.type_create_struct(b_dtype)
-    c_type = numba_mpi.type_create_struct(c_dtype)
+    a_type = numba_mpi.type_create_struct(dtypes["a"])
+    b_type = numba_mpi.type_create_struct(dtypes["b"])
+    c_type = numba_mpi.type_create_struct(dtypes["c"])
 
     c_type = numba_mpi.type_create_resized(
-        oldtype=c_type, lb=0, extent=c_dtype.itemsize
+        oldtype=c_type, lb=0, extent=dtypes["c"].itemsize
     )
     a_type = numba_mpi.type_create_resized(
-        oldtype=a_type, lb=0, extent=a_dtype.itemsize
+        oldtype=a_type, lb=0, extent=dtypes["a"].itemsize
     )
     b_type = numba_mpi.type_create_resized(
-        oldtype=b_type, lb=0, extent=b_dtype.itemsize
+        oldtype=b_type, lb=0, extent=dtypes["b"].itemsize
     )
 
     numba_mpi.type_commit(a_type)
@@ -161,27 +181,38 @@ def test_multiple_custom_dtypes(snd, rcv, align, kind):
     b = (999.999, -123.321e-4, 2026)
     c = (123, 456, 789)
 
-    a_send = np.array([a], dtype=a_dtype)
-    b_send = np.array([b, b], dtype=b_dtype)
-    c_send = np.array([c, c, c], dtype=c_dtype)
+    send = {
+        "a": np.array([a], dtype=dtypes["a"]),
+        "b": np.array([b, b], dtype=dtypes["b"]),
+        "c": np.array([c, c, c], dtype=dtypes["c"]),
+    }
+
+    # a_send = np.array([a], dtype=a_dtype)
+    # b_send = np.array([b, b], dtype=b_dtype)
+    # c_send = np.array([c, c, c], dtype=c_dtype)
 
     if world_rank == 0:
         for i in range(1, world_size):
-            snd(b_send, i, 12)
-            snd(c_send, i, 13)
-            snd(a_send, i, 11)
+            snd(send["b"], i, 12)
+            snd(send["c"], i, 13)
+            snd(send["a"], i, 11)
     else:
-        a_recv = np.zeros(1, dtype=a_dtype)
-        b_recv = np.zeros(2, dtype=b_dtype)
-        c_recv = np.zeros(3, dtype=c_dtype)
+        recv = {
+            "a": np.zeros(1, dtype=dtypes["a"]),
+            "b": np.zeros(2, dtype=dtypes["b"]),
+            "c": np.zeros(3, dtype=dtypes["c"]),
+        }
+        # a_recv = np.zeros(1, dtype=a_dtype)
+        # b_recv = np.zeros(2, dtype=b_dtype)
+        # c_recv = np.zeros(3, dtype=c_dtype)
 
-        rcv(a_recv, 0, 11)
-        rcv(c_recv, 0, 13)
-        rcv(b_recv, 0, 12)
+        rcv(recv["a"], 0, 11)
+        rcv(recv["c"], 0, 13)
+        rcv(recv["b"], 0, 12)
 
-        np.testing.assert_equal(a_send, a_recv)
-        np.testing.assert_equal(b_send, b_recv)
-        np.testing.assert_equal(c_send, c_recv)
+        np.testing.assert_equal(send["a"], recv["a"])
+        np.testing.assert_equal(send["b"], recv["b"])
+        np.testing.assert_equal(send["c"], recv["c"])
 
     numba_mpi.type_free(a_type)
     numba_mpi.type_free(b_type)

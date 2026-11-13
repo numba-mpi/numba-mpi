@@ -8,8 +8,7 @@ from .api import custom_dtypes
 from .api.allreduce import allreduce
 from .api.barrier import barrier
 from .api.bcast import bcast
-from .api.custom_dtypes import (
-    _dtype_to_mpitype,
+from .api.custom_dtypes import (  # _dtype_to_mpitype,
     type_commit,
     type_create_resized,
     type_create_struct,

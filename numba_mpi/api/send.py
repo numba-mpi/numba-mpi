@@ -6,12 +6,10 @@ import numba
 import numpy as np
 from mpi4py import MPI
 
-from numba_mpi import custom_dtypes
+from numba_mpi.api.custom_dtypes import _dtype_to_mpitype
 from numba_mpi.common import (
-    _MPI_DTYPES,
     ZERO_SIZE_BYTE_ARRAY,
     _MPI_Comm_World_ptr,
-    _MpiDatatype,
     libmpi,
     send_recv_args,
 )
@@ -23,9 +21,7 @@ _MPI_Send.argtypes = send_recv_args
 
 
 def __send(data, dest, tag=0):
-    """Wrapper for MPI_Send. Returns integer status code (0 == MPI_SUCCESS).
-    Mimicking `mpi4py`, default value for `tag` is set to zero.
-    """
+
     data = np.ascontiguousarray(data)
     datasize = data.size
 
@@ -52,22 +48,30 @@ def __send(data, dest, tag=0):
 
 
 def send(data, dest, tag=0):
+    """Wrapper for MPI_Send. Returns integer status code (`0` indicates `MPI_SUCCESS`).
+    The default value for `tag` is set to zero as in mpi4py.
+    Both built-in MPI datatypes, as well as custom datatypes defined in
+    user code are supported; transfers of custom-type data are done
+    byte-by-byte in JIT-compiled code, without datatype consistency checks,
+    while in pure-Python calling scopes, the mpi4py's `Send()` function is
+    called in order to perform type checks.
+    """
     if data.dtype.isbuiltin:
         return __send(data, dest, tag)
-    else:
-        try:
-            MPI.COMM_WORLD.Send(
-                [
-                    data,
-                    data.size,
-                    custom_dtypes._dtype_to_mpitype(data.dtype),
-                ],
-                dest,
-                tag,
-            )
-            return MPI.SUCCESS
-        except MPI.Exception as exception:
-            return exception.error_code
+
+    try:
+        MPI.COMM_WORLD.Send(
+            [
+                data,
+                data.size,
+                _dtype_to_mpitype(data.dtype),
+            ],
+            dest,
+            tag,
+        )
+        return MPI.SUCCESS
+    except MPI.Exception as exception:
+        return exception.error_code
 
 
 @numba.extending.overload(send)

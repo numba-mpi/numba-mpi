@@ -5,14 +5,12 @@ import ctypes
 import numba
 import numpy as np
 from mpi4py import MPI
-from mpi4py.MPI import ANY_SOURCE, ANY_TAG, BYTE, COMM_WORLD, DATATYPE_NULL, _addressof
+from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD
 
-from numba_mpi import custom_dtypes
+from numba_mpi.api.custom_dtypes import _dtype_to_mpitype
 from numba_mpi.common import (
-    _MPI_DTYPES,
     ZERO_SIZE_BYTE_ARRAY,
     _MPI_Comm_World_ptr,
-    _MpiDatatype,
     _MpiStatusPtr,
     create_status_buffer,
     libmpi,
@@ -63,22 +61,31 @@ def __recv(data, source=ANY_SOURCE, tag=ANY_TAG):
 
 
 def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
+    """Wrapper for MPI_Recv. Returns integer status code (`0` indicates `MPI_SUCCESS`).
+    The default value for `source` is set to `ANY_SOURCE`; `tag` to `ANY_TAG` as in mpi4py.
+    Both built-in MPI datatypes, as well as custom datatypes defined in
+    user code are supported; transfers of custom-type data are done
+    byte-by-byte in JIT-compiled code, without datatype consistency checks,
+    while in pure-Python calling scopes, the mpi4py's `Recv()` function is
+    called in order to perform type checks.
+    """
+
     if data.dtype.isbuiltin:
         return __recv(data, source, tag)
-    else:
-        try:
-            COMM_WORLD.Recv(
-                [
-                    data,
-                    data.size,
-                    custom_dtypes._dtype_to_mpitype(data.dtype),
-                ],
-                source,
-                tag,
-            )
-            return MPI.SUCCESS
-        except MPI.Exception as exception:
-            return exception.error_code
+
+    try:
+        COMM_WORLD.Recv(
+            [
+                data,
+                data.size,
+                _dtype_to_mpitype(data.dtype),
+            ],
+            source,
+            tag,
+        )
+        return MPI.SUCCESS
+    except MPI.Exception as exception:
+        return exception.error_code
 
 
 @numba.extending.overload(recv)
