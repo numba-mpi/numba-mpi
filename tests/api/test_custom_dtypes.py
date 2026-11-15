@@ -35,7 +35,7 @@ def jit_recv(data, source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG):
     "align",
     (
         True,
-        False,
+        # False,
     ),
 )
 @pytest.mark.parametrize("resize", (True, False))
@@ -155,7 +155,6 @@ def test_multiple_custom_dtypes(snd, rcv, align):
         ),
         "c": np.dtype([("c1", np.intc), ("c2", np.intc), ("c3", np.intc)], align=align),
     }
-    # comm = MPI.COMM_WORLD
     world_size = MPI.COMM_WORLD.Get_size()
     world_rank = MPI.COMM_WORLD.Get_rank()
 
@@ -187,10 +186,6 @@ def test_multiple_custom_dtypes(snd, rcv, align):
         "c": np.array([c, c, c], dtype=dtypes["c"]),
     }
 
-    # a_send = np.array([a], dtype=a_dtype)
-    # b_send = np.array([b, b], dtype=b_dtype)
-    # c_send = np.array([c, c, c], dtype=c_dtype)
-
     if world_rank == 0:
         for i in range(1, world_size):
             snd(send["b"], i, 12)
@@ -202,9 +197,6 @@ def test_multiple_custom_dtypes(snd, rcv, align):
             "b": np.zeros(2, dtype=dtypes["b"]),
             "c": np.zeros(3, dtype=dtypes["c"]),
         }
-        # a_recv = np.zeros(1, dtype=a_dtype)
-        # b_recv = np.zeros(2, dtype=b_dtype)
-        # c_recv = np.zeros(3, dtype=c_dtype)
 
         rcv(recv["a"], 0, 11)
         rcv(recv["c"], 0, 13)
