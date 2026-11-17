@@ -23,16 +23,16 @@ def type_commit(mpi_type):
     Returns:
         None
     """
-    # a = __MPIPY2F_TO_DTYPE[mpi_type.py2f()].itemsize
-    # b = mpi_type.extent
+    a = __MPIPY2F_TO_DTYPE[mpi_type.py2f()].itemsize
+    b = mpi_type.extent
 
-    # if a != b:
-    #     raise ValueError(
-    #         f"Size of the passed dtype ({a}) "
-    #         f"does not match its extent ({b}).\n"
-    #         "Use align=True when using np.dtype(..., align=True) "
-    #         "or change the extent with numba_mpi.type_create_resized(..., extent=dtype.itemsize)"
-    #     )
+    if a != b:
+        raise ValueError(
+            f"Size of the passed dtype ({a}) "
+            f"does not match its extent ({b}).\n"
+            "Use align=True when using np.dtype(..., align=True) "
+            "or change the extent with numba_mpi.type_create_resized(..., extent=dtype.itemsize)"
+        )
 
     mpi_type.Commit()
 

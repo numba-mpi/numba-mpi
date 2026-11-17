@@ -35,7 +35,7 @@ def jit_recv(data, source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG):
     "align",
     (
         True,
-        # False,
+        False,
     ),
 )
 @pytest.mark.parametrize("resize", (True, False))
@@ -57,14 +57,17 @@ def test_custom_dtypes(snd, rcv, align, resize):
 
     particle_type = numba_mpi.type_create_struct(particle_dtype)
 
-    if not resize and not align:
-        with pytest.raises(ValueError):
-            numba_mpi.type_commit(particle_type)
-        return
+    if resize:
+        particle_type = numba_mpi.type_create_resized(
+            oldtype=particle_type, lb=0, extent=particle_dtype.itemsize
+        )
 
-    particle_type = numba_mpi.type_create_resized(
-        oldtype=particle_type, lb=0, extent=particle_dtype.itemsize
-    )
+    try:
+        numba_mpi.type_commit(particle_type)
+    except ValueError:
+        if not resize and not align:
+            return
+        raise
 
     numba_mpi.type_commit(particle_type)
 
