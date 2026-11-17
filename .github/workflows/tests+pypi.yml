@@ -116,6 +116,8 @@ jobs:
           mpi: intelmpi
       fail-fast: false
     runs-on: ${{ matrix.platform }}
+    env:
+      UCX_TLS: ${{ matrix.platform == 'ubuntu-24.04-arm' && 'self,sm,tcp' || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v6
