@@ -5,7 +5,7 @@ import time
 import numba
 import numpy as np
 import pytest
-from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD, get_vendor
+from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD, REQUEST_NULL, get_vendor
 
 import numba_mpi as mpi
 from tests.common import data_types
@@ -285,7 +285,7 @@ def test_wall_segfault(fun):
     ):
         pytest.skip("OpenMPI v5 segfault on ARM64 #163")
 
-    reqs = np.zeros((2,), dtype=mpi.RequestType)
+    reqs = np.full((2,), REQUEST_NULL, dtype=mpi.RequestType)
     fun(reqs)
 
 
