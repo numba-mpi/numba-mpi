@@ -246,7 +246,7 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall):
     src = get_random_array((5,))
     dst = np.empty_like(src)
 
-    reqs = np.zeros((2,), dtype=mpi.RequestType)
+    reqs = np.full((2,), REQUEST_NULL.handle, dtype=mpi.RequestType)
     if mpi.rank() == 0:
         status, reqs[0:1] = isnd(src, dest=1, tag=11)
         assert status == mpi.SUCCESS
