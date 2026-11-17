@@ -285,7 +285,7 @@ def test_wall_segfault(fun):
     ):
         pytest.skip("OpenMPI v5 segfault on ARM64 #163")
 
-    reqs = np.full((2,), REQUEST_NULL, dtype=mpi.RequestType)
+    reqs = np.full((2,), REQUEST_NULL.handle, dtype=mpi.RequestType)
     fun(reqs)
 
 
