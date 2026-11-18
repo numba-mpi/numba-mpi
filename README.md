@@ -17,9 +17,14 @@
 Numba-MPI provides Python wrappers to the C MPI API callable from within [Numba JIT-compiled code](https://numba.readthedocs.io/en/stable/user/jit.html) (@jit mode). For an outline of the project, rationale, architecture, and features, refer to: [Numba-MPI paper in SoftwareX (open access)](https://www.sciencedirect.com/science/article/pii/S235271102400267X) (please cite if Numba-MPI is used in your research).
 
 Support is provided for a subset of MPI routines covering: `size`/`rank`, `send`/`recv`, `sendrecv`, `allreduce`, `reduce`, `bcast`, `scatter`/`gather` & `allgather`, `barrier`, `wtime`
-and basic asynchronous communication with `isend`/`irecv` (only for contiguous arrays); for request handling including `wait`/`waitall`/`waitany` and `test`/`testall`/`testany`.
+and basic asynchronous communication with `isend`/`irecv` (for contiguous arrays only); for request handling including `wait`/`waitall`/`waitany` and `test`/`testall`/`testany`.
 
 The API uses NumPy and supports both numeric and character datatypes (e.g., `broadcast`).
+Initial JIT-compilable support for custom datatypes (i.e. structures defined with `np.dtype`) has been introduced since v1.4
+in `send`/`recv`, and relies on (intentionally) non-JIT-compilable `type_create_struct`,
+`type_create_resized`, `type_commit` and `type_free`. Note that for custom datatypes,
+type checks are only performed when run without JIT compilation.
+
 Auto-generated docstring-based API docs are published on the web: https://numba-mpi.github.io/numba-mpi
 
 Packages can be obtained from
@@ -136,12 +141,6 @@ if numba_mpi.rank() == 0:
 ```
 
 ![plot](https://github.com/Numba-MPI/Numba-MPI/releases/download/tip/readme_plot.png)
-
-### Known Issues
-
-**NOTE**: Issues listed below only relate to combinations of platforms and MPI distributions that we target to support, but due to various reason are currently not working and are temporarily excluded from automated testing:
-
-- tests on MacOS (both Intel- and ARM-based) that use OpenMPI are currently not run due to failures being under investigation (see [related issue](https://github.com/Numba-MPI/Numba-MPI/issues/163)  - TODO #163).
 
 ### MPI resources on the web:
 
