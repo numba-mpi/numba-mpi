@@ -70,37 +70,42 @@ hello()
 
 ```python
 import numpy as np
-import numba_mpi as mpi
 import numba
+import numba_mpi as mpi
 
-@numba.jit()
+
+@numba.njit
 def main():
     rank = mpi.rank()
+    size = mpi.size()
 
-    if mpi.size() != 2:
-        raise RuntimeError("This example requires exactly 2 MPI processes.")
+    if size != 4:
+        raise RuntimeError("This example requires exactly 4 MPI processes.")
 
-    peer = 1 - rank
+    send_to = (rank + 1) % size
+    recv_from = (rank - 1 + size) % size
 
     send_data = np.full(5, rank, dtype=np.int64)
     recv_data = np.empty_like(send_data)
 
 
+
     reqs = np.full(2, mpi.REQUEST_NULL, dtype=mpi.RequestType)
 
-    status, send_req = mpi.isend(send_data, dest=peer, tag=0)
+    status, send_req = mpi.isend(send_data, dest=send_to, tag=0)
     assert status == mpi.SUCCESS
     reqs[0:1] = send_req
 
-    status, recv_req = mpi.irecv(recv_data, source=peer, tag=0)
+    status, recv_req = mpi.irecv(recv_data, source=recv_from, tag=0)
     assert status == mpi.SUCCESS
     reqs[1:2] = recv_req
+
 
 
     while True:
         status, index = mpi.waitany(reqs)
         assert status == mpi.SUCCESS
-        
+
         if index == mpi.UNDEFINED:
             break
 
@@ -111,7 +116,9 @@ def main():
             print("Rank", rank, ": received", recv_data)
 
             for i in range(recv_data.size):
-                assert recv_data[i] == peer
+                assert recv_data[i] == recv_from
+
+    print("Rank", rank, ": all requests completed.")
 
 main()
 ```
