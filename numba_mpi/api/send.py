@@ -29,7 +29,6 @@ def __send(data, dest, tag=0):
 
     if dtype == _mpi_dtype(ZERO_SIZE_BYTE_ARRAY):
         datasize = data.nbytes
-        # TODO: test for both aligned and non-aligned types
 
     status = _MPI_Send(
         data.ctypes.data,

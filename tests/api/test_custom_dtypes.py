@@ -12,13 +12,6 @@ def jit_send(data, dest, tag):
     return numba_mpi.send(data, dest, tag)
 
 
-# pylint --ignored-modules=mpi4py
-# --disable=fixme,duplicate-code $(git ls-files '*.py' | grep -v -e ^tests/paper_listings)
-# TODO: add pylint to pre-commit config and remove
-# the pylint GH Actions job (or add an issue describing it)
-# see `ccnact` repo
-
-
 @numba.njit()
 def jit_recv(data, source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG):
     return numba_mpi.recv(data, source, tag)
