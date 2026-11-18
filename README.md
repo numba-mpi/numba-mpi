@@ -51,33 +51,30 @@ Features that are not implemented yet include (help welcome!):
 ### Basic send/recv example
 
 ```python
-import numba, numba_mpi, numpy
+import numba, numba_mpi, numpy as np
 
 @numba.jit()
-def hello():
-    src = numpy.array([1., 2., 3., 4., 5.])
-    dst_tst = numpy.empty_like(src)
+def basic_send_recv_example():
+    src = np.array([1., 2., 3., 4., 5.])
+    dst_tst = np.empty_like(src)
 
     if numba_mpi.rank() == 0:
         numba_mpi.send(src, dest=1, tag=11)
     elif numba_mpi.rank() == 1:
         numba_mpi.recv(dst_tst, source=0, tag=11)
 
-hello()
+basic_send_recv_example()
 ```
 
 ### Asynchronous isend/irecv example
 
 ```python
-import numpy as np
-import numba
-import numba_mpi as mpi
-
+import numba, numba_mpi, numpy as np
 
 @numba.njit
-def main():
-    rank = mpi.rank()
-    size = mpi.size()
+def async_isend_irecv_example():
+    rank = numba_mpi.rank()
+    size = numba_mpi.size()
 
     if size != 4:
         raise RuntimeError("This example requires exactly 4 MPI processes.")
@@ -88,47 +85,48 @@ def main():
     send_data = np.full(5, rank, dtype=np.int64)
     recv_data = np.empty_like(send_data)
 
+    reqs = np.full(2, numba_mpi.REQUEST_NULL, dtype=numba_mpi.RequestType)
 
-
-    reqs = np.full(2, mpi.REQUEST_NULL, dtype=mpi.RequestType)
-
-    status, send_req = mpi.isend(send_data, dest=send_to, tag=0)
-    assert status == mpi.SUCCESS
+    status, send_req = numba_mpi.isend(send_data, dest=send_to, tag=0)
+    assert status == numba_mpi.SUCCESS
     reqs[0:1] = send_req
 
-    status, recv_req = mpi.irecv(recv_data, source=recv_from, tag=0)
-    assert status == mpi.SUCCESS
+    status, recv_req = numba_mpi.irecv(recv_data, source=recv_from, tag=0)
+    assert status == numba_mpi.SUCCESS
     reqs[1:2] = recv_req
 
-
-
     while True:
-        status, index = mpi.waitany(reqs)
-        assert status == mpi.SUCCESS
+        status, index = numba_mpi.waitany(reqs)
+        assert status == numba_mpi.SUCCESS
 
-        if index == mpi.UNDEFINED:
+        if index == numba_mpi.UNDEFINED:
             break
-
         if index == 0:
             print("Rank", rank, ": send completed.")
-
         elif index == 1:
             print("Rank", rank, ": received", recv_data)
-
             for i in range(recv_data.size):
                 assert recv_data[i] == recv_from
 
     print("Rank", rank, ": all requests completed.")
 
-main()
+async_isend_irecv_example()
 ```
 
 ### Custom datatype handling example
 
 ```python
-import numpy as np
-import numba_mpi
-import numba
+import numba, numba_mpi, numpy as np
+
+@numba.jit()
+def custom_dtype_example(p_send):
+    if numba_mpi.rank() == 0:
+        numba_mpi.send(p_send, dest=1, tag=11)
+
+    if numba_mpi.rank() == 1:
+        p_recv = np.zeros_like(p_send)
+        numba_mpi.recv(p_recv, source=0, tag=11)
+        print(p_recv)
 
 point_dt = np.dtype(
     [
@@ -139,31 +137,14 @@ point_dt = np.dtype(
 )
 
 mpi_dt_point = numba_mpi.type_create_struct(point_dt)
-
 numba_mpi.type_commit(mpi_dt_point)
-
-p_send = np.array( 
+custom_dtype_example(p_send = np.array( 
     [
         ((1.0, 2.0, 3.0), 99),
         ((5.0, 3.2, 9.0), 54)
     ],
     dtype=point_dt
-)
-
-@numba.jit()
-def main():
-    if numba_mpi.rank() == 0:
-        numba_mpi.send(p_send, dest=1, tag=11)
-
-    if numba_mpi.rank() == 1:
-        p_recv = np.zeros_like(p_send)
-        numba_mpi.recv(p_recv, source=0, tag=11)
-        
-        print(p_recv)
-        
-
-main()
-
+))
 numba_mpi.type_free(mpi_dt_point)
 ```
 
@@ -190,7 +171,7 @@ eliminated by using `Numba-MPI`, and which the measured differences in execution
 stem from.
 
 ```python
-import timeit, mpi4py, numba, numpy as np, numba_mpi
+import timeit, mpi4py, numba, numba_mpi, numpy as np
 
 N_TIMES = 10000
 RTOL = 1e-3
