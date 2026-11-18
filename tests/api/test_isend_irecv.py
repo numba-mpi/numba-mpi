@@ -278,13 +278,6 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall):
     ),
 )
 def test_wall_segfault(fun):
-    if (
-        platform.machine() == "aarch64"
-        and "Open MPI" == get_vendor()[0]
-        and 5 == get_vendor()[1][0]
-    ):
-        pytest.skip("OpenMPI v5 segfault on ARM64 #163")
-
     reqs = np.full((2,), mpi.REQUEST_NULL, dtype=mpi.RequestType)
     fun(reqs)
 
