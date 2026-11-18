@@ -1,11 +1,10 @@
 # pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring,too-many-arguments
-import platform
 import time
 
 import numba
 import numpy as np
 import pytest
-from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD, get_vendor
+from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD
 
 import numba_mpi as mpi
 from tests.common import data_types
