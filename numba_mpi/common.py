@@ -13,6 +13,8 @@ from mpi4py import MPI
 
 # pylint: disable=protected-access
 _MPI_Comm_World_ptr = MPI._addressof(MPI.COMM_WORLD)
+REQUEST_NULL = MPI.REQUEST_NULL.handle
+UNDEFINED = MPI.UNDEFINED
 
 _MPI4PY_DTYPES = {
     np.dtype("uint8"): MPI.CHAR,

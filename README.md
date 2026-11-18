@@ -14,6 +14,7 @@
 [![DOI](https://zenodo.org/badge/316911228.svg)](https://zenodo.org/badge/latestdoi/316911228)
 
 ### Overview
+
 Numba-MPI provides Python wrappers to the C MPI API callable from within [Numba JIT-compiled code](https://numba.readthedocs.io/en/stable/user/jit.html) (@jit mode). For an outline of the project, rationale, architecture, and features, refer to: [Numba-MPI paper in SoftwareX (open access)](https://www.sciencedirect.com/science/article/pii/S235271102400267X) (please cite if Numba-MPI is used in your research).
 
 Support is provided for a subset of MPI routines covering: `size`/`rank`, `send`/`recv`, `sendrecv`, `allreduce`, `reduce`, `bcast`, `scatter`/`gather` & `allgather`, `barrier`, `wtime`
@@ -22,10 +23,10 @@ and basic asynchronous communication with `isend`/`irecv` (for contiguous arrays
 The API uses NumPy and supports both numeric and character datatypes (e.g., `broadcast`).
 Initial JIT-compilable support for custom datatypes (i.e. structures defined with `np.dtype`) has been introduced since v1.4
 in `send`/`recv`, and relies on (intentionally) non-JIT-compilable `type_create_struct`,
-`type_create_resized`, `type_commit` and `type_free`. Note that for custom datatypes,
+`type_create_resized`, `type_commit` and `type_free` (see [example below](#custom-datatype-handling-example)). Note that for custom datatypes,
 type checks are only performed when run without JIT compilation.
 
-Auto-generated docstring-based API docs are published on the web: https://numba-mpi.github.io/numba-mpi
+Auto-generated docstring-based API docs are published on the web: <https://numba-mpi.github.io/numba-mpi>
 
 Packages can be obtained from
   [PyPI](https://pypi.org/project/Numba-MPI) (`pip install numba-mpi`),
@@ -39,16 +40,16 @@ for automated testing on: Intel Linux ([MPICH](https://www.mpich.org/), [OpenMPI
 & [Intel MPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html)),
 ARM Linux ([MPICH](https://www.mpich.org/) & [OpenMPI](https://www.open-mpi.org/doc/)),
 Intel and ARM macOS ([MPICH](https://www.mpich.org/)) and
-Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi)). Note, that some of those
-combinations may not be fully supported yet - see [Known Issues](#known-issues) for more information.
+Windows ([MS MPI](https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi)).
 
 Features that are not implemented yet include (help welcome!):
+
 - support for non-default communicators
 - support for `MPI_IN_PLACE` in `[all]gather`/`scatter` and `allreduce`
-- support for `MPI_Type_create_struct` (Numpy structured arrays)
 - ...
 
-### Hello world send/recv example:
+### Basic send/recv example
+
 ```python
 import numba, numba_mpi, numpy
 
@@ -65,7 +66,101 @@ def hello():
 hello()
 ```
 
-### Example comparing Numba-MPI vs. mpi4py performance:
+### Asynchronous isend/irecv example
+
+```python
+import numpy as np
+import numba_mpi as mpi
+import numba
+
+@numba.jit()
+def main():
+    rank = mpi.rank()
+
+    if mpi.size() != 2:
+        raise RuntimeError("This example requires exactly 2 MPI processes.")
+
+    peer = 1 - rank
+
+    send_data = np.full(5, rank, dtype=np.int64)
+    recv_data = np.empty_like(send_data)
+
+
+    reqs = np.full(2, mpi.REQUEST_NULL, dtype=mpi.RequestType)
+
+    status, send_req = mpi.isend(send_data, dest=peer, tag=0)
+    assert status == mpi.SUCCESS
+    reqs[0:1] = send_req
+
+    status, recv_req = mpi.irecv(recv_data, source=peer, tag=0)
+    assert status == mpi.SUCCESS
+    reqs[1:2] = recv_req
+
+
+    while True:
+        status, index = mpi.waitany(reqs)
+        assert status == mpi.SUCCESS
+        
+        if index == mpi.UNDEFINED:
+            break
+
+        if index == 0:
+            print("Rank", rank, ": send completed.")
+
+        elif index == 1:
+            print("Rank", rank, ": received", recv_data)
+
+            for i in range(recv_data.size):
+                assert recv_data[i] == peer
+
+main()
+```
+
+### Custom datatype handling example
+
+```python
+import numpy as np
+import numba_mpi
+import numba
+
+point_dt = np.dtype(
+    [
+        ("xyz", np.float64, (3,)),
+        ("id", np.intc),
+    ],
+    align=True,
+)
+
+mpi_dt_point = numba_mpi.type_create_struct(point_dt)
+
+numba_mpi.type_commit(mpi_dt_point)
+
+p_send = np.array( 
+    [
+        ((1.0, 2.0, 3.0), 99),
+        ((5.0, 3.2, 9.0), 54)
+    ],
+    dtype=point_dt
+)
+
+@numba.jit()
+def main():
+    if numba_mpi.rank() == 0:
+        numba_mpi.send(p_send, dest=1, tag=11)
+
+    if numba_mpi.rank() == 1:
+        p_recv = np.zeros_like(p_send)
+        numba_mpi.recv(p_recv, source=0, tag=11)
+        
+        print(p_recv)
+        
+
+main()
+
+numba_mpi.type_free(mpi_dt_point)
+```
+
+### Example comparing Numba-MPI vs. mpi4py performance
 
 The example below compares `Numba`+`mpi4py` vs. `Numba`+`Numba-MPI` performance.
 The sample code estimates $\pi$ by numerical integration of $\int_0^1 (4/(1+x^2))dx=\pi$
@@ -86,6 +181,7 @@ These are the overhead of `mpi4py` higher-level abstractions and the overhead of
 repeatedly entering and leaving the JIT-compiled block if using `mpi4py`, which can be
 eliminated by using `Numba-MPI`, and which the measured differences in execution time
 stem from.
+
 ```python
 import timeit, mpi4py, numba, numpy as np, numba_mpi
 
@@ -142,25 +238,25 @@ if numba_mpi.rank() == 0:
 
 ![plot](https://github.com/Numba-MPI/Numba-MPI/releases/download/tip/readme_plot.png)
 
-### MPI resources on the web:
+### MPI resources on the web
 
 - MPI standard and general information:
-    - https://www.mpi-forum.org/docs
-    - https://en.wikipedia.org/wiki/Message_Passing_Interface
+  - <https://www.mpi-forum.org/docs>
+  - <https://en.wikipedia.org/wiki/Message_Passing_Interface>
 - MPI implementations:
-    - OpenMPI: https://www.open-mpi.org
-    - MPICH: https://www.mpich.org
-    - MS MPI: https://learn.microsoft.com/en-us/message-passing-interface
-    - Intel MPI: https://intel.com/content/www/us/en/developer/tools/oneapi/mpi-library-documentation.html
+  - OpenMPI: <https://www.open-mpi.org>
+  - MPICH: <https://www.mpich.org>
+  - MS MPI: <https://learn.microsoft.com/en-us/message-passing-interface>
+  - Intel MPI: <https://intel.com/content/www/us/en/developer/tools/oneapi/mpi-library-documentation.html>
 - MPI bindings:
-    - Python: https://mpi4py.readthedocs.io
-    - Python/JAX: https://mpi4jax.readthedocs.io
-    - Julia: https://juliaparallel.org/MPI.jl
-    - Rust: https://docs.rs/mpi
-    - C++: https://www.boost.org/doc/libs/latest/doc/html/mpi.html
-    - R: https://cran.r-project.org/web/packages/Rmpi
+  - Python: <https://mpi4py.readthedocs.io>
+  - Python/JAX: <https://mpi4jax.readthedocs.io>
+  - Julia: <https://juliaparallel.org/MPI.jl>
+  - Rust: <https://docs.rs/mpi>
+  - C++: <https://www.boost.org/doc/libs/latest/doc/html/mpi.html>
+  - R: <https://cran.r-project.org/web/packages/Rmpi>
 
-### Acknowledgements:
+### Acknowledgements
 
 We thank [all contributors](https://github.com/Numba-MPI/Numba-MPI/graphs/contributors) and users who reported feedback to the project
   through [GitHub issues](https://github.com/Numba-MPI/Numba-MPI/issues).

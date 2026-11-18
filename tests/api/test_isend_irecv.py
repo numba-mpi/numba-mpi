@@ -5,7 +5,7 @@ import time
 import numba
 import numpy as np
 import pytest
-from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD, REQUEST_NULL, get_vendor
+from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD, get_vendor
 
 import numba_mpi as mpi
 from tests.common import data_types
@@ -177,7 +177,7 @@ def test_isend_irecv_waitall(isnd, ircv, wall, data_type):
     dst1 = np.empty_like(src1)
     dst2 = np.empty_like(src2)
 
-    reqs = np.zeros((2,), dtype=mpi.RequestType)
+    reqs = np.full((2,), mpi.REQUEST_NULL, dtype=mpi.RequestType)
     if mpi.rank() == 0:
         status, reqs[0:1] = isnd(src1, dest=1, tag=11)
         assert status == mpi.SUCCESS
@@ -246,7 +246,7 @@ def test_isend_irecv_waitall_exchange(isnd, ircv, wall):
     src = get_random_array((5,))
     dst = np.empty_like(src)
 
-    reqs = np.full((2,), REQUEST_NULL.handle, dtype=mpi.RequestType)
+    reqs = np.full((2,), mpi.REQUEST_NULL, dtype=mpi.RequestType)
     if mpi.rank() == 0:
         status, reqs[0:1] = isnd(src, dest=1, tag=11)
         assert status == mpi.SUCCESS
@@ -285,7 +285,7 @@ def test_wall_segfault(fun):
     ):
         pytest.skip("OpenMPI v5 segfault on ARM64 #163")
 
-    reqs = np.full((2,), REQUEST_NULL.handle, dtype=mpi.RequestType)
+    reqs = np.full((2,), mpi.REQUEST_NULL, dtype=mpi.RequestType)
     fun(reqs)
 
 
@@ -308,7 +308,7 @@ def test_isend_irecv_waitany(isnd, ircv, wany, wall, data_type):
     dst1 = np.empty_like(src1)
     dst2 = np.empty_like(src2)
 
-    reqs = np.zeros((2,), dtype=mpi.RequestType)
+    reqs = np.full((2,), mpi.REQUEST_NULL, dtype=mpi.RequestType)
     if mpi.rank() == 0:
         status, reqs[0:1] = isnd(src1, dest=1, tag=11)
         assert status == mpi.SUCCESS
@@ -382,7 +382,7 @@ def test_isend_irecv_testall(isnd, ircv, tall, wall):
     dst1 = np.empty_like(src1)
     dst2 = np.empty_like(src2)
 
-    reqs = np.zeros((2,), dtype=mpi.RequestType)
+    reqs = np.full((2,), mpi.REQUEST_NULL, dtype=mpi.RequestType)
     if mpi.rank() == 0:
         time.sleep(TEST_WAIT_FULL_IN_SECONDS)
 
@@ -428,7 +428,7 @@ def test_isend_irecv_testany(isnd, ircv, tany, wall):
     dst1 = np.empty_like(src1)
     dst2 = np.empty_like(src2)
 
-    reqs = np.zeros((2,), dtype=mpi.RequestType)
+    reqs = np.full((2,), mpi.REQUEST_NULL, dtype=mpi.RequestType)
     if mpi.rank() == 0:
         time.sleep(TEST_WAIT_FULL_IN_SECONDS)
 
