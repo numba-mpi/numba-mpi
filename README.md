@@ -54,7 +54,7 @@ Features that are not implemented yet include (help welcome!):
 import numba, numba_mpi, numpy as np
 
 @numba.jit()
-def basic_send_recv_example():
+def test_basic_send_recv():
     src = np.array([1., 2., 3., 4., 5.])
     dst_tst = np.empty_like(src)
 
@@ -62,8 +62,6 @@ def basic_send_recv_example():
         numba_mpi.send(src, dest=1, tag=11)
     elif numba_mpi.rank() == 1:
         numba_mpi.recv(dst_tst, source=0, tag=11)
-
-basic_send_recv_example()
 ```
 
 ### Asynchronous isend/irecv example
@@ -72,12 +70,11 @@ basic_send_recv_example()
 import numba, numba_mpi, numpy as np
 
 @numba.njit
-def async_isend_irecv_example():
+def test_async_isend_irecv():
     rank = numba_mpi.rank()
     size = numba_mpi.size()
 
-    if size != 4:
-        raise RuntimeError("This example requires exactly 4 MPI processes.")
+    assert size == 4, "This example requires exactly 4 MPI processes."
 
     send_to = (rank + 1) % size
     recv_from = (rank - 1 + size) % size
@@ -109,8 +106,6 @@ def async_isend_irecv_example():
                 assert recv_data[i] == recv_from
 
     print("Rank", rank, ": all requests completed.")
-
-async_isend_irecv_example()
 ```
 
 ### Custom datatype handling example
@@ -119,7 +114,7 @@ async_isend_irecv_example()
 import numba, numba_mpi, numpy as np
 
 @numba.jit()
-def custom_dtype_example(p_send):
+def number_crunching(p_send):
     if numba_mpi.rank() == 0:
         numba_mpi.send(p_send, dest=1, tag=11)
 
@@ -128,24 +123,25 @@ def custom_dtype_example(p_send):
         numba_mpi.recv(p_recv, source=0, tag=11)
         print(p_recv)
 
-point_dt = np.dtype(
-    [
-        ("xyz", np.float64, (3,)),
-        ("id", np.intc),
-    ],
-    align=True,
-)
+def test_custom_dtype():
+    point_dt = np.dtype(
+        [
+            ("xyz", np.float64, (3,)),
+            ("id", np.intc),
+        ],
+        align=True,
+    )
 
-mpi_dt_point = numba_mpi.type_create_struct(point_dt)
-numba_mpi.type_commit(mpi_dt_point)
-custom_dtype_example(p_send = np.array( 
-    [
-        ((1.0, 2.0, 3.0), 99),
-        ((5.0, 3.2, 9.0), 54)
-    ],
-    dtype=point_dt
-))
-numba_mpi.type_free(mpi_dt_point)
+    mpi_dt_point = numba_mpi.type_create_struct(point_dt)
+    numba_mpi.type_commit(mpi_dt_point)
+    number_crunching(p_send = np.array( 
+        [
+            ((1.0, 2.0, 3.0), 99),
+            ((5.0, 3.2, 9.0), 54)
+        ],
+        dtype=point_dt
+    ))
+    numba_mpi.type_free(mpi_dt_point)
 ```
 
 ### Example comparing Numba-MPI vs. mpi4py performance

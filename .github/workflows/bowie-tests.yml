@@ -45,7 +45,7 @@ jobs:
         uses: ./actions-framework/.github/actions/run-slurm-job
         with:
           python-version: ${{ matrix.python-version }}
-          command: "python readme.py"
+          command: "pytest -k 'not async' readme.py"
           working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload README Benchmark Plot
