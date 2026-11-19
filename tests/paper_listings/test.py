@@ -1,12 +1,22 @@
 import numpy as np
+import numba
 import pytest
 import numba_mpi as mpi
 from tests.common import data_types
 from tests.utils import get_random_array
 
+@numba.njit()
+def jit_send(data, dest, tag=0):
+    return mpi.send(data, dest, tag)
+
+
+@numba.njit()
+def jit_recv(data, source=None, tag=None):
+    return mpi.recv(data, source, tag)
+
 @pytest.mark.parametrize("snd, rcv", (
-    (mpi.send, mpi.recv),
-    (mpi.send.py_func, mpi.recv.py_func))
+    (jit_send, jit_recv),
+    (mpi.send, mpi.recv))
 )
 @pytest.mark.parametrize("fortran_order", [True, False])
 @pytest.mark.parametrize("data_type", data_types)
