@@ -38,14 +38,14 @@ jobs:
         uses: ./actions-framework/.github/actions/run-slurm-job
         with:
           python-version: ${{ matrix.python-version }}
-          command: "python -m pytest -s -v --durations=10 -p no:unraisableexception -We tests/api"
+          command: "python -m pytest -s -v --durations=10 -We tests/api"
           working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Run README Benchmark
         uses: ./actions-framework/.github/actions/run-slurm-job
         with:
           python-version: ${{ matrix.python-version }}
-          command: "pytest -k 'not async' readme.py"
+          command: "python -m pytest -s -v --durations=10 -We --assert=plain -k 'not async' readme.py"
           working-directory: run-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload README Benchmark Plot
