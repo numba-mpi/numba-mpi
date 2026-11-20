@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Numba-MPI/Numba-MPI/main/.github/numba_mpi_logo.png" width=128 height=142 alt="Numba-MPI logo"> Numba-MPI
+# <img src="https://raw.githubusercontent.com/Numba-MPI/Numba-MPI/main/.github/numba_mpi_logo_with_text.svg" width=128 height=142 alt="Numba-MPI logo"> Numba-MPI
 
 [![Python 3](https://img.shields.io/static/v1?label=Python&logo=Python&color=3776AB&message=3)](https://www.python.org/)
 [![LLVM](https://img.shields.io/static/v1?label=LLVM&logo=LLVM&color=gold&message=Numba)](https://numba.pydata.org)
