@@ -4,9 +4,16 @@
 
 from importlib.metadata import PackageNotFoundError, version
 
+from .api import custom_dtypes
 from .api.allreduce import allreduce
 from .api.barrier import barrier
 from .api.bcast import bcast
+from .api.custom_dtypes import (
+    type_commit,
+    type_create_resized,
+    type_create_struct,
+    type_free,
+)
 from .api.initialized import initialized
 from .api.irecv import irecv
 from .api.isend import isend
@@ -21,7 +28,7 @@ from .api.send import send
 from .api.sendrecv import sendrecv
 from .api.size import size
 from .api.wtime import wtime
-from .common import RequestType
+from .common import REQUEST_NULL, UNDEFINED, RequestType
 
 SUCCESS = 0
 
