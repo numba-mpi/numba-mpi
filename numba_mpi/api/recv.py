@@ -4,9 +4,12 @@ import ctypes
 
 import numba
 import numpy as np
-from mpi4py.MPI import ANY_SOURCE, ANY_TAG
+from mpi4py import MPI
+from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD
 
+from numba_mpi.api.custom_dtypes import _dtype_to_mpitype
 from numba_mpi.common import (
+    ZERO_SIZE_BYTE_ARRAY,
     _MPI_Comm_World_ptr,
     _MpiStatusPtr,
     create_status_buffer,
@@ -22,8 +25,7 @@ _MPI_Recv.argtypes = send_recv_args + [
 ]
 
 
-@numba.njit()
-def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
+def __recv(data, source=ANY_SOURCE, tag=ANY_TAG):
     """file containing wrapper for MPI_Recv (writes data directly if `data` is contiguous, otherwise
     allocates a buffer and later copies the data into non-contiguous `data` array).
     Returns integer status code (0 == MPI_SUCCESS)"""
@@ -37,10 +39,15 @@ def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
         )  # np.empty_like(data, order='C') fails with Numba
     )
 
+    datasize = buffer.size
+    dtype = _mpi_dtype(buffer)
+    if dtype == _mpi_dtype(ZERO_SIZE_BYTE_ARRAY):
+        datasize = buffer.nbytes
+
     status = _MPI_Recv(
         buffer.ctypes.data,
-        buffer.size,
-        _mpi_dtype(data),
+        datasize,
+        dtype,
         source,
         tag,
         _mpi_addr(_MPI_Comm_World_ptr),
@@ -51,3 +58,36 @@ def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
         data[...] = buffer
 
     return status
+
+
+def recv(data, source=ANY_SOURCE, tag=ANY_TAG):
+    """Wrapper for MPI_Recv. Returns integer status code (`0` indicates `MPI_SUCCESS`).
+    The default value for `source` is set to `ANY_SOURCE`; `tag` to `ANY_TAG` as in mpi4py.
+    Both built-in MPI datatypes, as well as custom datatypes defined in
+    user code are supported; transfers of custom-type data are done
+    byte-by-byte in JIT-compiled code, without datatype consistency checks,
+    while in pure-Python calling scopes, the mpi4py's `Recv()` function is
+    called in order to perform type checks.
+    """
+
+    if data.dtype.isbuiltin:
+        return __recv(data, source, tag)
+
+    try:
+        COMM_WORLD.Recv(
+            [
+                data,
+                data.size,
+                _dtype_to_mpitype(data.dtype),
+            ],
+            source,
+            tag,
+        )
+        return MPI.SUCCESS
+    except MPI.Exception as exception:
+        return exception.error_code
+
+
+@numba.extending.overload(recv)
+def recv_numba(data, source=ANY_SOURCE, tag=ANY_TAG):
+    return __recv
