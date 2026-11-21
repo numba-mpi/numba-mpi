@@ -18,7 +18,7 @@ jobs:
   pylint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - uses: actions/setup-python@v7
       with:
         python-version: "3.13"
@@ -32,11 +32,11 @@ jobs:
   precommit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.10"
+          python-version: "3.13"
       - name: Linting
         run: |
           pip install pre-commit
@@ -49,7 +49,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: actions/setup-python@v7
@@ -63,7 +63,7 @@ jobs:
           PDOC_ALLOW_EXEC=1 python -We -m pdoc -o html numba_mpi
       - name: Deploy
         if: github.ref == 'refs/heads/main'
-        uses: JamesIves/github-pages-deploy-action@v4.8.0
+        uses: JamesIves/github-pages-deploy-action@v4.9.0
         with:
           BRANCH: pdoc
           FOLDER: html
@@ -72,7 +72,7 @@ jobs:
   zenodo_json:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: notiz-dev/github-action-json-property@release
         with:
           path: '.zenodo.json'
@@ -100,10 +100,6 @@ jobs:
           mpi: msmpi
         - platform: macos-15
           mpi: intelmpi
-        - platform: macos-15-intel   # TODO: # 163
-          mpi: openmpi
-        - platform: macos-15   # TODO: # 163
-          mpi: openmpi
         - python-version: "3.14"
           platform: macos-15-intel
         - platform: ubuntu-latest
@@ -120,8 +116,10 @@ jobs:
           mpi: intelmpi
       fail-fast: false
     runs-on: ${{ matrix.platform }}
+    env:
+      UCX_TLS: ${{ startsWith(matrix.platform, 'ubuntu-') && 'self,sm,tcp' || '' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
@@ -147,7 +145,7 @@ jobs:
       id-token: write
     steps:
       - uses: mpi4py/setup-mpi@v1
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0  # https://github.com/pypa/setuptools_scm/issues/480
       - uses: actions/setup-python@v7

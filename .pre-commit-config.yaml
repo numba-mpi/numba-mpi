@@ -4,13 +4,13 @@ default_stages: [commit]
 
 repos:
   - repo: https://github.com/psf/black
-    rev: 26.5.1
+    rev: 26.10.1
     hooks:
       - id: black
         exclude: ^tests/paper_listings/
 
   - repo: https://github.com/timothycrosley/isort
-    rev: 8.0.1
+    rev: 9.0.2
     hooks:
       - id: isort
         args: ["--profile", "black"]
