@@ -21,10 +21,11 @@ Support is provided for a subset of MPI routines covering: `size`/`rank`, `send`
 and basic asynchronous communication with `isend`/`irecv` (for contiguous arrays only); for request handling including `wait`/`waitall`/`waitany` and `test`/`testall`/`testany`.
 
 The API uses NumPy and supports both numeric and character datatypes (e.g., `broadcast`).
-Initial JIT-compilable support for custom datatypes (i.e. structures defined with `np.dtype`) has been introduced since v1.4
-in `send`/`recv`, and relies on (intentionally) non-JIT-compilable `type_create_struct`,
-`type_create_resized`, `type_commit` and `type_free` (see [example below](#custom-datatype-handling-example)). Note that for custom datatypes,
-type checks are only performed when run without JIT compilation.
+Initial JIT-compilable support for custom datatypes (i.e. structures defined with `np.dtype`) has been gradually introduced since v1.4, and
+as of now covers `send`, `recv` and `sendrecv` functions. Note that it relies on (intentionally) non-JIT-compilable `type_create_struct`,
+`type_create_resized`, `type_commit` and `type_free` (see [example below](#custom-datatype-handling-example)). For custom datatypes,
+type checks are only performed when run without JIT compilation (e.g. by setting `NUMBA_DISABLE_JIT=1`). With JIT-compilation enabled,
+custom data structures are sent byte-by-byte without type checks, but in an alignment-aware manner.
 
 Auto-generated docstring-based API docs are published on the web: <https://numba-mpi.github.io/numba-mpi>
 

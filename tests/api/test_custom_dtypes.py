@@ -17,6 +17,14 @@ def jit_recv(data, source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG):
     return numba_mpi.recv(data, source, tag)
 
 
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+@numba.njit()
+def jit_sendrecv(
+    senddata, dest, recvdata, source=MPI.ANY_SOURCE, sendtag=0, recvtag=MPI.ANY_TAG
+):
+    return numba_mpi.sendrecv(senddata, dest, recvdata, source, sendtag, recvtag)
+
+
 @pytest.mark.parametrize(
     "snd, rcv",
     (
@@ -205,3 +213,65 @@ def test_multiple_custom_dtypes(snd, rcv, align):
     numba_mpi.type_free(a_type)
     numba_mpi.type_free(b_type)
     numba_mpi.type_free(c_type)
+
+
+@pytest.mark.parametrize(
+    "sr",
+    (
+        pytest.param(numba_mpi.sendrecv, id="numba disabled"),
+        pytest.param(jit_sendrecv, id="numba enabled"),
+    ),
+)
+@pytest.mark.parametrize(
+    "align",
+    (
+        True,
+        False,
+    ),
+)
+@pytest.mark.parametrize("resize", argvalues=(True, False))
+def test_sendrecv(sr, align, resize):
+    particle_dtype = np.dtype(
+        [
+            ("id", np.intc),
+            ("xyz", np.float64, (3,)),
+            ("mass", np.float64),
+        ],
+        align=align,
+    )
+
+    world_rank = MPI.COMM_WORLD.Get_rank()
+
+    particle_type = numba_mpi.type_create_struct(particle_dtype)
+
+    if resize:
+        particle_type = numba_mpi.type_create_resized(
+            oldtype=particle_type, lb=0, extent=particle_dtype.itemsize
+        )
+
+    try:
+        numba_mpi.type_commit(particle_type)
+    except ValueError:
+        if not resize and not align:
+            return
+        raise
+
+    p1 = (120, [-45.3, 1.2, 0.05], 999.98)
+    p1_send = np.array([p1, p1, p1], dtype=particle_dtype)
+    p2 = (444, [0.0, -1.0, 22.3], 0.00002)
+    p2_send = np.array([p2, p2], dtype=particle_dtype)
+
+    if world_rank == 0:
+        p_recv = np.zeros(2, dtype=particle_dtype)
+
+        sr(p1_send, 1, p_recv, 1, 11, 22)
+
+        np.testing.assert_equal(p_recv, p2_send)
+    elif world_rank == 1:
+        p_recv = np.zeros(3, dtype=particle_dtype)
+
+        sr(p2_send, 0, p_recv, 0, 22, 11)
+
+        np.testing.assert_equal(p_recv, p1_send)
+
+    numba_mpi.type_free(particle_type)
