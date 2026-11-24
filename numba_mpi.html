@@ -78,10 +78,11 @@ numba_mpi    </h1>
 and basic asynchronous communication with <code>isend</code>/<code>irecv</code> (for contiguous arrays only); for request handling including <code>wait</code>/<code>waitall</code>/<code>waitany</code> and <code>test</code>/<code>testall</code>/<code>testany</code>.</p>
 
 <p>The API uses NumPy and supports both numeric and character datatypes (e.g., <code>broadcast</code>).
-Initial JIT-compilable support for custom datatypes (i.e. structures defined with <code>np.dtype</code>) has been introduced since v1.4
-in <code>send</code>/<code>recv</code>, and relies on (intentionally) non-JIT-compilable <code>type_create_struct</code>,
-<code>type_create_resized</code>, <code>type_commit</code> and <code>type_free</code> (see <a href="#custom-datatype-handling-example">example below</a>). Note that for custom datatypes,
-type checks are only performed when run without JIT compilation.</p>
+Initial JIT-compilable support for custom datatypes (i.e. structures defined with <code>np.dtype</code>) has been gradually introduced since v1.4, and
+as of now covers <code>send</code>, <code>recv</code> and <code>sendrecv</code> functions. Note that it relies on (intentionally) non-JIT-compilable <code>type_create_struct</code>,
+<code>type_create_resized</code>, <code>type_commit</code> and <code>type_free</code> (see <a href="#custom-datatype-handling-example">example below</a>). For custom datatypes,
+type checks are only performed when run without JIT compilation (e.g. by setting <code>NUMBA_DISABLE_JIT=1</code>). With JIT-compilation enabled,
+custom data structures are sent byte-by-byte without type checks, but in an alignment-aware manner.</p>
 
 <p>Auto-generated docstring-based API docs are published on the web: <a href="https://numba-mpi.github.io/numba-mpi">https://numba-mpi.github.io/numba-mpi</a></p>
 
