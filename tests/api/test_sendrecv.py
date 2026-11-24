@@ -2,11 +2,12 @@
 import numba
 import numpy as np
 import pytest
-from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD, get_vendor
+from mpi4py.MPI import ANY_SOURCE, ANY_TAG, get_vendor
 
 import numba_mpi as mpi
 
 
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 @numba.njit()
 def jit_sendrecv(
     senddata, dest, recvdata, source=ANY_SOURCE, sendtag=0, recvtag=ANY_TAG
