@@ -41,18 +41,6 @@ _MPI_Sendrecv.argtypes = [
 
 
 def __sendrecv(senddata, dest, recvdata, source=ANY_SOURCE, sendtag=0, recvtag=ANY_TAG):
-    """
-    Wrapper for MPI_Sendrecv.
-
-    Performs a simultaneous send and receive operation: sends `senddata`
-    to `dest` and receives data into `recvdata` from `source`.
-
-    Mimicking MPI semantics, default value for `sendtag` is set to zero,
-    while `source` defaults to ANY_SOURCE and `recvtag` defaults to ANY_TAG.
-
-    Returns MPI error code (0 == MPI_SUCCESS).
-    """
-
     senddata = np.ascontiguousarray(senddata)
 
     status_buffer = create_status_buffer()
@@ -96,6 +84,21 @@ def __sendrecv(senddata, dest, recvdata, source=ANY_SOURCE, sendtag=0, recvtag=A
 
 
 def sendrecv(senddata, dest, recvdata, source=ANY_SOURCE, sendtag=0, recvtag=ANY_TAG):
+    """
+    Wrapper for MPI_Sendrecv. Returns integer status code (`0` indicates `MPI_SUCCESS`).
+
+    Performs a simultaneous send and receive operation: sends `senddata`
+    to `dest` and receives data into `recvdata` from `source`.
+
+    Mimicking MPI semantics, default value for `sendtag` is set to zero,
+    while `source` defaults to ANY_SOURCE and `recvtag` defaults to ANY_TAG.
+
+    Both built-in MPI datatypes, as well as custom datatypes defined in
+    user code are supported; transfers of custom-type data are done
+    byte-by-byte in JIT-compiled code, without datatype consistency checks,
+    while in pure-Python calling scopes, the mpi4py's `Sendrecv()` function is
+    called in order to perform type checks.
+    """
 
     if senddata.dtype.isbuiltin and recvdata.dtype.isbuiltin:
         return __sendrecv(senddata, dest, recvdata, source, sendtag, recvtag)

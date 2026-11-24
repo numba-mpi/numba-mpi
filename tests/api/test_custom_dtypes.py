@@ -17,6 +17,7 @@ def jit_recv(data, source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG):
     return numba_mpi.recv(data, source, tag)
 
 
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 @numba.njit()
 def jit_sendrecv(
     senddata, dest, recvdata, source=MPI.ANY_SOURCE, sendtag=0, recvtag=MPI.ANY_TAG
