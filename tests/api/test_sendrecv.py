@@ -1,15 +1,22 @@
 # pylint: disable=missing-function-docstring,missing-class-docstring,missing-module-docstring
-
+import numba
 import numpy as np
 import pytest
-from mpi4py.MPI import get_vendor
+from mpi4py.MPI import ANY_SOURCE, ANY_TAG, COMM_WORLD, get_vendor
 
 import numba_mpi as mpi
 
 
+@numba.njit()
+def jit_sendrecv(
+    senddata, dest, recvdata, source=ANY_SOURCE, sendtag=0, recvtag=ANY_TAG
+):
+    return mpi.sendrecv(senddata, dest, recvdata, source, sendtag, recvtag)
+
+
 class TestSendrecv:
 
-    @pytest.mark.parametrize("sr", (mpi.sendrecv, mpi.sendrecv.py_func))
+    @pytest.mark.parametrize("sr", (mpi.sendrecv, jit_sendrecv))
     @staticmethod
     def test_pairwise_smoke(sr):
         """Minimal 0↔1 exchange — rank 0’s send tag matches rank 1’s recv tag, and vice versa."""
@@ -31,7 +38,7 @@ class TestSendrecv:
         assert status == mpi.SUCCESS
         np.testing.assert_array_equal(rcv, snd[r - 1])
 
-    @pytest.mark.parametrize("sr", (mpi.sendrecv, mpi.sendrecv.py_func))
+    @pytest.mark.parametrize("sr", (mpi.sendrecv, jit_sendrecv))
     @staticmethod
     def test_circular(sr):
         """Minimal neighbour exchange — rank 0’s send tag matches rank 1’s recv tag, etc"""
@@ -57,7 +64,7 @@ class TestSendrecv:
         reason="Known self-send issue with Microsoft MPI",
         strict=True,
     )
-    @pytest.mark.parametrize("sr", (mpi.sendrecv, mpi.sendrecv.py_func))
+    @pytest.mark.parametrize("sr", (mpi.sendrecv, jit_sendrecv))
     @staticmethod
     def test_selfsend(sr):
         # arrange
@@ -69,7 +76,7 @@ class TestSendrecv:
         # assert
         assert status == mpi.SUCCESS
 
-    @pytest.mark.parametrize("sr", (mpi.sendrecv, mpi.sendrecv.py_func))
+    @pytest.mark.parametrize("sr", (mpi.sendrecv, jit_sendrecv))
     @staticmethod
     def test_noncontiguous_input(sr):
         # arrange
@@ -86,7 +93,7 @@ class TestSendrecv:
         assert status == mpi.SUCCESS
         assert all(inpt.flatten() == oupt.flatten())
 
-    @pytest.mark.parametrize("sr", (mpi.sendrecv, mpi.sendrecv.py_func))
+    @pytest.mark.parametrize("sr", (mpi.sendrecv, jit_sendrecv))
     @staticmethod
     def test_noncontiguous_output(sr):
         # arrange
@@ -103,7 +110,7 @@ class TestSendrecv:
         assert status == mpi.SUCCESS
         assert all(inpt.flatten() == oupt.flatten())
 
-    @pytest.mark.parametrize("sr", (mpi.sendrecv, mpi.sendrecv.py_func))
+    @pytest.mark.parametrize("sr", (mpi.sendrecv, jit_sendrecv))
     @staticmethod
     def test_invalid_dest(sr):
         # arrange
@@ -115,7 +122,7 @@ class TestSendrecv:
         # assert
         assert status != mpi.SUCCESS
 
-    @pytest.mark.parametrize("sr", (mpi.sendrecv, mpi.sendrecv.py_func))
+    @pytest.mark.parametrize("sr", (mpi.sendrecv, jit_sendrecv))
     @staticmethod
     def test_invalid_source(sr):
         # arrange
